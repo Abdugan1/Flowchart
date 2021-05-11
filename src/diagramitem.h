@@ -18,6 +18,8 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 private:
+    QPointF preventOutsideMove(QPointF pos);
+private:
     DiagramType diagramType_;
 };
 

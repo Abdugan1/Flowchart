@@ -14,17 +14,8 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 {
     if (change == ItemPositionChange && scene()) {
         QPointF newPos = value.toPointF();
-        QRectF sceneRect = scene()->sceneRect();
-        QPointF bottomRight;
-        bottomRight.setX(boundingRect().width()  + newPos.x());
-        bottomRight.setY(boundingRect().height() + newPos.y());
-        if (!sceneRect.contains(newPos) || !sceneRect.contains(bottomRight)) {
-            // Keep item inside scene rect
-            qDebug() << "Vnimanie! Govorit Moskva!";
-            newPos.setX(qMin(sceneRect.right(),  qMax(newPos.x(), sceneRect.left())));
-            newPos.setY(qMin(sceneRect.bottom(), qMax(newPos.y(), sceneRect.top())));
-            return newPos;
-        }
+        newPos = preventOutsideMove(newPos);
+        return newPos;
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -32,4 +23,23 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 DiagramItem::DiagramType DiagramItem::diagramType() const
 {
     return diagramType_;
+}
+
+QPointF DiagramItem::preventOutsideMove(QPointF topLeft)
+{
+    QRectF sceneRect = scene()->sceneRect();
+
+    QPointF bottomRight;
+    bottomRight.setX(boundingRect().width()  + topLeft.x());
+    bottomRight.setY(boundingRect().height() + topLeft.y());
+
+    if (!sceneRect.contains(topLeft)) {
+        topLeft.setX(qMax(topLeft.x(), sceneRect.left()));
+        topLeft.setY(qMax(topLeft.y(), sceneRect.top()));
+    }
+    if (!sceneRect.contains(bottomRight)) {
+        topLeft.setX(qMin(bottomRight.x(), sceneRect.right())  - (bottomRight.x() - topLeft.x()));
+        topLeft.setY(qMin(bottomRight.y(), sceneRect.bottom()) - (bottomRight.y() - topLeft.y()));
+    }
+    return topLeft;
 }
