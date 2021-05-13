@@ -22,6 +22,7 @@ public:
     DiagramPolygonItem(DiagramPolygonType diagramType, QGraphicsItem* parent = nullptr);
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QPixmap image() const;
 private:
     QPolygonF polygonF_;
 };

@@ -44,3 +44,15 @@ void DiagramPolygonItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
     painter->drawPolygon(polygonF_);
     painter->restore();
 }
+
+QPixmap DiagramPolygonItem::image() const
+{
+    QPixmap pixmap(DefaultSize::Width, DefaultSize::Height);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen(QPen(Qt::black, 6));
+//    painter.translate(125, 125);
+    painter.drawPolygon(polygonF_);
+    return pixmap;
+}
