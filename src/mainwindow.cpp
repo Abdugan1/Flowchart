@@ -45,11 +45,10 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
             DiagramItem::DiagramType(buttonGroup_->id(button));
     switch (type) {
     case DiagramItem::Terminal:
-//        break;
     case DiagramItem::Process:
     case DiagramItem::Desicion:
     case DiagramItem::InOut:
-        diagramItem = new DiagramPolygonItem(DiagramPolygonItem::DiagramPolygonType(type));
+        diagramItem = new DiagramItem(DiagramItem::DiagramType(type));
         break;
     }
     diagramItem->setFlag(QGraphicsItem::ItemIsMovable);
@@ -89,7 +88,7 @@ QWidget* MainWindow::createCellWidget(const QString &text, DiagramItem::DiagramT
     case DiagramItem::Process:
     case DiagramItem::Desicion:
     case DiagramItem::InOut:
-        icon.addPixmap(DiagramPolygonItem(DiagramPolygonItem::DiagramPolygonType(type)).image());
+        icon.addPixmap(DiagramItem(DiagramItem::DiagramType(type)).image());
         break;
     }
 

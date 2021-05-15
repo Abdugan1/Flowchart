@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include "diagramscene.h"
-#include "diagrampolygonitem.h"
+#include "diagramitem.h"
 
 #include <QMainWindow>
 

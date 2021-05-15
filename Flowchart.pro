@@ -10,14 +10,12 @@ CONFIG += c++11
 
 SOURCES += \
     src/diagramitem.cpp \
-    src/diagrampolygonitem.cpp \
     src/diagramscene.cpp \
     src/main.cpp \
     src/mainwindow.cpp
 
 HEADERS += \
     src/diagramitem.h \
-    src/diagrampolygonitem.h \
     src/diagramscene.h \
     src/mainwindow.h
 
