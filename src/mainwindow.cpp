@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene_->setSceneRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
     scene_->addRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
 
-    view_ = new QGraphicsView(scene_);
+    view_ = new DiagramView(scene_);
     view_->setRenderHint(QPainter::Antialiasing, true);
 
     QHBoxLayout * hLayout = new QHBoxLayout;

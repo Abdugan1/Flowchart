@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "diagramscene.h"
+#include "diagramview.h"
 #include "diagramitem.h"
 
 #include <QMainWindow>
@@ -25,7 +26,7 @@ private:
     QWidget* createCellWidget(const QString& text, DiagramItem::DiagramType type);
 private:
     DiagramScene* scene_;
-    QGraphicsView* view_;
+    DiagramView*  view_;
 
     QButtonGroup* buttonGroup_;
     QToolBox*     toolBox_;

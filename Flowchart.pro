@@ -12,6 +12,7 @@ SOURCES += \
     src/diagramitem.cpp \
     src/diagramscene.cpp \
     src/diagramtextitem.cpp \
+    src/diagramview.cpp \
     src/main.cpp \
     src/mainwindow.cpp
 
@@ -19,6 +20,7 @@ HEADERS += \
     src/diagramitem.h \
     src/diagramscene.h \
     src/diagramtextitem.h \
+    src/diagramview.h \
     src/mainwindow.h
 
 FORMS +=
