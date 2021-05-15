@@ -11,12 +11,14 @@ CONFIG += c++11
 SOURCES += \
     src/diagramitem.cpp \
     src/diagramscene.cpp \
+    src/diagramtextitem.cpp \
     src/main.cpp \
     src/mainwindow.cpp
 
 HEADERS += \
     src/diagramitem.h \
     src/diagramscene.h \
+    src/diagramtextitem.h \
     src/mainwindow.h
 
 FORMS +=

@@ -7,6 +7,7 @@
 DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
     , diagramType_(diagramType)
+    , textItem_(new DiagramTextItem(this))
 {
 
     int w = DefaultSize::Width;
@@ -17,19 +18,27 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     case Process:
         polygon_ << QPointF(0, 0)  << QPointF(w, 0)
                   << QPointF(w, h) << QPointF(0, h);
+        textItem_->setPlainText("Process");
         break;
     case Desicion:
         polygon_ << QPointF(0, h / 2) << QPointF(w / 2, 0)
                   << QPointF(w, h / 2) << QPointF(w / 2, h);
+        textItem_->setPlainText("Desicion\nABDU");
         break;
     case InOut:
         polygon_ << QPointF(w * 0.25, 0) << QPointF(w, 0)
                   << QPointF(w * 0.75, h) << QPointF(0, h);
+        textItem_->setPlainText("InOut");
         break;
     }
 
     setPolygon(polygon_);
     setBrush(Qt::white);
+
+    textItem_->setZValue(1000.0);
+    textItem_->setAlignment(Qt::AlignCenter);
+    textItem_->setX(boundingRect().center().x() - textItem_->boundingRect().width()  / 2);
+    textItem_->setY(boundingRect().center().y() - textItem_->boundingRect().height() / 2);
 
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);

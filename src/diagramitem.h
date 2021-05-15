@@ -1,6 +1,8 @@
 #ifndef DIAGRAMITEM_H
 #define DIAGRAMITEM_H
 
+#include "diagramtextitem.h"
+
 #include <QGraphicsPolygonItem>
 
 class DiagramItem : public QGraphicsPolygonItem
@@ -32,6 +34,8 @@ private:
 private:
     DiagramType diagramType_;
     QPolygonF   polygon_;
+
+    DiagramTextItem* textItem_;
 };
 
 #endif // DIAGRAMITEM_H
