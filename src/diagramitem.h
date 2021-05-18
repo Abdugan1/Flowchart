@@ -30,6 +30,7 @@ protected:
 
 private:
     QPointF preventOutsideMove(QPointF pos);
+    QPointF moveByGrid(QPointF pos);
 
 private:
     DiagramType diagramType_;

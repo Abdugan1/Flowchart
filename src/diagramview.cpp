@@ -50,7 +50,6 @@ void DiagramView::mouseMoveEvent(QMouseEvent *event)
     setTransformationAnchor(QGraphicsView::NoAnchor);
     // Moving around by Ctrl and mouse move.
     if (event->modifiers() == Qt::CTRL && event->buttons() & Qt::LeftButton) {
-        qDebug() << "Moving around";
         QPointF oldPos = mapToScene(originX_, originY_);
         QPointF newPos = mapToScene(event->pos());
         QPointF translation = newPos - oldPos;

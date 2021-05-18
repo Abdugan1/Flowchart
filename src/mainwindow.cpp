@@ -51,7 +51,6 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
         diagramItem = new DiagramItem(DiagramItem::DiagramType(type));
         break;
     }
-    diagramItem->setFlag(QGraphicsItem::ItemIsMovable);
 
     scene_->addItem(diagramItem);
 }

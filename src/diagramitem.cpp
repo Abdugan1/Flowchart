@@ -1,4 +1,5 @@
 #include "diagramitem.h"
+#include "diagramscene.h"
 
 #include <QGraphicsScene>
 #include <QPainter>
@@ -40,14 +41,16 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     textItem_->setX(boundingRect().center().x() - textItem_->boundingRect().width()  / 2);
     textItem_->setY(boundingRect().center().y() - textItem_->boundingRect().height() / 2);
 
-    setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+    setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);
+    setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
 
 QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange && scene()) {
         QPointF newPos = value.toPointF();
+        newPos = moveByGrid(newPos);
         newPos = preventOutsideMove(newPos);
         return newPos;
     }
@@ -87,4 +90,16 @@ QPointF DiagramItem::preventOutsideMove(QPointF topLeft)
         topLeft.setY(qMin(bottomRight.y(), sceneRect.bottom()) - (bottomRight.y() - topLeft.y()));
     }
     return topLeft;
+}
+
+QPointF DiagramItem::moveByGrid(QPointF pos)
+{
+    int gridSize = 20;
+    qreal xV = round(pos.x() / gridSize) * gridSize;
+    qreal yV = round(pos.y() / gridSize) * gridSize;
+
+    pos.setX(xV);
+    pos.setY(yV);
+
+    return pos;
 }
