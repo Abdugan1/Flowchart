@@ -1,19 +1,13 @@
 #include "mainwindow.h"
 
-#include <QGraphicsView>
-#include <QGraphicsProxyWidget>
-#include <QBoxLayout>
-#include <QButtonGroup>
-#include <QToolButton>
-#include <QLabel>
-#include <QToolBox>
-
-#include <QDebug>
+#include <QtWidgets>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    createActions();
     createToolBox();
+    createMenus();
 
     scene_ = new DiagramScene(this);
     scene_->setSceneRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
@@ -55,6 +49,14 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
     scene_->addItem(diagramItem);
 }
 
+void MainWindow::deleteItem()
+{
+    QList<QGraphicsItem*> selectedItems = scene_->selectedItems();
+    for (QGraphicsItem* item : selectedItems) {
+        delete item;
+    }
+}
+
 void MainWindow::createToolBox()
 {
     buttonGroup_ = new QButtonGroup(this);
@@ -76,6 +78,19 @@ void MainWindow::createToolBox()
     toolBox_->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
     toolBox_->setMinimumWidth(itemWidget->sizeHint().width()); //! try without sizeHint()
     toolBox_->addItem(itemWidget, tr("Diagram Items"));
+}
+
+void MainWindow::createActions()
+{
+    deleteAction_ = new QAction(tr("&Delete"), this);
+    deleteAction_->setShortcut(tr("Delete"));
+    connect(deleteAction_, &QAction::triggered, this, &MainWindow::deleteItem);
+}
+
+void MainWindow::createMenus()
+{
+    itemMenu_ = menuBar()->addMenu(tr("&Item"));
+    itemMenu_->addAction(deleteAction_);
 }
 
 QWidget* MainWindow::createCellWidget(const QString &text, DiagramItem::DiagramType type)
