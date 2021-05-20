@@ -7,15 +7,13 @@
 DiagramView::DiagramView(QWidget *parent)
     : QGraphicsView(parent)
 {
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    init();
 }
 
 DiagramView::DiagramView(QGraphicsScene *scene, QWidget *parent)
     : QGraphicsView(scene, parent)
 {
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    init();
 }
 
 void DiagramView::wheelEvent(QWheelEvent *event)
@@ -62,4 +60,11 @@ void DiagramView::mouseMoveEvent(QMouseEvent *event)
     } else {
         QGraphicsView::mouseMoveEvent(event);
     }
+}
+
+void DiagramView::init()
+{
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setDragMode(QGraphicsView::RubberBandDrag);
 }

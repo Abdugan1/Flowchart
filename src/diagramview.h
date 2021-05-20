@@ -16,6 +16,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
+    void init();
+
+private:
     // used for moving around by Ctrl and mouse move.
     int originX_;
     int originY_;
