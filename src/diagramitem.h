@@ -25,6 +25,7 @@ public:
     DiagramItem(DiagramType diagramType, QGraphicsItem* parent = nullptr);
     DiagramType diagramType() const;
     QPixmap image() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 

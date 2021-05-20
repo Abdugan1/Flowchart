@@ -3,6 +3,7 @@
 
 #include <QGraphicsScene>
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 #include <QtDebug>
 
 DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *parent)
@@ -71,6 +72,22 @@ QPixmap DiagramItem::image() const
     painter.setPen(QPen(Qt::black, 6));
     painter.drawPolygon(polygon_);
     return pixmap;
+}
+
+void DiagramItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget)
+
+    bool selected = (option->state & QStyle::State_Selected);
+
+    QColor polygonColor = (selected ? QColor(Qt::green) : QColor(Qt::black));
+    int width = (selected ? 2 : 1);
+
+    QPen pen(polygonColor);
+    pen.setWidth(width);
+    painter->setPen(pen);
+    painter->setBrush(QBrush(Qt::white));
+    painter->drawPolygon(polygon());
 }
 
 QPointF DiagramItem::preventOutsideMove(QPointF topLeft)
