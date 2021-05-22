@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include <QDebug>
+#include <QStack>
 
 DiagramScene::DiagramScene(QObject *parent)
     : QGraphicsScene(parent)
@@ -25,25 +26,22 @@ void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &
 
     // Draw green dash line, if moving item is at level of others
     QList<QGraphicsItem*> items = this->items();
-    QList<QGraphicsLineItem*> linesToDraw;
-    for (QGraphicsItem* i : items) {
+    QStack<QLineF> linesToDraw;
+    for (QGraphicsItem* i : qAsConst(items)) {
         DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i);
         if (!item || item == senderItem)
             continue;
 
         QPoint center1 = newPos.toPoint() + senderItem->boundingRect().center().toPoint();
-        QPoint center2 = item->pos().toPoint() + item->boundingRect().center().toPoint();
+        QPoint center2 = getItemCenter(item);
 
         if (center1.x() == center2.x() || center1.y() == center2.y()) {
-            QGraphicsLineItem* line = new QGraphicsLineItem(QLineF(center2, center1));
-            QPen pen;
-            pen.setColor(Qt::green);
-            pen.setStyle(Qt::DashLine);
-            pen.setDashPattern(QVector<qreal>({10, 5}));
-            line->setPen(pen);
-            addItem(line);
+            linesToDraw.push(QLineF(center2, center1));
         }
     }
+
+    for (QLineF line : linesToDraw)
+        drawGreenDashLine(line);
 }
 
 void DiagramScene::onItemReleased()
@@ -81,4 +79,20 @@ void DiagramScene::deleteAllLines(const QPoint &point)
         else
             hasLine = false;
     }
+}
+
+void DiagramScene::drawGreenDashLine(QLineF line)
+{
+    QGraphicsLineItem* lineItem = new QGraphicsLineItem(line);
+    QPen pen;
+    pen.setColor(Qt::green);
+    pen.setStyle(Qt::DashLine);
+    pen.setDashPattern(QVector<qreal>({10, 5}));
+    lineItem->setPen(pen);
+    addItem(lineItem);
+}
+
+QPoint DiagramScene::getItemCenter(const DiagramItem *item)
+{
+    return (item->pos().toPoint() + item->boundingRect().center().toPoint());
 }

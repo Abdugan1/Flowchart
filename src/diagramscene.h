@@ -3,6 +3,8 @@
 
 #include <QGraphicsScene>
 
+class DiagramItem;
+
 class DiagramScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -28,6 +30,8 @@ protected:
 
 private:
     void deleteAllLines(const QPoint& point);
+    void drawGreenDashLine(QLineF line);
+    QPoint getItemCenter(const DiagramItem* item);
 };
 
 #endif // DIAGRAMSCENE_H
