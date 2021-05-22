@@ -53,9 +53,19 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
         QPointF newPos = value.toPointF();
         newPos = moveByGrid(newPos);
         newPos = preventOutsideMove(newPos);
+
+        if (newPos != pos())
+            emit itemPositionChanging(pos(), newPos);
+
         return newPos;
     }
     return QGraphicsItem::itemChange(change, value);
+}
+
+void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    emit itemReleased();
+    QGraphicsPolygonItem::mouseReleaseEvent(event);
 }
 
 DiagramItem::DiagramType DiagramItem::diagramType() const

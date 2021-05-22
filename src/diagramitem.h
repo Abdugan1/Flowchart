@@ -5,8 +5,9 @@
 
 #include <QGraphicsPolygonItem>
 
-class DiagramItem : public QGraphicsPolygonItem
+class DiagramItem : public QObject, public QGraphicsPolygonItem
 {
+    Q_OBJECT
 public:
     enum DiagramType {
         Terminal,
@@ -26,8 +27,14 @@ public:
     DiagramType diagramType() const;
     QPixmap image() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+signals:
+    void itemPositionChanging(const QPointF& oldPos, const QPointF& newPos);
+    void itemReleased();
+
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
     QPointF preventOutsideMove(QPointF pos);

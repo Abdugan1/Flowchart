@@ -45,6 +45,11 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
         diagramItem = new DiagramItem(DiagramItem::DiagramType(type));
         break;
     }
+    connect(diagramItem, &DiagramItem::itemPositionChanging,
+            scene_,      &DiagramScene::onItemPositionChanging);
+
+    connect(diagramItem, &DiagramItem::itemReleased,
+            scene_,      &DiagramScene::onItemReleased);
 
     scene_->addItem(diagramItem);
 }

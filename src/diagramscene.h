@@ -19,9 +19,15 @@ public:
 public:
     DiagramScene(QObject* parent = nullptr);
 
+public slots:
+    void onItemPositionChanging(const QPointF& oldPos, const QPointF& newPos);
+    void onItemReleased();
+
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
 
+private:
+    void deleteAllLines(const QPoint& point);
 };
 
 #endif // DIAGRAMSCENE_H
