@@ -24,24 +24,53 @@ void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &
     if (selectedItems().count() > 1)
         return;
 
-    // Draw green dash line, if moving item is at level of others
-    QList<QGraphicsItem*> items = this->items();
-    QStack<QLineF> linesToDraw;
-    for (QGraphicsItem* i : qAsConst(items)) {
+    // Copying for convinience
+    QList<QGraphicsItem*> allItems = this->items();
+    QList<DiagramItem*> items;
+    for (QGraphicsItem* i : qAsConst(allItems)) {
         DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i);
-        if (!item || item == senderItem)
-            continue;
+        if (item)
+            items.append(item);
+    }
 
-        QPoint center1 = newPos.toPoint() + senderItem->boundingRect().center().toPoint();
-        QPoint center2 = getItemCenter(item);
+    // Draw green dash line, if moving item is at level of others
+    QPoint senderCenter = newPos.toPoint() + senderItem->boundingRect().center().toPoint();
+    QPoint startX = senderCenter;
+    QPoint endX = senderCenter;
 
-        if (center1.x() == center2.x() || center1.y() == center2.y()) {
-            linesToDraw.push(QLineF(center2, center1));
+    QPoint startY = senderCenter;
+    QPoint endY = senderCenter;
+    for (DiagramItem* item : qAsConst(items)) {
+        QPoint itemCenter;
+        if (item == senderItem)
+            itemCenter = senderCenter;
+        else
+            itemCenter = getItemCenter(item);
+
+        // Check "x" dimension
+        if (itemCenter.x() == senderCenter.x()) {
+            startX.setY(qMin(itemCenter.y(), startX.y()));
+            endX.setY(qMax(itemCenter.y(), endX.y()));
+        }
+
+        // Check "y" dimension
+        if (itemCenter.y() == senderCenter.y()) {
+            startY.setX(qMin(itemCenter.x(), startY.x()));
+            endY.setX(qMax(itemCenter.x(), endY.x()));
         }
     }
 
-    for (QLineF line : linesToDraw)
-        drawGreenDashLine(line);
+    if (startX.y() != senderCenter.y()) {
+        drawGreenDashLine(QLineF(startX, endX));
+    } else if (endX.y() != senderCenter.y()) {
+        drawGreenDashLine(QLineF(endX, startX));
+    }
+
+    if (startY.x() != senderCenter.x()) {
+        drawGreenDashLine(QLineF(startY, endY));
+    } else if (endY.x() != senderCenter.x()) {
+        drawGreenDashLine(QLineF(endY, startY));
+    }
 }
 
 void DiagramScene::onItemReleased()
