@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QDebug>
 #include <QStack>
+#include <QGuiApplication>
+#include <QCursor>
 
 DiagramScene::DiagramScene(QObject *parent)
     : QGraphicsScene(parent)
@@ -14,10 +16,12 @@ DiagramScene::DiagramScene(QObject *parent)
 
 void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &newPos)
 {
+    if (!QGuiApplication::overrideCursor())
+        QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
+
     DiagramItem* senderItem = static_cast<DiagramItem*>(sender());
 
     QPoint oldCenter = oldPos.toPoint() + senderItem->boundingRect().center().toPoint();
-
     deleteAllLines(oldCenter);
 
     // Dont draw green dash line, if several items selected
@@ -28,18 +32,16 @@ void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &
     QList<QGraphicsItem*> allItems = this->items();
     QList<DiagramItem*> items;
     for (QGraphicsItem* i : qAsConst(allItems)) {
-        DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i);
-        if (item)
+        if (DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i))
             items.append(item);
     }
 
-    // Draw green dash line, if moving item is at level of others
-    QPoint senderCenter = newPos.toPoint() + senderItem->boundingRect().center().toPoint();
-    QPoint startX = senderCenter;
-    QPoint endX = senderCenter;
+    QPoint senderCenter  = newPos.toPoint() + senderItem->boundingRect().center().toPoint();
+    QPoint verticalBegin = senderCenter;
+    QPoint verticalEnd   = senderCenter;
 
-    QPoint startY = senderCenter;
-    QPoint endY = senderCenter;
+    QPoint horizontalBegin = senderCenter;
+    QPoint horizontalEnd   = senderCenter;
     for (DiagramItem* item : qAsConst(items)) {
         QPoint itemCenter;
         if (item == senderItem)
@@ -49,27 +51,27 @@ void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &
 
         // Check "x" dimension
         if (itemCenter.x() == senderCenter.x()) {
-            startX.setY(qMin(itemCenter.y(), startX.y()));
-            endX.setY(qMax(itemCenter.y(), endX.y()));
+            verticalBegin.setY(qMin(itemCenter.y(), verticalBegin.y()));
+            verticalEnd.setY(qMax(itemCenter.y(), verticalEnd.y()));
         }
 
         // Check "y" dimension
         if (itemCenter.y() == senderCenter.y()) {
-            startY.setX(qMin(itemCenter.x(), startY.x()));
-            endY.setX(qMax(itemCenter.x(), endY.x()));
+            horizontalBegin.setX(qMin(itemCenter.x(), horizontalBegin.x()));
+            horizontalEnd.setX(qMax(itemCenter.x(), horizontalEnd.x()));
         }
     }
 
-    if (startX.y() != senderCenter.y()) {
-        drawGreenDashLine(QLineF(startX, endX));
-    } else if (endX.y() != senderCenter.y()) {
-        drawGreenDashLine(QLineF(endX, startX));
+    if (verticalBegin.y() != senderCenter.y()) {
+        drawGreenDashLine(QLineF(verticalBegin, verticalEnd));
+    } else if (verticalEnd.y() != senderCenter.y()) {
+        drawGreenDashLine(QLineF(verticalEnd, verticalBegin));
     }
 
-    if (startY.x() != senderCenter.x()) {
-        drawGreenDashLine(QLineF(startY, endY));
-    } else if (endY.x() != senderCenter.x()) {
-        drawGreenDashLine(QLineF(endY, startY));
+    if (horizontalBegin.x() != senderCenter.x()) {
+        drawGreenDashLine(QLineF(horizontalBegin, horizontalEnd));
+    } else if (horizontalEnd.x() != senderCenter.x()) {
+        drawGreenDashLine(QLineF(horizontalEnd, horizontalBegin));
     }
 }
 
@@ -78,6 +80,7 @@ void DiagramScene::onItemReleased()
     DiagramItem* item = static_cast<DiagramItem*>(sender());
     QPoint center = item->pos().toPoint() + item->boundingRect().center().toPoint();
     deleteAllLines(center);
+    QGuiApplication::restoreOverrideCursor();
 }
 
 void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
