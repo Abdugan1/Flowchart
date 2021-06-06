@@ -11,7 +11,6 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     , diagramType_(diagramType)
     , textItem_(new DiagramTextItem(this))
 {
-
     int w = DefaultSize::Width;
     int h = DefaultSize::Height;
     switch (diagramType) {
@@ -51,8 +50,9 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 {
     if (change == ItemPositionChange && scene()) {
         QPointF newPos = value.toPointF();
-        newPos = moveByGrid(newPos);
-        newPos = preventOutsideMove(newPos);
+        DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
+        newPos = scene->getPositionWithStep(newPos);
+        newPos = scene->preventOutsideMove(newPos, this);
 
         if (newPos != pos())
             emit itemPositionChanging(pos(), newPos);
@@ -91,7 +91,7 @@ void DiagramItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     bool selected = (option->state & QStyle::State_Selected);
 
     QColor polygonColor = (selected ? QColor(Qt::green) : QColor(Qt::black));
-    int width = (selected ? 2 : 1);
+    int width = (selected ? SelectedPenWidth : DefaultPenWidth);
 
     QPen pen(polygonColor);
     pen.setWidth(width);
@@ -100,33 +100,12 @@ void DiagramItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->drawPolygon(polygon());
 }
 
-QPointF DiagramItem::preventOutsideMove(QPointF topLeft)
+QRectF DiagramItem::boundingRect() const
 {
-    QRectF sceneRect = scene()->sceneRect();
-
-    QPointF bottomRight;
-    bottomRight.setX(boundingRect().width()  + topLeft.x());
-    bottomRight.setY(boundingRect().height() + topLeft.y());
-
-    if (!sceneRect.contains(topLeft)) {
-        topLeft.setX(qMax(topLeft.x(), sceneRect.left()));
-        topLeft.setY(qMax(topLeft.y(), sceneRect.top()));
-    }
-    if (!sceneRect.contains(bottomRight)) {
-        topLeft.setX(qMin(bottomRight.x(), sceneRect.right())  - (bottomRight.x() - topLeft.x()));
-        topLeft.setY(qMin(bottomRight.y(), sceneRect.bottom()) - (bottomRight.y() - topLeft.y()));
-    }
-    return topLeft;
-}
-
-QPointF DiagramItem::moveByGrid(QPointF pos)
-{
-    int gridSize = 20;
-    qreal xV = round(pos.x() / gridSize) * gridSize;
-    qreal yV = round(pos.y() / gridSize) * gridSize;
-
-    pos.setX(xV);
-    pos.setY(yV);
-
-    return pos;
+    QRectF rect = polygon().boundingRect();
+    rect.setX(rect.x() - SelectedPenWidth / 2);
+    rect.setY(rect.y() - SelectedPenWidth / 2);
+    rect.setWidth(rect.width() + SelectedPenWidth / 2);
+    rect.setHeight(rect.height() + SelectedPenWidth / 2);
+    return rect;
 }

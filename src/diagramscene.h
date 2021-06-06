@@ -20,6 +20,8 @@ public:
 
 public:
     DiagramScene(QObject* parent = nullptr);
+    QPointF preventOutsideMove(QPointF pos, QGraphicsItem* item);
+    QPointF getPositionWithStep(QPointF pos);
 
 public slots:
     void onItemPositionChanging(const QPointF& oldPos, const QPointF& newPos);

@@ -14,6 +14,38 @@ DiagramScene::DiagramScene(QObject *parent)
     setFont(font);
 }
 
+QPointF DiagramScene::preventOutsideMove(QPointF topLeft, QGraphicsItem *item)
+{
+    QRectF sceneRect = this->sceneRect();
+    QRectF itemBoundingRect = item->boundingRect();
+
+    QPointF bottomRight;
+    bottomRight.setX(itemBoundingRect.width()  + topLeft.x());
+    bottomRight.setY(itemBoundingRect.height() + topLeft.y());
+
+    if (!sceneRect.contains(topLeft)) {
+        topLeft.setX(qMax(topLeft.x(), sceneRect.left()));
+        topLeft.setY(qMax(topLeft.y(), sceneRect.top()));
+    }
+    if (!sceneRect.contains(bottomRight)) {
+        topLeft.setX(qMin(bottomRight.x(), sceneRect.right())  - (bottomRight.x() - topLeft.x()));
+        topLeft.setY(qMin(bottomRight.y(), sceneRect.bottom()) - (bottomRight.y() - topLeft.y()));
+    }
+    return topLeft;
+}
+
+QPointF DiagramScene::getPositionWithStep(QPointF pos)
+{
+    int step = GridSize;
+    qreal xV = round(pos.x() / step) * step;
+    qreal yV = round(pos.y() / step) * step;
+
+    pos.setX(xV);
+    pos.setY(yV);
+
+    return pos;
+}
+
 void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &newPos)
 {
     if (!QGuiApplication::overrideCursor())

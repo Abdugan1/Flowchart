@@ -21,12 +21,17 @@ private:
         Width  = 200,
         Height = 80
     };
+    enum {
+        DefaultPenWidth  = 1,
+        SelectedPenWidth = 2
+    };
 
 public:
     DiagramItem(DiagramType diagramType, QGraphicsItem* parent = nullptr);
     DiagramType diagramType() const;
     QPixmap image() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
 
 signals:
     void itemPositionChanging(const QPointF& oldPos, const QPointF& newPos);
@@ -35,10 +40,6 @@ signals:
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
-
-private:
-    QPointF preventOutsideMove(QPointF pos);
-    QPointF moveByGrid(QPointF pos);
 
 private:
     DiagramType diagramType_;
