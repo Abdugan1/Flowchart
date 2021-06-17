@@ -13,6 +13,7 @@ SOURCES += \
     src/diagramscene.cpp \
     src/diagramtextitem.cpp \
     src/diagramview.cpp \
+    src/internal.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/polygonresizer.cpp \

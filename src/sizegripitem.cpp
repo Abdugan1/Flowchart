@@ -25,6 +25,7 @@
 #include <QBrush>
 #include "sizegripitem.h"
 #include "internal.h"
+#include "diagramscene.h"
 #include "diagramitem.h"
 
 #include <cmath>
@@ -51,7 +52,7 @@ QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
     {
         QPointF newPos = value.toPointF();
 
-        newPos = internal::getPointByStep(newPos, 20);
+        newPos = internal::getPointByStep(newPos, DiagramScene::GridSize);
         newPos = restrictPosition(newPos);
 
         if (isOppositeSide())

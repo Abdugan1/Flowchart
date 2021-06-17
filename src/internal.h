@@ -1,20 +1,11 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H
 
-#include <QPointF>
+class QPointF;
 
 namespace internal {
 
-QPointF getPointByStep(QPointF point, int step)
-{
-    qreal xV = round(point.x() / step) * step;
-    qreal yV = round(point.y() / step) * step;
-
-    point.setX(xV);
-    point.setY(yV);
-
-    return point;
-}
+QPointF getPointByStep(QPointF point, int step);
 
 }
 

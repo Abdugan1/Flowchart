@@ -1,6 +1,8 @@
 #include "diagramitem.h"
 #include "diagramscene.h"
 
+#include "internal.h"
+
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
@@ -51,7 +53,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
     if (change == ItemPositionChange && scene()) {
         QPointF newPos = value.toPointF();
         DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
-        newPos = scene->getPositionWithStep(newPos);
+        newPos = internal::getPointByStep(newPos, DiagramScene::GridSize / 2);
         newPos = scene->preventOutsideMove(newPos, this);
 
         if (newPos != pos())

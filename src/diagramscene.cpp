@@ -34,18 +34,6 @@ QPointF DiagramScene::preventOutsideMove(QPointF topLeft, QGraphicsItem *item)
     return topLeft;
 }
 
-QPointF DiagramScene::getPositionWithStep(QPointF pos)
-{
-    int step = GridSize;
-    qreal xV = round(pos.x() / step) * step;
-    qreal yV = round(pos.y() / step) * step;
-
-    pos.setX(xV);
-    pos.setY(yV);
-
-    return pos;
-}
-
 void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &newPos)
 {
     if (!QGuiApplication::overrideCursor())
