@@ -32,6 +32,7 @@ public:
     QPixmap image() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
+    QRectF polygonBoundingRect() const;
 
 signals:
     void itemPositionChanging(const QPointF& oldPos, const QPointF& newPos);

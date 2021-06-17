@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "polygonresizer.h"
 
 #include <QtWidgets>
 
@@ -45,6 +46,9 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
         diagramItem = new DiagramItem(DiagramItem::DiagramType(type));
         break;
     }
+
+    new SizeGripItem(new PolygonResizer, diagramItem);
+
     connect(diagramItem, &DiagramItem::itemPositionChanging,
             scene_,      &DiagramScene::onItemPositionChanging);
 

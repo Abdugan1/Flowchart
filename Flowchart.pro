@@ -14,14 +14,19 @@ SOURCES += \
     src/diagramtextitem.cpp \
     src/diagramview.cpp \
     src/main.cpp \
-    src/mainwindow.cpp
+    src/mainwindow.cpp \
+    src/polygonresizer.cpp \
+    src/sizegripitem.cpp
 
 HEADERS += \
     src/diagramitem.h \
     src/diagramscene.h \
     src/diagramtextitem.h \
     src/diagramview.h \
-    src/mainwindow.h
+    src/internal.h \
+    src/mainwindow.h \
+    src/polygonresizer.h \
+    src/sizegripitem.h
 
 FORMS +=
 

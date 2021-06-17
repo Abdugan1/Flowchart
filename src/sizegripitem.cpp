@@ -1,0 +1,262 @@
+/*
+ * SizeGripItem - A size grip QGraphicsItem for interactive resizing.
+ *
+ * Copyright (c) 2011 Cesar L. B. Silveira
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+
+#include <QBrush>
+#include "sizegripitem.h"
+#include "internal.h"
+#include "diagramitem.h"
+
+#include <cmath>
+
+SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem* parent)
+    : QGraphicsRectItem(-4, -4, 8, 8, parent),
+      positionFlags_(positionFlags),
+      parent_(parent)
+{
+    setBrush(QBrush(Qt::lightGray));
+    setFlag(ItemIsMovable);
+    setFlag(ItemSendsGeometryChanges);
+}
+
+int SizeGripItem::HandleItem::positionFlags() const
+{
+    return positionFlags_;
+}
+
+QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
+                                              const QVariant &value)
+{
+    if (change == ItemPositionChange)
+    {
+        QPointF newPos = value.toPointF();
+
+        newPos = internal::getPointByStep(newPos, 20);
+        newPos = restrictPosition(newPos);
+
+        if (isOppositeSide())
+            recalculatePosition(&newPos);
+
+        return newPos;
+    }
+    else if (change == ItemPositionHasChanged)
+    {
+        QPointF pos = value.toPointF();
+
+        switch (positionFlags_)
+        {
+        case TopLeft:
+            parent_->setTopLeft(pos);
+            break;
+        case Top:
+            parent_->setTop(pos.y());
+            break;
+        case TopRight:
+            parent_->setTopRight(pos);
+            break;
+        case Right:
+            parent_->setRight(pos.x());
+            break;
+        case BottomRight:
+            parent_->setBottomRight(pos);
+            break;
+        case Bottom:
+            parent_->setBottom(pos.y());
+            break;
+        case BottomLeft:
+            parent_->setBottomLeft(pos);
+            break;
+        case Left:
+            parent_->setLeft(pos.x());
+            break;
+        }
+    }
+
+    return QGraphicsRectItem::itemChange(change, value);
+}
+
+QPointF SizeGripItem::HandleItem::restrictPosition(const QPointF& newPos)
+{
+    QPointF retVal = pos();
+
+    if (positionFlags_ & Top || positionFlags_ & Bottom)
+        retVal.setY(newPos.y());
+
+    if (positionFlags_ & Left || positionFlags_ & Right)
+        retVal.setX(newPos.x());
+
+    return retVal;
+}
+
+bool SizeGripItem::HandleItem::isOppositeSide()
+{
+    return (positionFlags_ & Top) || (positionFlags_ & Left);
+}
+
+void SizeGripItem::HandleItem::recalculatePosition(QPointF *pos)
+{
+    int x = int(pos->x());
+    int y = int(pos->y());
+
+    if (positionFlags_ == BottomLeft) {
+        pos->setX(recalculateX(x));
+        return;
+    }
+    if (positionFlags_ == TopRight) {
+        pos->setY(recalculateY(y));
+        return;
+    }
+
+    pos->setX(recalculateX(x));
+    pos->setY(recalculateY(y));
+}
+
+int SizeGripItem::HandleItem::recalculateX(int x)
+{
+    if (x != 0 && std::abs(x) % 20 == 0) {
+        int tempX = x;
+        x = x - anchor_.x();
+        anchor_.setX(tempX);
+    } else {
+        anchor_.setX(0);
+    }
+    return x;
+}
+
+int SizeGripItem::HandleItem::recalculateY(int y)
+{
+    if (y != 0 && std::abs(y) % 20 == 0) {
+        int tempY = y;
+        y = y - anchor_.y();
+        anchor_.setY(tempY);
+    } else {
+        anchor_.setY(0);
+    }
+    return y;
+}
+
+SizeGripItem::SizeGripItem(Resizer* resizer, QGraphicsItem* parent)
+    : QGraphicsItem(parent),
+      resizer_(resizer)
+{
+    DiagramItem* diagramItem = qgraphicsitem_cast<DiagramItem*>(parent);
+    if (diagramItem)
+        rect_ = diagramItem->polygonBoundingRect();
+
+    handleItems_.append(new HandleItem(TopLeft, this));
+    handleItems_.append(new HandleItem(Top, this));
+    handleItems_.append(new HandleItem(TopRight, this));
+    handleItems_.append(new HandleItem(Right, this));
+    handleItems_.append(new HandleItem(BottomRight, this));
+    handleItems_.append(new HandleItem(Bottom, this));
+    handleItems_.append(new HandleItem(BottomLeft, this));
+    handleItems_.append(new HandleItem(Left, this));
+    updateHandleItemPositions();
+}
+
+SizeGripItem::~SizeGripItem()
+{
+    if (resizer_)
+        delete resizer_;
+}
+
+QRectF SizeGripItem::boundingRect() const
+{
+    return rect_;
+}
+
+void SizeGripItem::paint(QPainter* painter,
+                         const QStyleOptionGraphicsItem* option,
+                         QWidget* widget)
+{
+    Q_UNUSED(painter)
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+}
+
+#define IMPL_SET_FN(TYPE, POS)                  \
+    void SizeGripItem::set ## POS (TYPE v)      \
+{                                           \
+    rect_.set ## POS (v);                   \
+    doResize();                             \
+}
+
+IMPL_SET_FN(qreal, Top)
+IMPL_SET_FN(qreal, Right)
+IMPL_SET_FN(qreal, Bottom)
+IMPL_SET_FN(qreal, Left)
+IMPL_SET_FN(const QPointF&, TopLeft)
+IMPL_SET_FN(const QPointF&, TopRight)
+IMPL_SET_FN(const QPointF&, BottomRight)
+IMPL_SET_FN(const QPointF&, BottomLeft)
+
+void SizeGripItem::doResize()
+{
+    if (resizer_)
+    {
+        (*resizer_)(parentItem(), rect_);
+        updateHandleItemPositions();
+    }
+}
+
+void SizeGripItem::updateHandleItemPositions()
+{
+    foreach (HandleItem* item, handleItems_)
+    {
+        item->setFlag(ItemSendsGeometryChanges, false);
+
+        switch (item->positionFlags())
+        {
+        case TopLeft:
+            item->setPos(rect_.topLeft());
+            break;
+        case Top:
+            item->setPos(rect_.left() + rect_.width() / 2,
+                         rect_.top());
+            break;
+        case TopRight:
+            item->setPos(rect_.topRight());
+            break;
+        case Right:
+            item->setPos(rect_.right(),
+                         rect_.top() + rect_.height() / 2);
+            break;
+        case BottomRight:
+            item->setPos(rect_.bottomRight());
+            break;
+        case Bottom:
+            item->setPos(rect_.left() + rect_.width() / 2,
+                         rect_.bottom());
+            break;
+        case BottomLeft:
+            item->setPos(rect_.bottomLeft());
+            break;
+        case Left:
+            item->setPos(rect_.left(),
+                         rect_.top() + rect_.height() / 2);
+            break;
+        }
+
+        item->setFlag(ItemSendsGeometryChanges, true);
+    }
+}

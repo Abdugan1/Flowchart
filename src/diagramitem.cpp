@@ -109,3 +109,8 @@ QRectF DiagramItem::boundingRect() const
     rect.setHeight(rect.height() + SelectedPenWidth / 2);
     return rect;
 }
+
+QRectF DiagramItem::polygonBoundingRect() const
+{
+    return polygon().boundingRect();
+}
