@@ -57,6 +57,12 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
             emit itemPositionChanging(pos(), newPos);
 
         return newPos;
+
+    } else if (change == ItemSelectedChange
+               && textItem_->textInteractionFlags() != Qt::NoTextInteraction
+               && !value.toBool()) {
+
+        textItem_->setTextInteraction(false);
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -69,7 +75,12 @@ void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    textItem_->setTextInteractionFlags(Qt::TextEditorInteraction);
+    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
+        QGraphicsPolygonItem::mouseDoubleClickEvent(event);
+        return;
+    }
+    textItem_->setTextInteraction(true);
+    QGraphicsPolygonItem::mouseDoubleClickEvent(event);
 }
 
 DiagramItem::DiagramType DiagramItem::diagramType() const
