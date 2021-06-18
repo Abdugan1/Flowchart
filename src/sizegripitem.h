@@ -28,8 +28,10 @@
 #include <QGraphicsItem>
 #include <QGraphicsRectItem>
 
-class SizeGripItem : public QGraphicsItem
+class SizeGripItem : public QObject, public QGraphicsItem
 {
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 private:
     enum
     {
@@ -88,6 +90,9 @@ public:
     void setBottom(qreal y);
     void setBottomLeft(const QPointF& pos);
     void setLeft(qreal x);
+
+signals:
+    void itemResized();
 
 private:
     void doResize();

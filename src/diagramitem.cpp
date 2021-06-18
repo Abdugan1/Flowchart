@@ -21,17 +21,14 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     case Process:
         polygon_ << QPointF(0, 0)  << QPointF(w, 0)
                   << QPointF(w, h) << QPointF(0, h);
-        textItem_->setPlainText("Process");
         break;
     case Desicion:
         polygon_ << QPointF(0, h / 2) << QPointF(w / 2, 0)
                   << QPointF(w, h / 2) << QPointF(w / 2, h);
-        textItem_->setPlainText("Desicion\nABDU");
         break;
     case InOut:
         polygon_ << QPointF(w * 0.25, 0) << QPointF(w, 0)
                   << QPointF(w * 0.75, h) << QPointF(0, h);
-        textItem_->setPlainText("InOut");
         break;
     }
 
@@ -68,6 +65,11 @@ void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit itemReleased();
     QGraphicsPolygonItem::mouseReleaseEvent(event);
+}
+
+void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    textItem_->setTextInteractionFlags(Qt::TextEditorInteraction);
 }
 
 DiagramItem::DiagramType DiagramItem::diagramType() const
@@ -115,4 +117,9 @@ QRectF DiagramItem::boundingRect() const
 QRectF DiagramItem::polygonBoundingRect() const
 {
     return polygon().boundingRect();
+}
+
+void DiagramItem::updateTextItemPosition()
+{
+    textItem_->updatePosition();
 }

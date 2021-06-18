@@ -49,6 +49,18 @@ void DiagramTextItem::updateGeometry()
         setPos(pos() + (topRightPrev - topRight));
 }
 
+void DiagramTextItem::updatePosition()
+{
+    qreal width  = boundingRect().width();
+    qreal height = boundingRect().height();
+    QPointF parentCenter = parentItem()->boundingRect().center();
+
+    qreal x = parentCenter.x() - width  / 2;
+    qreal y = parentCenter.y() - height / 2;
+
+    setPos(x, y);
+}
+
 void DiagramTextItem::init()
 {
     setTextInteractionFlags(Qt::TextEditable);
@@ -57,4 +69,6 @@ void DiagramTextItem::init()
     connect(document(), SIGNAL(contentsChange(int,int,int)),
             this,       SLOT(updateGeometry(int,int,int))
             );
+    connect(document(), &QTextDocument::contentsChanged,
+            this,       &DiagramTextItem::updatePosition);
 }

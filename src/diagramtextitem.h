@@ -14,6 +14,7 @@ public:
 public slots:
     void updateGeometry(int, int, int);
     void updateGeometry();
+    void updatePosition();
 
 private:
     void init();

@@ -47,7 +47,11 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
         break;
     }
 
-    new SizeGripItem(new PolygonResizer, diagramItem);
+    SizeGripItem* sizeGripItem =
+            new SizeGripItem(new PolygonResizer, diagramItem);
+    connect(sizeGripItem, &SizeGripItem::itemResized,
+            diagramItem,  &DiagramItem::updateTextItemPosition);
+
 
     connect(diagramItem, &DiagramItem::itemPositionChanging,
             scene_,      &DiagramScene::onItemPositionChanging);

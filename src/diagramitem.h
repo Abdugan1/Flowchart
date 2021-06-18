@@ -38,9 +38,13 @@ signals:
     void itemPositionChanging(const QPointF& oldPos, const QPointF& newPos);
     void itemReleased();
 
+public slots:
+    void updateTextItemPosition();
+
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
     DiagramType diagramType_;
