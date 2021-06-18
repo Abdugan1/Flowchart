@@ -5,16 +5,16 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+    , scene_(new DiagramScene(this))
+    , view_(new DiagramView(scene_))
 {
     createActions();
     createToolBox();
     createMenus();
 
-    scene_ = new DiagramScene(this);
     scene_->setSceneRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
     scene_->addRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
 
-    view_ = new DiagramView(scene_);
     view_->setRenderHint(QPainter::Antialiasing, true);
 
     QHBoxLayout * hLayout = new QHBoxLayout;
@@ -98,12 +98,17 @@ void MainWindow::createActions()
     deleteAction_ = new QAction(tr("&Delete"), this);
     deleteAction_->setShortcut(tr("Delete"));
     connect(deleteAction_, &QAction::triggered, this, &MainWindow::deleteItem);
+
+    selectAllAction_ = new QAction(tr("Select &All"), this);
+    selectAllAction_->setShortcut(tr("Ctrl+A"));
+    connect(selectAllAction_, &QAction::triggered, scene_, &DiagramScene::selectAllItems);
 }
 
 void MainWindow::createMenus()
 {
     itemMenu_ = menuBar()->addMenu(tr("&Item"));
     itemMenu_->addAction(deleteAction_);
+    itemMenu_->addAction(selectAllAction_);
 }
 
 QWidget* MainWindow::createCellWidget(const QString &text, DiagramItem::DiagramType type)

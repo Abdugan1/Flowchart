@@ -25,11 +25,13 @@ public:
 public slots:
     void onItemPositionChanging(const QPointF& oldPos, const QPointF& newPos);
     void onItemReleased();
+    void selectAllItems();
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
 
 private:
+    QList<DiagramItem*> getAllDiagramItems();
     void deleteAllLines(const QPoint& point);
     void drawGreenDashLine(QLineF line);
     QPoint getItemCenter(const DiagramItem* item);

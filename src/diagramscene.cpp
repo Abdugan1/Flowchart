@@ -48,13 +48,7 @@ void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &
     if (selectedItems().count() > 1)
         return;
 
-    // Copying for convinience
-    QList<QGraphicsItem*> allItems = this->items();
-    QList<DiagramItem*> items;
-    for (QGraphicsItem* i : qAsConst(allItems)) {
-        if (DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i))
-            items.append(item);
-    }
+    QList<DiagramItem*> items = getAllDiagramItems();
 
     QPoint senderCenter  = newPos.toPoint() + senderItem->boundingRect().center().toPoint();
     QPoint verticalBegin = senderCenter;
@@ -103,6 +97,13 @@ void DiagramScene::onItemReleased()
     QGuiApplication::restoreOverrideCursor();
 }
 
+void DiagramScene::selectAllItems()
+{
+    QList<DiagramItem*> items = getAllDiagramItems();
+    for (auto* item : items)
+        item->setSelected(true);
+}
+
 void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
     QPen pen;
@@ -118,6 +119,17 @@ void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
     }
 
     painter->drawPoints(points.data(), points.size());
+}
+
+QList<DiagramItem *> DiagramScene::getAllDiagramItems()
+{
+    QList<QGraphicsItem*> allItems = this->items();
+    QList<DiagramItem*> diagramItems;
+    for (QGraphicsItem* i : qAsConst(allItems)) {
+        if (DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i))
+            diagramItems.append(item);
+    }
+    return diagramItems;
 }
 
 void DiagramScene::deleteAllLines(const QPoint &point)

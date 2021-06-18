@@ -39,6 +39,7 @@ private:
     QToolBox*     toolBox_;
 
     QAction* deleteAction_;
+    QAction* selectAllAction_;
 
     QMenu* itemMenu_;
 };
