@@ -29,6 +29,9 @@
 #include "diagramitem.h"
 
 #include <cmath>
+#include <QDebug>
+#include <QCursor>
+#include <QGuiApplication>
 
 SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem* parent)
     : QGraphicsRectItem(-4, -4, 8, 8, parent),
@@ -38,6 +41,7 @@ SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem* parent)
     setBrush(QBrush(Qt::lightGray));
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
+    setAcceptHoverEvents(true);
 }
 
 int SizeGripItem::HandleItem::positionFlags() const
@@ -94,6 +98,18 @@ QVariant SizeGripItem::HandleItem::itemChange(GraphicsItemChange change,
     }
 
     return QGraphicsRectItem::itemChange(change, value);
+}
+
+void SizeGripItem::HandleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    changeCursor();
+    QGraphicsRectItem::hoverEnterEvent(event);
+}
+
+void SizeGripItem::HandleItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    QGuiApplication::restoreOverrideCursor();
+    QGraphicsRectItem::hoverLeaveEvent(event);
 }
 
 QPointF SizeGripItem::HandleItem::restrictPosition(const QPointF& newPos)
@@ -154,6 +170,39 @@ int SizeGripItem::HandleItem::recalculateY(int y)
         anchor_.setY(0);
     }
     return y;
+}
+
+void SizeGripItem::HandleItem::changeCursor()
+{
+    QCursor newCursor;
+    switch (positionFlags_)
+    {
+    case TopLeft:
+        newCursor.setShape(Qt::SizeFDiagCursor);
+        break;
+    case Top:
+        newCursor.setShape(Qt::SizeVerCursor);
+        break;
+    case TopRight:
+        newCursor.setShape(Qt::SizeBDiagCursor);
+        break;
+    case Right:
+        newCursor.setShape(Qt::SizeHorCursor);
+        break;
+    case BottomLeft:
+        newCursor.setShape(Qt::SizeBDiagCursor);
+        break;
+    case Bottom:
+        newCursor.setShape(Qt::SizeVerCursor);
+        break;
+    case BottomRight:
+        newCursor.setShape(Qt::SizeFDiagCursor);
+        break;
+    case Left:
+        newCursor.setShape(Qt::SizeHorCursor);
+        break;
+    }
+    QGuiApplication::setOverrideCursor(newCursor);
 }
 
 SizeGripItem::SizeGripItem(Resizer* resizer, QGraphicsItem* parent)

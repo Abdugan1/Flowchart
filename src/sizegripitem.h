@@ -52,8 +52,10 @@ private:
         int positionFlags() const;
 
     protected:
-        virtual QVariant itemChange(GraphicsItemChange change,
-                                    const QVariant &value);
+        QVariant itemChange(GraphicsItemChange change,
+                                    const QVariant &value)    override;
+        void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+        void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
     private:
         QPointF restrictPosition(const QPointF& newPos);
@@ -61,6 +63,7 @@ private:
         void recalculatePosition(QPointF* pos);
         int recalculateX(int x);
         int recalculateY(int y);
+        void changeCursor();
 
         int positionFlags_;
         SizeGripItem* parent_;
