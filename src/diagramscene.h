@@ -23,7 +23,7 @@ public:
     QPointF preventOutsideMove(QPointF pos, QGraphicsItem* item);
 
 public slots:
-    void onItemPositionChanging(const QPointF& oldPos, const QPointF& newPos);
+    void onItemPositionChanged(const QPointF& pos);
     void onItemReleased();
     void selectAllItems();
 
@@ -32,8 +32,8 @@ protected:
 
 private:
     QList<DiagramItem*> getAllDiagramItems();
-    void deleteAllLines(const QPoint& point);
-    void drawGreenDashLine(QLineF line);
+    void deleteAllLines();
+    void drawLevelLine(const QLineF& line);
     QPoint getItemCenter(const DiagramItem* item);
 };
 

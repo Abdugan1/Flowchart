@@ -28,7 +28,6 @@
 #include "diagramscene.h"
 #include "diagramitem.h"
 
-#include <cmath>
 #include <QDebug>
 #include <QCursor>
 #include <QGuiApplication>
@@ -150,7 +149,7 @@ void SizeGripItem::HandleItem::recalculatePosition(QPointF *pos)
 
 int SizeGripItem::HandleItem::recalculateX(int x)
 {
-    if (x != 0 && std::abs(x) % 20 == 0) {
+    if (x != 0 && qAbs(x) % 20 == 0) {
         int tempX = x;
         x = x - anchor_.x();
         anchor_.setX(tempX);
@@ -162,7 +161,7 @@ int SizeGripItem::HandleItem::recalculateX(int x)
 
 int SizeGripItem::HandleItem::recalculateY(int y)
 {
-    if (y != 0 && std::abs(y) % 20 == 0) {
+    if (y != 0 && qAbs(y) % 20 == 0) {
         int tempY = y;
         y = y - anchor_.y();
         anchor_.setY(tempY);

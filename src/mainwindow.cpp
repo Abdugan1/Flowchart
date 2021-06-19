@@ -53,8 +53,8 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
             diagramItem,  &DiagramItem::updateTextItemPosition);
 
 
-    connect(diagramItem, &DiagramItem::itemPositionChanging,
-            scene_,      &DiagramScene::onItemPositionChanging);
+    connect(diagramItem, &DiagramItem::itemPositionChanged,
+            scene_,      &DiagramScene::onItemPositionChanged);
 
     connect(diagramItem, &DiagramItem::itemReleased,
             scene_,      &DiagramScene::onItemReleased);

@@ -35,7 +35,7 @@ public:
     QRectF polygonBoundingRect() const;
 
 signals:
-    void itemPositionChanging(const QPointF& oldPos, const QPointF& newPos);
+    void itemPositionChanged(const QPointF& pos);
     void itemReleased();
 
 public slots:

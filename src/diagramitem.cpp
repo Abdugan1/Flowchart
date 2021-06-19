@@ -37,8 +37,7 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
 
     textItem_->setZValue(1000.0);
     textItem_->setAlignment(Qt::AlignCenter);
-    textItem_->setX(boundingRect().center().x() - textItem_->boundingRect().width()  / 2);
-    textItem_->setY(boundingRect().center().y() - textItem_->boundingRect().height() / 2);
+    textItem_->updatePosition();
 
     setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);
@@ -53,10 +52,10 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
         newPos = internal::getPointByStep(newPos, DiagramScene::GridSize / 2);
         newPos = scene->preventOutsideMove(newPos, this);
 
-        if (newPos != pos())
-            emit itemPositionChanging(pos(), newPos);
-
         return newPos;
+
+    } else if (change == ItemPositionHasChanged) {
+        emit itemPositionChanged(value.toPointF());
 
     } else if (change == ItemSelectedChange
                && textItem_->textInteractionFlags() != Qt::NoTextInteraction

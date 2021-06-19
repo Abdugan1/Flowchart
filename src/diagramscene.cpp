@@ -3,7 +3,6 @@
 
 #include <QPainter>
 #include <QDebug>
-#include <QStack>
 #include <QGuiApplication>
 #include <QCursor>
 
@@ -34,28 +33,27 @@ QPointF DiagramScene::preventOutsideMove(QPointF topLeft, QGraphicsItem *item)
     return topLeft;
 }
 
-void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &newPos)
+void DiagramScene::onItemPositionChanged(const QPointF &pos)
 {
     if (!QGuiApplication::overrideCursor())
         QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
 
-    DiagramItem* senderItem = static_cast<DiagramItem*>(sender());
-
-    QPoint oldCenter = oldPos.toPoint() + senderItem->boundingRect().center().toPoint();
-    deleteAllLines(oldCenter);
+    deleteAllLines();
 
     // Dont draw green dash line, if several items selected
     if (selectedItems().count() > 1)
         return;
 
+    DiagramItem* senderItem   = static_cast<DiagramItem*>(sender());
     QList<DiagramItem*> items = getAllDiagramItems();
 
-    QPoint senderCenter  = newPos.toPoint() + senderItem->boundingRect().center().toPoint();
+    QPoint senderCenter  = pos.toPoint() + senderItem->boundingRect().center().toPoint();
     QPoint verticalBegin = senderCenter;
     QPoint verticalEnd   = senderCenter;
 
     QPoint horizontalBegin = senderCenter;
     QPoint horizontalEnd   = senderCenter;
+
     for (DiagramItem* item : qAsConst(items)) {
         QPoint itemCenter;
         if (item == senderItem)
@@ -77,29 +75,28 @@ void DiagramScene::onItemPositionChanging(const QPointF &oldPos, const QPointF &
     }
 
     if (verticalBegin.y() != senderCenter.y()) {
-        drawGreenDashLine(QLineF(verticalBegin, verticalEnd));
+        drawLevelLine(QLineF(verticalBegin, verticalEnd));
     } else if (verticalEnd.y() != senderCenter.y()) {
-        drawGreenDashLine(QLineF(verticalEnd, verticalBegin));
+        drawLevelLine(QLineF(verticalEnd, verticalBegin));
     }
 
     if (horizontalBegin.x() != senderCenter.x()) {
-        drawGreenDashLine(QLineF(horizontalBegin, horizontalEnd));
+        drawLevelLine(QLineF(horizontalBegin, horizontalEnd));
     } else if (horizontalEnd.x() != senderCenter.x()) {
-        drawGreenDashLine(QLineF(horizontalEnd, horizontalBegin));
+        drawLevelLine(QLineF(horizontalEnd, horizontalBegin));
     }
 }
 
 void DiagramScene::onItemReleased()
 {
-    DiagramItem* item = static_cast<DiagramItem*>(sender());
-    QPoint center = item->pos().toPoint() + item->boundingRect().center().toPoint();
-    deleteAllLines(center);
+    deleteAllLines();
     QGuiApplication::restoreOverrideCursor();
 }
 
 void DiagramScene::selectAllItems()
 {
     QList<DiagramItem*> items = getAllDiagramItems();
+
     for (auto* item : items)
         item->setSelected(true);
 }
@@ -111,6 +108,7 @@ void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
 
     qreal left = int(rect.left() - (int(rect.left()) % GridSize));
     qreal top  = int(rect.top()  - (int(rect.top())  % GridSize));
+
     QVector<QPointF> points;
     for (qreal x = left; x < rect.right(); x += GridSize) {
         for (qreal y = top; y < rect.bottom(); y += GridSize) {
@@ -125,27 +123,27 @@ QList<DiagramItem *> DiagramScene::getAllDiagramItems()
 {
     QList<QGraphicsItem*> allItems = this->items();
     QList<DiagramItem*> diagramItems;
+
     for (QGraphicsItem* i : qAsConst(allItems)) {
         if (DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i))
             diagramItems.append(item);
     }
+
     return diagramItems;
 }
 
-void DiagramScene::deleteAllLines(const QPoint &point)
+void DiagramScene::deleteAllLines()
 {
-    bool hasLine = true;
-    while (hasLine) {
-        typedef  QGraphicsLineItem LineItem;
-        LineItem* line = qgraphicsitem_cast<LineItem*>(itemAt(point, QTransform()));
+    QList<QGraphicsItem*> items = this->items();
+    using LineItem = QGraphicsLineItem;
+    for (auto* item : items) {
+        LineItem* line = qgraphicsitem_cast<LineItem*>(item);
         if (line)
             delete line;
-        else
-            hasLine = false;
     }
 }
 
-void DiagramScene::drawGreenDashLine(QLineF line)
+void DiagramScene::drawLevelLine(const QLineF& line)
 {
     QGraphicsLineItem* lineItem = new QGraphicsLineItem(line);
     QPen pen;
