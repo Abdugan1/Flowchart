@@ -6,7 +6,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
-#include <QtDebug>
+#include <QDebug>
 
 DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)

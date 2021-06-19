@@ -1,7 +1,7 @@
 #include "diagramview.h"
 
 #include <QtEvents>
-#include <QtDebug>
+#include <QDebug>
 
 
 DiagramView::DiagramView(QWidget *parent)
@@ -37,29 +37,26 @@ void DiagramView::wheelEvent(QWheelEvent *event)
 void DiagramView::mousePressEvent(QMouseEvent *event)
 {
     if (event->modifiers() == Qt::CTRL) {
-        originX_ = event->x();
-        originY_ = event->y();
+        setDragMode(QGraphicsView::ScrollHandDrag);
+        setInteractive(false);
     }
     QGraphicsView::mousePressEvent(event);
 }
 
 void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
-    setTransformationAnchor(QGraphicsView::NoAnchor);
-    // Moving around by Ctrl and mouse move.
-    if (event->modifiers() == Qt::CTRL && event->buttons() & Qt::LeftButton) {
-        QPointF oldPos = mapToScene(originX_, originY_);
-        QPointF newPos = mapToScene(event->pos());
-        QPointF translation = newPos - oldPos;
-
-        translate(translation.x(), translation.y());
-
-        originX_ = event->x();
-        originX_ = event->y();
-
-    } else {
-        QGraphicsView::mouseMoveEvent(event);
+    if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::CTRL) {
+        setDragMode(NoDrag);
+        setInteractive(true);
     }
+    QGraphicsView::mouseMoveEvent(event);
+}
+
+void DiagramView::mouseReleaseEvent(QMouseEvent *event)
+{
+    setDragMode(NoDrag);
+    setInteractive(true);
+    QGraphicsView::mouseReleaseEvent(event);
 }
 
 void DiagramView::init()
