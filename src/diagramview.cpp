@@ -37,25 +37,28 @@ void DiagramView::wheelEvent(QWheelEvent *event)
 void DiagramView::mousePressEvent(QMouseEvent *event)
 {
     if (event->modifiers() == Qt::CTRL) {
-        setDragMode(QGraphicsView::ScrollHandDrag);
         setInteractive(false);
+        setDragMode(QGraphicsView::ScrollHandDrag);
     }
     QGraphicsView::mousePressEvent(event);
 }
 
 void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::CTRL) {
-        setDragMode(NoDrag);
+    if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::CTRL
+            && !isInteractive()) {
         setInteractive(true);
+        setDragMode(NoDrag);
+        setDragMode(RubberBandDrag);
     }
     QGraphicsView::mouseMoveEvent(event);
 }
 
 void DiagramView::mouseReleaseEvent(QMouseEvent *event)
 {
-    setDragMode(NoDrag);
     setInteractive(true);
+    setDragMode(NoDrag);
+    setDragMode(RubberBandDrag);
     QGraphicsView::mouseReleaseEvent(event);
 }
 

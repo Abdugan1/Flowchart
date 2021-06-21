@@ -29,6 +29,7 @@ private:
 
     protected:
         void hoverEnterEvent(QGraphicsSceneHoverEvent *event)   override;
+        void hoverMoveEvent(QGraphicsSceneHoverEvent *event)    override;
         void hoverLeaveEvent(QGraphicsSceneHoverEvent *event)   override;
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event)    override;
 

@@ -5,6 +5,7 @@
 void PolygonResizer::operator ()(QGraphicsItem *item, QRectF &rect)
 {
     DiagramItem* diagramItem = qgraphicsitem_cast<DiagramItem*>(item);
+    diagramItem->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
     QRectF itemRect = diagramItem->polygonBoundingRect();
 
     qreal sx = rect.width()  / itemRect.width();
@@ -21,4 +22,5 @@ void PolygonResizer::operator ()(QGraphicsItem *item, QRectF &rect)
     diagramItem->moveBy(dx, dy);
     diagramItem->setPolygon(newPolygon);
     rect = polygonRect;
+    diagramItem->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }

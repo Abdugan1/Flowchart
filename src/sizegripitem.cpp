@@ -27,8 +27,16 @@ int SizeGripItem::HandleItem::positionFlags() const
 
 void SizeGripItem::HandleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    changeCursor();
+    if (event->modifiers() != Qt::CTRL)
+        changeCursor();
     QGraphicsRectItem::hoverEnterEvent(event);
+}
+
+void SizeGripItem::HandleItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (!QGuiApplication::overrideCursor() && event->modifiers() != Qt::CTRL)
+        changeCursor();
+    QGraphicsRectItem::hoverMoveEvent(event);
 }
 
 void SizeGripItem::HandleItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
