@@ -34,18 +34,9 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
             button->setChecked(false);
     }
 
-    DiagramItem* diagramItem;
-
     const DiagramItem::DiagramType type =
             DiagramItem::DiagramType(buttonGroup_->id(button));
-    switch (type) {
-    case DiagramItem::Terminal:
-    case DiagramItem::Process:
-    case DiagramItem::Desicion:
-    case DiagramItem::InOut:
-        diagramItem = new DiagramItem(DiagramItem::DiagramType(type));
-        break;
-    }
+    DiagramItem* diagramItem = new DiagramItem(DiagramItem::DiagramType(type));
 
     SizeGripItem* sizeGripItem =
             new SizeGripItem(new PathResizer, diagramItem);
@@ -77,9 +68,11 @@ void MainWindow::createToolBox()
     connect(buttonGroup_, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
             this, &MainWindow::buttonGroupClicked);
     QGridLayout* layout = new QGridLayout;
-    layout->addWidget(createCellWidget(tr("Process"),  DiagramItem::Process),  0, 0);
-    layout->addWidget(createCellWidget(tr("Desicion"), DiagramItem::Desicion), 0, 1);
-    layout->addWidget(createCellWidget(tr("InOut"),    DiagramItem::InOut),    1, 0);
+    layout->addWidget(createCellWidget(tr("Terminal"),      DiagramItem::Terminal),  0, 0);
+    layout->addWidget(createCellWidget(tr("Process"),       DiagramItem::Process),   0, 1);
+    layout->addWidget(createCellWidget(tr("Desicion"),      DiagramItem::Desicion),  1, 0);
+    layout->addWidget(createCellWidget(tr("In/Out"),        DiagramItem::InOut),     1, 1);
+    layout->addWidget(createCellWidget(tr("For loop"),      DiagramItem::ForLoop),   2, 0);
 
     layout->setRowStretch(3, 10);
     layout->setColumnStretch(2, 10);
@@ -114,15 +107,7 @@ void MainWindow::createMenus()
 QWidget* MainWindow::createCellWidget(const QString &text, DiagramItem::DiagramType type)
 {
     QIcon icon;
-    switch (type) {
-    case DiagramItem::Terminal:
-        break;
-    case DiagramItem::Process:
-    case DiagramItem::Desicion:
-    case DiagramItem::InOut:
-        icon.addPixmap(DiagramItem(DiagramItem::DiagramType(type)).image());
-        break;
-    }
+    icon.addPixmap(DiagramItem(DiagramItem::DiagramType(type)).image());
 
     QToolButton* button = new QToolButton;
     button->setIcon(icon);

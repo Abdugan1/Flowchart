@@ -13,7 +13,8 @@ public:
         Terminal,
         Process,
         Desicion,
-        InOut
+        InOut,
+        ForLoop,
     };
 
 private:

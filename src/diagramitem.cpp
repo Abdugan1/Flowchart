@@ -17,7 +17,11 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     int h = DefaultSize::Height;
     switch (diagramType) {
     case Terminal:
+    {
+        QRectF rect(0, 0, w, h);
+        painterPath_.addRoundedRect(rect, h / 2, h / 2);
         break;
+    }
     case Process:
     {
         QRectF rect(0, 0, w, h);
@@ -39,6 +43,16 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
         polygon << QPointF(w * 0.25, 0) << QPointF(w, 0)
                 << QPointF(w * 0.75, h) << QPointF(0, h)
                 << QPointF(w * 0.25, 0);
+        painterPath_.addPolygon(polygon);
+        break;
+    }
+    case ForLoop:
+    {
+        QPolygonF polygon;
+        polygon << QPointF(0, h / 2)     << QPointF(w * 0.125, 0)
+                << QPointF(w * 0.875, 0) << QPointF(w, h / 2)
+                << QPointF(w * 0.875, h) << QPointF(w * 0.125, h)
+                << QPointF(0, h / 2);
         painterPath_.addPolygon(polygon);
         break;
     }
