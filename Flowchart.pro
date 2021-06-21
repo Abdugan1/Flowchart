@@ -13,6 +13,7 @@ SOURCES += \
     src/diagramscene.cpp \
     src/diagramtextitem.cpp \
     src/diagramview.cpp \
+    src/handleitem.cpp \
     src/internal.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
@@ -24,6 +25,7 @@ HEADERS += \
     src/diagramscene.h \
     src/diagramtextitem.h \
     src/diagramview.h \
+    src/handleitem.h \
     src/internal.h \
     src/mainwindow.h \
     src/polygonresizer.h \
