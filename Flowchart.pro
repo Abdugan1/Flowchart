@@ -17,7 +17,7 @@ SOURCES += \
     src/internal.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/polygonresizer.cpp \
+    src/pathresizer.cpp \
     src/sizegripitem.cpp
 
 HEADERS += \
@@ -28,7 +28,7 @@ HEADERS += \
     src/handleitem.h \
     src/internal.h \
     src/mainwindow.h \
-    src/polygonresizer.h \
+    src/pathresizer.h \
     src/sizegripitem.h
 
 FORMS +=

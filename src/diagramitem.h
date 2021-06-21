@@ -3,9 +3,9 @@
 
 #include "diagramtextitem.h"
 
-#include <QGraphicsPolygonItem>
+#include <QGraphicsPathItem>
 
-class DiagramItem : public QObject, public QGraphicsPolygonItem
+class DiagramItem : public QObject, public QGraphicsPathItem
 {
     Q_OBJECT
 public:
@@ -32,7 +32,7 @@ public:
     QPixmap image() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
-    QRectF polygonBoundingRect() const;
+    QRectF pathBoundingRect() const;
 
 signals:
     void itemPositionChanged(const QPointF& pos);
@@ -47,8 +47,8 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
-    DiagramType diagramType_;
-    QPolygonF   polygon_;
+    DiagramType  diagramType_;
+    QPainterPath painterPath_;
 
     DiagramTextItem* textItem_;
 };

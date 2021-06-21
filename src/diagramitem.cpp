@@ -9,7 +9,7 @@
 #include <QDebug>
 
 DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *parent)
-    : QGraphicsPolygonItem(parent)
+    : QGraphicsPathItem(parent)
     , diagramType_(diagramType)
     , textItem_(new DiagramTextItem(this))
 {
@@ -19,20 +19,32 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     case Terminal:
         break;
     case Process:
-        polygon_ << QPointF(0, 0)  << QPointF(w, 0)
-                  << QPointF(w, h) << QPointF(0, h);
-        break;
-    case Desicion:
-        polygon_ << QPointF(0, h / 2) << QPointF(w / 2, 0)
-                  << QPointF(w, h / 2) << QPointF(w / 2, h);
-        break;
-    case InOut:
-        polygon_ << QPointF(w * 0.25, 0) << QPointF(w, 0)
-                  << QPointF(w * 0.75, h) << QPointF(0, h);
+    {
+        QRectF rect(0, 0, w, h);
+        painterPath_.addRect(rect);
         break;
     }
+    case Desicion:
+    {
+        QPolygonF polygon;
+        polygon << QPointF(0, h / 2) << QPointF(w / 2, 0)
+                << QPointF(w, h / 2) << QPointF(w / 2, h)
+                << QPointF(0, h / 2);
+        painterPath_.addPolygon(polygon);
+        break;
+    }
+    case InOut:
+    {
+        QPolygonF polygon;
+        polygon << QPointF(w * 0.25, 0) << QPointF(w, 0)
+                << QPointF(w * 0.75, h) << QPointF(0, h)
+                << QPointF(w * 0.25, 0);
+        painterPath_.addPolygon(polygon);
+        break;
+    }
+    }
 
-    setPolygon(polygon_);
+    setPath(painterPath_);
     setBrush(Qt::white);
 
     textItem_->setZValue(1000.0);
@@ -69,17 +81,17 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit itemReleased();
-    QGraphicsPolygonItem::mouseReleaseEvent(event);
+    QGraphicsPathItem::mouseReleaseEvent(event);
 }
 
 void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
-        QGraphicsPolygonItem::mouseDoubleClickEvent(event);
+        QGraphicsPathItem::mouseDoubleClickEvent(event);
         return;
     }
     textItem_->setTextInteraction(true);
-    QGraphicsPolygonItem::mouseDoubleClickEvent(event);
+    QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
 
 DiagramItem::DiagramType DiagramItem::diagramType() const
@@ -94,7 +106,7 @@ QPixmap DiagramItem::image() const
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(QPen(Qt::black, 6));
-    painter.drawPolygon(polygon_);
+    painter.drawPath(painterPath_);
     return pixmap;
 }
 
@@ -111,12 +123,12 @@ void DiagramItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     pen.setWidth(width);
     painter->setPen(pen);
     painter->setBrush(QBrush(Qt::white));
-    painter->drawPolygon(polygon());
+    painter->drawPath(path());
 }
 
 QRectF DiagramItem::boundingRect() const
 {
-    QRectF rect = polygon().boundingRect();
+    QRectF rect = path().boundingRect();
     rect.setX(rect.x() - SelectedPenWidth / 2);
     rect.setY(rect.y() - SelectedPenWidth / 2);
     rect.setWidth(rect.width() + SelectedPenWidth / 2);
@@ -124,9 +136,9 @@ QRectF DiagramItem::boundingRect() const
     return rect;
 }
 
-QRectF DiagramItem::polygonBoundingRect() const
+QRectF DiagramItem::pathBoundingRect() const
 {
-    return polygon().boundingRect();
+    return path().boundingRect();
 }
 
 void DiagramItem::updateTextItemPosition()

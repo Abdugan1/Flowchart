@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "polygonresizer.h"
+#include "pathresizer.h"
 
 #include <QtWidgets>
 
@@ -48,7 +48,7 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
     }
 
     SizeGripItem* sizeGripItem =
-            new SizeGripItem(new PolygonResizer, diagramItem);
+            new SizeGripItem(new PathResizer, diagramItem);
     connect(sizeGripItem, &SizeGripItem::itemResized,
             diagramItem,  &DiagramItem::updateTextItemPosition);
 

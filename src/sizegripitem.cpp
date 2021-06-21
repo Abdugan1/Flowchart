@@ -13,7 +13,7 @@ SizeGripItem::SizeGripItem(Resizer* resizer, QGraphicsItem* parent)
 {
     DiagramItem* diagramItem = qgraphicsitem_cast<DiagramItem*>(parent);
     if (diagramItem)
-        rect_ = diagramItem->polygonBoundingRect();
+        rect_ = diagramItem->pathBoundingRect();
 
     handleItems_.append(new HandleItem(PositionFlags::TopLeft,      this));
     handleItems_.append(new HandleItem(PositionFlags::Top,          this));
