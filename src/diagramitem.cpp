@@ -6,7 +6,11 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
 #include <QDebug>
+#include <QTextCursor>
+#include <QTextDocument>
+#include <QGuiApplication>
 
 DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *parent)
     : QGraphicsPathItem(parent)
@@ -68,6 +72,8 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+
+    setAcceptHoverEvents(true);
 }
 
 QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -92,6 +98,16 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
     return QGraphicsItem::itemChange(change, value);
 }
 
+void DiagramItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
+        QPointF clickPos = mapToItem(textItem_, event->pos());
+        setTextCursorMappedToTextItem(clickPos);
+    }
+
+    QGraphicsPathItem::mousePressEvent(event);
+}
+
 void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit itemReleased();
@@ -106,6 +122,66 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
     textItem_->setTextInteraction(true);
     QGraphicsPathItem::mouseDoubleClickEvent(event);
+}
+
+void DiagramItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction)
+        QGuiApplication::setOverrideCursor(QCursor(Qt::IBeamCursor));
+
+    QGraphicsPathItem::hoverEnterEvent(event);
+}
+
+void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction
+            && !QGuiApplication::overrideCursor())
+        QGuiApplication::setOverrideCursor(QCursor(Qt::IBeamCursor));
+
+    QGraphicsPathItem::hoverMoveEvent(event);
+}
+
+void DiagramItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (QGuiApplication::overrideCursor())
+        QGuiApplication::restoreOverrideCursor();
+
+    QGraphicsPathItem::hoverLeaveEvent(event);
+}
+
+void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)
+{
+    QSizeF textItemSize = textItem_->boundingRect().size();
+    QFontMetrics fontMetrics(textItem_->font());
+    QString text = textItem_->document()->toPlainText();
+
+    int position = 0;
+
+    int y = qMax(0.0, qMin(textItemSize.height(), clickPos.y()));
+    int div = y / fontMetrics.height();
+    int h = div < text.count('\n') ? div : text.count('\n');
+    QStringList strings = text.split('\n');
+    auto itStr = strings.begin();
+    for (int i = 0; i < h; ++i) {
+        static const int delimLength = 1;
+        position += (itStr++)->length() + delimLength;
+    }
+
+
+    QString str = *itStr;
+    qreal strWidth = fontMetrics.horizontalAdvance(str);
+    qreal strBeginPos = textItemSize.width() / 2 - strWidth / 2;
+
+    int x = qMax(strBeginPos, qMin(double(strWidth) + strBeginPos, clickPos.x()));
+    int l = str.length();
+    if (l != 0)
+        position += internal::map(x, strBeginPos, strWidth + strBeginPos, 0, l);
+
+    QTextCursor cursor = textItem_->textCursor();
+    cursor.setPosition(position);
+    textItem_->setFocus(Qt::MouseFocusReason);
+    textItem_->setSelected(true);
+    textItem_->setTextCursor(cursor);
 }
 
 DiagramItem::DiagramType DiagramItem::diagramType() const

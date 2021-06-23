@@ -12,3 +12,8 @@ QPointF internal::getPointByStep(QPointF point, int step)
 
     return point;
 }
+
+int internal::map(int value, int frowLow, int fromHigh, int toLow, int toHigh)
+{
+    return (value - frowLow) * (toHigh - toLow) / (fromHigh - frowLow) + toLow;
+}
