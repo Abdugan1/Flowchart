@@ -36,13 +36,20 @@ public:
     void setBottomLeft(const QPointF& pos);
     void setLeft(qreal x);
 
+protected:
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+
 signals:
     void itemResized();
 
 private:
     void doResize();
-    void updateHandleItemPositions();
+    void updateHandleItemsPositions();
+    void hideHandleItems();
+    void showHandleItems();
 
+private:
     QList<HandleItem*> handleItems_;
     QRectF rect_;
     Resizer* resizer_;

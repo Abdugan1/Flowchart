@@ -1,7 +1,9 @@
 #include "diagramview.h"
+#include "diagramitem.h"
 
 #include <QtEvents>
 #include <QDebug>
+#include <QGraphicsSceneHoverEvent>
 
 
 DiagramView::DiagramView(QWidget *parent)
@@ -45,6 +47,13 @@ void DiagramView::mousePressEvent(QMouseEvent *event)
 
 void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
+    QList<QGraphicsItem*> itemsUnderMouse = items(event->pos());
+
+    for (auto* item : itemsUnderMouse) {
+        QGraphicsSceneHoverEvent hoverMoveEvent(QEvent::GraphicsSceneHoverMove);
+        scene()->sendEvent(item, &hoverMoveEvent);
+    }
+
     if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::CTRL
             && !isInteractive()) {
         setInteractive(true);
@@ -67,4 +76,5 @@ void DiagramView::init()
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setDragMode(QGraphicsView::RubberBandDrag);
+    setMouseTracking(true);
 }

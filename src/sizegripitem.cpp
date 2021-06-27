@@ -5,6 +5,8 @@
 
 #include "internal.h"
 
+#include <QDebug>
+
 using PositionFlags = HandleItem::PositionFlags;
 
 SizeGripItem::SizeGripItem(Resizer* resizer, QGraphicsItem* parent)
@@ -23,7 +25,11 @@ SizeGripItem::SizeGripItem(Resizer* resizer, QGraphicsItem* parent)
     handleItems_.append(new HandleItem(PositionFlags::Bottom,       this));
     handleItems_.append(new HandleItem(PositionFlags::BottomLeft,   this));
     handleItems_.append(new HandleItem(PositionFlags::Left,         this));
-    updateHandleItemPositions();
+
+    updateHandleItemsPositions();
+    hideHandleItems();
+
+    setAcceptHoverEvents(true);
 }
 
 SizeGripItem::~SizeGripItem()
@@ -62,17 +68,29 @@ IMPL_SET_FN(const QPointF&, TopRight)
 IMPL_SET_FN(const QPointF&, BottomRight)
 IMPL_SET_FN(const QPointF&, BottomLeft)
 
+void SizeGripItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    showHandleItems();
+    QGraphicsItem::hoverEnterEvent(event);
+}
+
+void SizeGripItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    hideHandleItems();
+    QGraphicsItem::hoverLeaveEvent(event);
+}
+
 void SizeGripItem::doResize()
 {
     if (resizer_)
     {
         (*resizer_)(parentItem(), rect_);
         emit itemResized();
-        updateHandleItemPositions();
+        updateHandleItemsPositions();
     }
 }
 
-void SizeGripItem::updateHandleItemPositions()
+void SizeGripItem::updateHandleItemsPositions()
 {
     foreach (HandleItem* item, handleItems_)
     {
@@ -112,4 +130,16 @@ void SizeGripItem::updateHandleItemPositions()
 
         item->setFlag(ItemSendsGeometryChanges, true);
     }
+}
+
+void SizeGripItem::hideHandleItems()
+{
+    for (auto* item : handleItems_)
+        item->hide();
+}
+
+void SizeGripItem::showHandleItems()
+{
+    for (auto* item : handleItems_)
+        item->show();
 }
