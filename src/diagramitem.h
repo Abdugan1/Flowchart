@@ -35,6 +35,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
     QRectF pathBoundingRect() const;
+    static QPainterPath getDefaultShape(DiagramType diagramType);
 
 signals:
     void itemPositionChanged(const QPointF& pos);
@@ -56,8 +57,7 @@ private:
     void setTextCursorMappedToTextItem(const QPointF& clickPos);
 
 private:
-    DiagramType  diagramType_;
-    QPainterPath painterPath_;
+    DiagramType diagramType_;
 
     DiagramTextItem* textItem_;
 };

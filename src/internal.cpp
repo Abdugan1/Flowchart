@@ -4,8 +4,8 @@
 
 QPointF internal::getPointByStep(QPointF point, int step)
 {
-    qreal xV = round(point.x() / step) * step;
-    qreal yV = round(point.y() / step) * step;
+    qreal xV = qRound(point.x() / step) * step;
+    qreal yV = qRound(point.y() / step) * step;
 
     point.setX(xV);
     point.setY(yV);

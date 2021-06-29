@@ -17,52 +17,7 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     , diagramType_(diagramType)
     , textItem_(new DiagramTextItem(this))
 {
-    int w = DefaultSize::Width;
-    int h = DefaultSize::Height;
-    switch (diagramType) {
-    case Terminal:
-    {
-        QRectF rect(0, 0, w, h);
-        painterPath_.addRoundedRect(rect, h / 2, h / 2);
-        break;
-    }
-    case Process:
-    {
-        QRectF rect(0, 0, w, h);
-        painterPath_.addRect(rect);
-        break;
-    }
-    case Desicion:
-    {
-        QPolygonF polygon;
-        polygon << QPointF(0, h / 2) << QPointF(w / 2, 0)
-                << QPointF(w, h / 2) << QPointF(w / 2, h)
-                << QPointF(0, h / 2);
-        painterPath_.addPolygon(polygon);
-        break;
-    }
-    case InOut:
-    {
-        QPolygonF polygon;
-        polygon << QPointF(w * 0.25, 0) << QPointF(w, 0)
-                << QPointF(w * 0.75, h) << QPointF(0, h)
-                << QPointF(w * 0.25, 0);
-        painterPath_.addPolygon(polygon);
-        break;
-    }
-    case ForLoop:
-    {
-        QPolygonF polygon;
-        polygon << QPointF(0, h / 2)     << QPointF(w * 0.125, 0)
-                << QPointF(w * 0.875, 0) << QPointF(w, h / 2)
-                << QPointF(w * 0.875, h) << QPointF(w * 0.125, h)
-                << QPointF(0, h / 2);
-        painterPath_.addPolygon(polygon);
-        break;
-    }
-    }
-
-    setPath(painterPath_);
+    setPath(getDefaultShape(diagramType));
     setBrush(Qt::white);
 
     textItem_->setZValue(1000.0);
@@ -167,7 +122,6 @@ void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)
         position += (itStr++)->length() + delimLength;
     }
 
-
     QString str = *itStr;
     qreal strWidth = fontMetrics.horizontalAdvance(str);
     qreal strBeginPos = textItemSize.width() / 2 - strWidth / 2;
@@ -196,7 +150,7 @@ QPixmap DiagramItem::image() const
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(QPen(Qt::black, 6));
-    painter.drawPath(painterPath_);
+    painter.drawPath(getDefaultShape(diagramType()));
     return pixmap;
 }
 
@@ -229,6 +183,56 @@ QRectF DiagramItem::boundingRect() const
 QRectF DiagramItem::pathBoundingRect() const
 {
     return path().boundingRect();
+}
+
+QPainterPath DiagramItem::getDefaultShape(DiagramType diagramType)
+{
+    int w = DefaultSize::Width;
+    int h = DefaultSize::Height;
+    QPainterPath painterPath;
+    switch (diagramType) {
+    case Terminal:
+    {
+        QRectF rect(0, 0, w, h);
+        painterPath.addRoundedRect(rect, h / 2, h / 2);
+        break;
+    }
+    case Process:
+    {
+        QRectF rect(0, 0, w, h);
+        painterPath.addRect(rect);
+        break;
+    }
+    case Desicion:
+    {
+        QPolygonF polygon;
+        polygon << QPointF(0, h / 2) << QPointF(w / 2, 0)
+                << QPointF(w, h / 2) << QPointF(w / 2, h)
+                << QPointF(0, h / 2);
+        painterPath.addPolygon(polygon);
+        break;
+    }
+    case InOut:
+    {
+        QPolygonF polygon;
+        polygon << QPointF(w * 0.25, 0) << QPointF(w, 0)
+                << QPointF(w * 0.75, h) << QPointF(0, h)
+                << QPointF(w * 0.25, 0);
+        painterPath.addPolygon(polygon);
+        break;
+    }
+    case ForLoop:
+    {
+        QPolygonF polygon;
+        polygon << QPointF(0, h / 2)     << QPointF(w * 0.125, 0)
+                << QPointF(w * 0.875, 0) << QPointF(w, h / 2)
+                << QPointF(w * 0.875, h) << QPointF(w * 0.125, h)
+                << QPointF(0, h / 2);
+        painterPath.addPolygon(polygon);
+        break;
+    }
+    }
+    return painterPath;
 }
 
 void DiagramItem::updateTextItemPosition()
