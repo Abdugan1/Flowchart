@@ -35,9 +35,6 @@ QPointF DiagramScene::preventOutsideMove(QPointF topLeft, QGraphicsItem *item)
 
 void DiagramScene::onItemPositionChanged(const QPointF &pos)
 {
-    if (!QGuiApplication::overrideCursor())
-        QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
-
     deleteAllLines();
 
     // Dont draw green dash line, if several items selected
@@ -90,7 +87,6 @@ void DiagramScene::onItemPositionChanged(const QPointF &pos)
 void DiagramScene::onItemReleased()
 {
     deleteAllLines();
-    QGuiApplication::restoreOverrideCursor();
 }
 
 void DiagramScene::selectAllItems()

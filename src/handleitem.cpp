@@ -26,17 +26,11 @@ PositionFlags HandleItem::positionFlags() const
     return positionFlags_;
 }
 
-void HandleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-{
-    if (event->modifiers() != Qt::CTRL)
-        changeCursor();
-    QGraphicsRectItem::hoverEnterEvent(event);
-}
-
 void HandleItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     if (!QGuiApplication::overrideCursor() && event->modifiers() != Qt::CTRL)
         changeCursor();
+
     QGraphicsRectItem::hoverMoveEvent(event);
 }
 

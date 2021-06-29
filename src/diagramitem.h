@@ -18,6 +18,13 @@ public:
         ForLoop,
     };
 
+    enum State {
+        Resting,
+        Moving,
+        Scaling,
+        TextEditing
+    };
+
 private:
     enum DefaultSize {
         Width  = 200,
@@ -47,6 +54,7 @@ public slots:
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
@@ -58,6 +66,7 @@ private:
 
 private:
     DiagramType diagramType_;
+    State state_;
 
     DiagramTextItem* textItem_;
 };

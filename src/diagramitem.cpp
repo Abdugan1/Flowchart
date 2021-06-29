@@ -48,6 +48,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
                && textItem_->textInteractionFlags() != Qt::NoTextInteraction
                && !value.toBool()) {
 
+        state_ = State::Resting;
         textItem_->setTextInteraction(false);
     }
     return QGraphicsItem::itemChange(change, value);
@@ -63,14 +64,30 @@ void DiagramItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsPathItem::mousePressEvent(event);
 }
 
+void DiagramItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (state_ == State::TextEditing)
+        return;
+
+    if (!QGuiApplication::overrideCursor())
+        QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
+
+    QGraphicsPathItem::mouseMoveEvent(event);
+}
+
 void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    if (state_ == State::TextEditing)
+        return;
+
     emit itemReleased();
+    QGuiApplication::restoreOverrideCursor();
     QGraphicsPathItem::mouseReleaseEvent(event);
 }
 
 void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    state_ = State::TextEditing;
     if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
         QGraphicsPathItem::mouseDoubleClickEvent(event);
         return;
