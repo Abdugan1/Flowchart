@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 
 class DiagramItem;
+class GraphicsItemGroup;
 
 class DiagramScene : public QGraphicsScene
 {
@@ -26,15 +27,22 @@ public slots:
     void onItemPositionChanged(const QPointF& pos);
     void onItemReleased();
     void selectAllItems();
+    void deleteGraphicsItemGroup();
+    void makeGroupSelectedItems();
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
 
 private:
-    QList<DiagramItem*> getAllDiagramItems();
+    QList<DiagramItem*> getDiagramItemsFromQGraphics(const QList<QGraphicsItem*> items);
     void deleteAllLines();
     void drawLevelLine(const QLineF& line);
     QPoint getItemCenter(const DiagramItem* item);
+    void createGraphicsItemGroup(QList<DiagramItem*>& diagramItems);
+
+private:
+    GraphicsItemGroup* group_ = nullptr;
+
 };
 
 #endif // DIAGRAMSCENE_H

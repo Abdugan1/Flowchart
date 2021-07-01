@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     view_->setRenderHint(QPainter::Antialiasing, true);
 
+    connect(view_,  &DiagramView::rubberBandSelectingFinished,
+            scene_, &DiagramScene::makeGroupSelectedItems);
+
     QHBoxLayout * hLayout = new QHBoxLayout;
     hLayout->addWidget(toolBox_);
     hLayout->addWidget(view_);

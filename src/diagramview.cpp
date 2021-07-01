@@ -77,4 +77,18 @@ void DiagramView::init()
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setDragMode(QGraphicsView::RubberBandDrag);
     setMouseTracking(true);
+
+    connect(this, &DiagramView::rubberBandChanged, this,
+            [this](QRect rubberBandRect, QPointF fromScenePoint, QPointF toScenePoint)
+    {
+        if (isRubberBandFinishedSelecting(rubberBandRect, fromScenePoint, toScenePoint))
+            emit rubberBandSelectingFinished();
+    });
+}
+
+bool DiagramView::isRubberBandFinishedSelecting(const QRect &rubberBandRect,
+                                                const QPointF &fromScenePoint,
+                                                const QPointF &toScenePoint)
+{
+    return (rubberBandRect.isNull() && fromScenePoint.isNull() && toScenePoint.isNull());
 }

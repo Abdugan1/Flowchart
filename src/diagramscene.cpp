@@ -1,5 +1,6 @@
 #include "diagramscene.h"
 #include "diagramitem.h"
+#include "graphicsitemgroup.h"
 
 #include <QPainter>
 #include <QDebug>
@@ -42,7 +43,7 @@ void DiagramScene::onItemPositionChanged(const QPointF &pos)
         return;
 
     DiagramItem* senderItem   = static_cast<DiagramItem*>(sender());
-    QList<DiagramItem*> items = getAllDiagramItems();
+    QList<DiagramItem*> items = getDiagramItemsFromQGraphics(this->items());
 
     QPoint senderCenter  = pos.toPoint() + senderItem->boundingRect().center().toPoint();
     QPoint verticalBegin = senderCenter;
@@ -91,10 +92,30 @@ void DiagramScene::onItemReleased()
 
 void DiagramScene::selectAllItems()
 {
-    QList<DiagramItem*> items = getAllDiagramItems();
+    QList<DiagramItem*> items = getDiagramItemsFromQGraphics(this->items());
+    if (group_)
+        deleteGraphicsItemGroup();
+    createGraphicsItemGroup(items);
+}
 
-    for (auto* item : items)
-        item->setSelected(true);
+void DiagramScene::deleteGraphicsItemGroup()
+{
+    QList<DiagramItem*> groupItems
+            = getDiagramItemsFromQGraphics(group_->childItems());
+
+    destroyItemGroup(group_);
+
+    for (auto* item : groupItems)
+        item->setSelected(false);
+
+    group_ = nullptr;
+}
+
+void DiagramScene::makeGroupSelectedItems()
+{
+    QList<DiagramItem*> selectedItems = getDiagramItemsFromQGraphics(this->selectedItems());
+    if (selectedItems.count() > 0)
+        createGraphicsItemGroup(selectedItems);
 }
 
 void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
@@ -115,12 +136,11 @@ void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
     painter->drawPoints(points.data(), points.size());
 }
 
-QList<DiagramItem *> DiagramScene::getAllDiagramItems()
+QList<DiagramItem *> DiagramScene::getDiagramItemsFromQGraphics(const QList<QGraphicsItem *> items)
 {
-    QList<QGraphicsItem*> allItems = this->items();
     QList<DiagramItem*> diagramItems;
 
-    for (QGraphicsItem* i : qAsConst(allItems)) {
+    for (QGraphicsItem* i : qAsConst(items)) {
         if (DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i))
             diagramItems.append(item);
     }
@@ -153,4 +173,22 @@ void DiagramScene::drawLevelLine(const QLineF& line)
 QPoint DiagramScene::getItemCenter(const DiagramItem *item)
 {
     return (item->pos().toPoint() + item->boundingRect().center().toPoint());
+}
+
+void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
+{
+    group_ = new GraphicsItemGroup;
+    group_->setFlag(QGraphicsItem::ItemIsMovable);
+    group_->setFlag(QGraphicsItem::ItemIsSelectable);
+    group_->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
+
+    for (auto* item : diagramItems) {
+        item->setSelected(true);
+        group_->addToGroup(item);
+    }
+    addItem(group_);
+    group_->setSelected(true);
+
+    connect(group_, &GraphicsItemGroup::lostSelection,
+            this, &DiagramScene::deleteGraphicsItemGroup);
 }
