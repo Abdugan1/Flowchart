@@ -1,6 +1,7 @@
 #include "diagramscene.h"
 #include "diagramitem.h"
 #include "graphicsitemgroup.h"
+#include "internal.h"
 
 #include <QPainter>
 #include <QDebug>
@@ -16,12 +17,18 @@ DiagramScene::DiagramScene(QObject *parent)
 
 QPointF DiagramScene::preventOutsideMove(QPointF topLeft, QGraphicsItem *item)
 {
-    QRectF sceneRect = this->sceneRect();
     QRectF itemBoundingRect = item->boundingRect();
 
     QPointF bottomRight;
     bottomRight.setX(itemBoundingRect.width()  + topLeft.x());
     bottomRight.setY(itemBoundingRect.height() + topLeft.y());
+
+    return preventOutsideMove(topLeft, bottomRight);
+}
+
+QPointF DiagramScene::preventOutsideMove(QPointF topLeft, QPointF bottomRight)
+{
+    QRectF sceneRect = this->sceneRect();
 
     if (!sceneRect.contains(topLeft)) {
         topLeft.setX(qMax(topLeft.x(), sceneRect.left()));
@@ -43,7 +50,7 @@ void DiagramScene::onItemPositionChanged(const QPointF &pos)
         return;
 
     DiagramItem* senderItem   = static_cast<DiagramItem*>(sender());
-    QList<DiagramItem*> items = getDiagramItemsFromQGraphics(this->items());
+    QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items());
 
     QPoint senderCenter  = pos.toPoint() + senderItem->boundingRect().center().toPoint();
     QPoint verticalBegin = senderCenter;
@@ -92,7 +99,7 @@ void DiagramScene::onItemReleased()
 
 void DiagramScene::selectAllItems()
 {
-    QList<DiagramItem*> items = getDiagramItemsFromQGraphics(this->items());
+    QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items());
     if (!items.isEmpty()) {
         if (group_)
             destroyGraphicsItemGroup();
@@ -103,7 +110,7 @@ void DiagramScene::selectAllItems()
 void DiagramScene::destroyGraphicsItemGroup()
 {
     QList<DiagramItem*> groupItems
-            = getDiagramItemsFromQGraphics(group_->childItems());
+            = internal::getDiagramItemsFromQGraphics(group_->childItems());
 
     destroyItemGroup(group_);
 
@@ -117,7 +124,9 @@ void DiagramScene::destroyGraphicsItemGroup()
 
 void DiagramScene::makeGroupOfSelectedItems()
 {
-    QList<DiagramItem*> selectedItems = getDiagramItemsFromQGraphics(this->selectedItems());
+    QList<DiagramItem*> selectedItems =
+            internal::getDiagramItemsFromQGraphics(this->selectedItems());
+
     if (selectedItems.count() > 0)
         createGraphicsItemGroup(selectedItems);
 }
@@ -155,18 +164,6 @@ void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
     painter->drawPoints(points.data(), points.size());
 }
 
-QList<DiagramItem *> DiagramScene::getDiagramItemsFromQGraphics(const QList<QGraphicsItem *> items)
-{
-    QList<DiagramItem*> diagramItems;
-
-    for (QGraphicsItem* i : qAsConst(items)) {
-        if (DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i))
-            diagramItems.append(item);
-    }
-
-    return diagramItems;
-}
-
 void DiagramScene::deleteAllLines()
 {
     QList<QGraphicsItem*> items = this->items();
@@ -196,7 +193,14 @@ QPoint DiagramScene::getItemCenter(const DiagramItem *item)
 
 void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
 {
-    group_ = new GraphicsItemGroup;
+    QPointF topLeft = diagramItems.at(0)->pos();
+    for (auto* item : diagramItems) {
+        QPointF pos = item->pos();
+        topLeft.setX(qMin(pos.x(), topLeft.x()));
+        topLeft.setY(qMin(pos.y(), topLeft.y()));
+    }
+
+    group_ = new GraphicsItemGroup(topLeft);
     group_->setFlag(QGraphicsItem::ItemIsMovable);
     group_->setFlag(QGraphicsItem::ItemIsSelectable);
     group_->setFlag(QGraphicsItem::ItemSendsGeometryChanges);

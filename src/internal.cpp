@@ -1,4 +1,5 @@
 #include "internal.h"
+#include "diagramitem.h"
 
 #include <QPointF>
 
@@ -16,4 +17,16 @@ QPointF internal::getPointByStep(QPointF point, int step)
 int internal::map(int value, int frowLow, int fromHigh, int toLow, int toHigh)
 {
     return (value - frowLow) * (toHigh - toLow) / (fromHigh - frowLow) + toLow;
+}
+
+QList<DiagramItem *> internal::getDiagramItemsFromQGraphics(const QList<QGraphicsItem *> items)
+{
+    QList<DiagramItem*> diagramItems;
+
+    for (QGraphicsItem* i : qAsConst(items)) {
+        if (DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i))
+            diagramItems.append(item);
+    }
+
+    return diagramItems;
 }

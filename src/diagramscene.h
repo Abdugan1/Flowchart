@@ -21,7 +21,8 @@ public:
 
 public:
     DiagramScene(QObject* parent = nullptr);
-    QPointF preventOutsideMove(QPointF pos, QGraphicsItem* item);
+    QPointF preventOutsideMove(QPointF topLeft, QGraphicsItem* item);
+    QPointF preventOutsideMove(QPointF topLeft, QPointF bottomRight);
 
 public slots:
     void onItemPositionChanged(const QPointF& pos);
@@ -36,7 +37,6 @@ protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
 
 private:
-    QList<DiagramItem*> getDiagramItemsFromQGraphics(const QList<QGraphicsItem*> items);
     void deleteAllLines();
     void drawLevelLine(const QLineF& line);
     QPoint getItemCenter(const DiagramItem* item);

@@ -1,4 +1,7 @@
 #include "graphicsitemgroup.h"
+#include "diagramscene.h"
+#include "diagramitem.h"
+#include "internal.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
@@ -6,9 +9,10 @@
 #include <QCursor>
 #include <QDebug>
 
-GraphicsItemGroup::GraphicsItemGroup(QGraphicsItem *parent)
+GraphicsItemGroup::GraphicsItemGroup(const QPointF &pos, QGraphicsItem *parent)
     : QGraphicsItemGroup(parent)
 {
+    setPos(pos);
     setAcceptHoverEvents(true);
 }
 
@@ -33,7 +37,18 @@ void GraphicsItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem 
 
 QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change == ItemSelectedHasChanged) {
+    if (change == ItemPositionChange) {
+        QPointF newPos = value.toPointF();
+
+        newPos = internal::getPointByStep(newPos, DiagramScene::GridSize / 2);
+
+        QPointF bottomRight = calculateBottomRight(newPos);
+        newPos = static_cast<DiagramScene*>(scene())->
+                preventOutsideMove(newPos, bottomRight);
+
+        return newPos;
+
+    } else if (change == ItemSelectedHasChanged) {
         bool selected = value.toBool();
         if (!selected)
             emit lostSelection();
@@ -65,4 +80,21 @@ void GraphicsItemGroup::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGuiApplication::restoreOverrideCursor();
     QGraphicsItemGroup::mouseReleaseEvent(event);
+}
+
+QPointF GraphicsItemGroup::calculateBottomRight(QPointF topLeft) const
+{
+    QList<DiagramItem*> diagramItems =
+            internal::getDiagramItemsFromQGraphics(childItems());
+
+    QPointF bottomRight = diagramItems.at(0)->pos() +
+            diagramItems.at(0)->boundingRect().bottomRight();
+
+    for (auto* item : diagramItems) {
+        QPointF pos = item->pos() + item->boundingRect().bottomRight();
+        bottomRight.setX(qMax(pos.x(), bottomRight.x()));
+        bottomRight.setY(qMax(pos.y(), bottomRight.y()));
+    }
+
+    return topLeft + bottomRight;
 }

@@ -8,7 +8,7 @@ class GraphicsItemGroup : public QObject, public QGraphicsItemGroup
     Q_OBJECT
 
 public:
-    GraphicsItemGroup(QGraphicsItem *parent = nullptr);
+    GraphicsItemGroup(const QPointF& pos, QGraphicsItem *parent = nullptr);
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
@@ -23,6 +23,10 @@ protected:
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+
+private:
+    QPointF calculateBottomRight(QPointF topLeft) const;
+
 };
 
 #endif // GRAPHICSITEMGROUP_H
