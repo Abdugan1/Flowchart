@@ -27,8 +27,10 @@ public slots:
     void onItemPositionChanged(const QPointF& pos);
     void onItemReleased();
     void selectAllItems();
-    void deleteGraphicsItemGroup();
-    void makeGroupSelectedItems();
+    void destroyGraphicsItemGroup();
+    void makeGroupOfSelectedItems();
+    void deleteSelectedItems();
+
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;

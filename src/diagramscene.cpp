@@ -93,29 +93,48 @@ void DiagramScene::onItemReleased()
 void DiagramScene::selectAllItems()
 {
     QList<DiagramItem*> items = getDiagramItemsFromQGraphics(this->items());
-    if (group_)
-        deleteGraphicsItemGroup();
-    createGraphicsItemGroup(items);
+    if (!items.isEmpty()) {
+        if (group_)
+            destroyGraphicsItemGroup();
+        createGraphicsItemGroup(items);
+    }
 }
 
-void DiagramScene::deleteGraphicsItemGroup()
+void DiagramScene::destroyGraphicsItemGroup()
 {
     QList<DiagramItem*> groupItems
             = getDiagramItemsFromQGraphics(group_->childItems());
 
     destroyItemGroup(group_);
 
-    for (auto* item : groupItems)
+    for (auto* item : groupItems) {
         item->setSelected(false);
+        item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+    }
 
     group_ = nullptr;
 }
 
-void DiagramScene::makeGroupSelectedItems()
+void DiagramScene::makeGroupOfSelectedItems()
 {
     QList<DiagramItem*> selectedItems = getDiagramItemsFromQGraphics(this->selectedItems());
     if (selectedItems.count() > 0)
         createGraphicsItemGroup(selectedItems);
+}
+
+void DiagramScene::deleteSelectedItems()
+{
+    if (!selectedItems().isEmpty()) {
+        QGraphicsItem* selectedItem = selectedItems().at(0);
+
+        // item could be a group, or it could be a single item
+        if (qgraphicsitem_cast<GraphicsItemGroup*>(selectedItem)) {
+            delete group_;
+            group_ = nullptr;
+        } else {
+            delete selectedItem;
+        }
+    }
 }
 
 void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
@@ -183,6 +202,7 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
     group_->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 
     for (auto* item : diagramItems) {
+        item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
         item->setSelected(true);
         group_->addToGroup(item);
     }
@@ -190,5 +210,5 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
     group_->setSelected(true);
 
     connect(group_, &GraphicsItemGroup::lostSelection,
-            this, &DiagramScene::deleteGraphicsItemGroup);
+            this, &DiagramScene::destroyGraphicsItemGroup);
 }

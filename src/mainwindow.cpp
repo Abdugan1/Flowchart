@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     view_->setRenderHint(QPainter::Antialiasing, true);
 
     connect(view_,  &DiagramView::rubberBandSelectingFinished,
-            scene_, &DiagramScene::makeGroupSelectedItems);
+            scene_, &DiagramScene::makeGroupOfSelectedItems);
 
     QHBoxLayout * hLayout = new QHBoxLayout;
     hLayout->addWidget(toolBox_);
@@ -56,14 +56,6 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
     scene_->addItem(diagramItem);
 }
 
-void MainWindow::deleteItem()
-{
-    QList<QGraphicsItem*> selectedItems = scene_->selectedItems();
-    for (QGraphicsItem* item : selectedItems) {
-        delete item;
-    }
-}
-
 void MainWindow::createToolBox()
 {
     buttonGroup_ = new QButtonGroup(this);
@@ -93,7 +85,7 @@ void MainWindow::createActions()
 {
     deleteAction_ = new QAction(tr("&Delete"), this);
     deleteAction_->setShortcut(tr("Delete"));
-    connect(deleteAction_, &QAction::triggered, this, &MainWindow::deleteItem);
+    connect(deleteAction_, &QAction::triggered, scene_, &DiagramScene::deleteSelectedItems);
 
     selectAllAction_ = new QAction(tr("Select &All"), this);
     selectAllAction_->setShortcut(tr("Ctrl+A"));

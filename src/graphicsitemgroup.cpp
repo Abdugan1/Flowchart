@@ -1,10 +1,15 @@
 #include "graphicsitemgroup.h"
 
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+#include <QGuiApplication>
+#include <QCursor>
+#include <QDebug>
 
 GraphicsItemGroup::GraphicsItemGroup(QGraphicsItem *parent)
     : QGraphicsItemGroup(parent)
 {
+    setAcceptHoverEvents(true);
 }
 
 QRectF GraphicsItemGroup::boundingRect() const
@@ -34,4 +39,30 @@ QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant
             emit lostSelection();
     }
     return QGraphicsItemGroup::itemChange(change, value);
+}
+
+void GraphicsItemGroup::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (!QGuiApplication::overrideCursor())
+        QGuiApplication::setOverrideCursor(QCursor(Qt::OpenHandCursor));
+
+    QGraphicsItemGroup::hoverMoveEvent(event);
+}
+
+void GraphicsItemGroup::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    QGuiApplication::restoreOverrideCursor();
+    QGraphicsItemGroup::hoverLeaveEvent(event);
+}
+
+void GraphicsItemGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGuiApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
+    QGraphicsItemGroup::mousePressEvent(event);
+}
+
+void GraphicsItemGroup::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGuiApplication::restoreOverrideCursor();
+    QGraphicsItemGroup::mouseReleaseEvent(event);
 }

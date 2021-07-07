@@ -23,7 +23,6 @@ public:
 
 private slots:
     void buttonGroupClicked(QAbstractButton* button);
-    void deleteItem();
 
 private:
     void createToolBox();
