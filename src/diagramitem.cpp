@@ -167,6 +167,7 @@ QPixmap DiagramItem::image() const
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(QPen(Qt::black, 6));
+    painter.setBrush(QBrush(Qt::white));
     painter.drawPath(getDefaultShape(diagramType()));
     return pixmap;
 }

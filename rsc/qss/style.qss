@@ -1,0 +1,53 @@
+QFrame#sideMenu {
+    background-color: white;
+}
+
+QWidget#graphicsView {
+    background-color: white;
+}
+
+QMenuBar {
+    background-color: #151a1e;
+    font: 9pt "Montserrat";
+}
+
+QMenuBar::item {
+    color: #d3dae3;
+    spacing: 3px;
+    padding: 5px 5px;
+    background-color: #151a1e;
+}
+
+QMenuBar::item:selected {
+    background-color: #252a2e;
+    color: #FFFFFF;
+}
+
+QMenu {
+    background-color: #151a1e;
+}
+
+QMenu::item {
+    color: #d3dae3;
+    background-color: #151a1e;
+}
+
+QMenu::item:selected {
+    background-color: #252a2e;
+    color: #FFFFFF;
+}
+
+QToolButton#sideMenuButton {
+    background-color: white;
+    min-width: 250px;
+    min-height: 50px;
+    border: none;
+    font: 10pt "Montserrat";
+    icon-size: 50px 50px;
+    padding: 4px 4px;
+}
+
+QToolButton#sideMenuButton:hover {
+    background-color: #2196f3;
+    color: white;
+}

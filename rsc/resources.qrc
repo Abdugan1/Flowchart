@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qss/style.qss</file>
+        <file>images/app_icon.ico</file>
+        <file>images/app_icon.png</file>
+        <file>fonts/Montserrat-Regular.ttf</file>
+    </qresource>
+</RCC>

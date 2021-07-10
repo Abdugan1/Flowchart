@@ -12,6 +12,7 @@ class QGraphicsView;
 class QButtonGroup;
 class QAbstractButton;
 class QToolBox;
+class QToolButton;
 class QAction;
 class QMenu;
 
@@ -25,17 +26,18 @@ private slots:
     void buttonGroupClicked(QAbstractButton* button);
 
 private:
-    void createToolBox();
+    void createSideMenu();
     void createActions();
     void createMenus();
-    QWidget* createCellWidget(const QString& text, DiagramItem::DiagramType type);
+    QToolButton* createSideMenuButton(const QString& text,
+                                      DiagramItem::DiagramType type);
 
 private:
     DiagramScene* scene_;
     DiagramView*  view_;
 
     QButtonGroup* buttonGroup_;
-    QToolBox*     toolBox_;
+    QFrame*       sideMenu_;
 
     QAction* deleteAction_;
     QAction* selectAllAction_;

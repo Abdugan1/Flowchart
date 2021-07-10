@@ -9,19 +9,23 @@ MainWindow::MainWindow(QWidget *parent)
     , view_(new DiagramView(scene_))
 {
     createActions();
-    createToolBox();
+    createSideMenu();
     createMenus();
 
     scene_->setSceneRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
     scene_->addRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
 
+    view_->setObjectName("graphicsView");
     view_->setRenderHint(QPainter::Antialiasing, true);
 
     connect(view_,  &DiagramView::rubberBandSelectingFinished,
             scene_, &DiagramScene::makeGroupOfSelectedItems);
 
     QHBoxLayout * hLayout = new QHBoxLayout;
-    hLayout->addWidget(toolBox_);
+    hLayout->setContentsMargins(0, 0, 0, 0);
+    hLayout->setSpacing(0);
+
+    hLayout->addWidget(sideMenu_);
     hLayout->addWidget(view_);
 
     QWidget* widget = new QWidget;
@@ -56,29 +60,31 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
     scene_->addItem(diagramItem);
 }
 
-void MainWindow::createToolBox()
+void MainWindow::createSideMenu()
 {
     buttonGroup_ = new QButtonGroup(this);
     buttonGroup_->setExclusive(false);
     connect(buttonGroup_, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
             this, &MainWindow::buttonGroupClicked);
-    QGridLayout* layout = new QGridLayout;
-    layout->addWidget(createCellWidget(tr("Terminal"),      DiagramItem::Terminal),  0, 0);
-    layout->addWidget(createCellWidget(tr("Process"),       DiagramItem::Process),   0, 1);
-    layout->addWidget(createCellWidget(tr("Desicion"),      DiagramItem::Desicion),  1, 0);
-    layout->addWidget(createCellWidget(tr("In/Out"),        DiagramItem::InOut),     1, 1);
-    layout->addWidget(createCellWidget(tr("For loop"),      DiagramItem::ForLoop),   2, 0);
 
-    layout->setRowStretch(3, 10);
-    layout->setColumnStretch(2, 10);
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
 
-    QWidget* itemWidget = new QWidget;
-    itemWidget->setLayout(layout);
+    layout->addWidget(createSideMenuButton(tr("Terminal"),      DiagramItem::Terminal) );
+    layout->addWidget(createSideMenuButton(tr("Process"),       DiagramItem::Process)  );
+    layout->addWidget(createSideMenuButton(tr("Desicion"),      DiagramItem::Desicion) );
+    layout->addWidget(createSideMenuButton(tr("In/Out"),        DiagramItem::InOut)    );
+    layout->addWidget(createSideMenuButton(tr("For loop"),      DiagramItem::ForLoop)  );
 
-    toolBox_ = new QToolBox;
-    toolBox_->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
-    toolBox_->setMinimumWidth(itemWidget->sizeHint().width()); //! try without sizeHint()
-    toolBox_->addItem(itemWidget, tr("Diagram Items"));
+    layout->setSpacing(0);
+    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum,
+                                                  QSizePolicy::Expanding);
+    layout->addItem(spacer);
+
+    sideMenu_ = new QFrame;
+    sideMenu_->setObjectName("sideMenu");
+    sideMenu_->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Ignored));
+    sideMenu_->setLayout(layout);
 }
 
 void MainWindow::createActions()
@@ -99,22 +105,21 @@ void MainWindow::createMenus()
     itemMenu_->addAction(selectAllAction_);
 }
 
-QWidget* MainWindow::createCellWidget(const QString &text, DiagramItem::DiagramType type)
+QToolButton* MainWindow::createSideMenuButton(const QString &text, DiagramItem::DiagramType type)
 {
     QIcon icon;
     icon.addPixmap(DiagramItem(DiagramItem::DiagramType(type)).image());
 
     QToolButton* button = new QToolButton;
-    button->setIcon(icon);
-    button->setIconSize(QSize(50, 50));
+    button->setObjectName("sideMenuButton");
+    button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     button->setCheckable(true);
+    button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+    button->setIcon(icon);
+    button->setText(text);
+
     buttonGroup_->addButton(button, int(type));
-    QGridLayout* layout = new QGridLayout;
-    layout->addWidget(button, 0, 0, Qt::AlignHCenter);
-    layout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
 
-    QWidget* widget = new QWidget;
-    widget->setLayout(layout);
-
-    return widget;
+    return button;
 }
