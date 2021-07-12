@@ -18,26 +18,12 @@ HandleItem::HandleItem(PositionFlags positionFlags, SizeGripItem* parent)
 {
     setBrush(QBrush(Qt::lightGray));
     setFlag(ItemIsMovable);
-    setAcceptHoverEvents(true);
+    setCursorByFlag(positionFlags);
 }
 
 PositionFlags HandleItem::positionFlags() const
 {
     return positionFlags_;
-}
-
-void HandleItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
-{
-    if (!QGuiApplication::overrideCursor() && event->modifiers() != Qt::CTRL)
-        changeCursor();
-
-    QGraphicsRectItem::hoverMoveEvent(event);
-}
-
-void HandleItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-{
-    QGuiApplication::restoreOverrideCursor();
-    QGraphicsRectItem::hoverLeaveEvent(event);
 }
 
 void HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -94,35 +80,35 @@ void HandleItem::changeParentBoundingRect(const QPointF &pos)
     }
 }
 
-void HandleItem::changeCursor()
+void HandleItem::setCursorByFlag(PositionFlags positionFlags)
 {
-    QCursor newCursor;
-    switch (positionFlags_)
+    QCursor cursor;
+    switch (positionFlags)
     {
     case TopLeft:
-        newCursor.setShape(Qt::SizeFDiagCursor);
+        cursor.setShape(Qt::SizeFDiagCursor);
         break;
     case Top:
-        newCursor.setShape(Qt::SizeVerCursor);
+        cursor.setShape(Qt::SizeVerCursor);
         break;
     case TopRight:
-        newCursor.setShape(Qt::SizeBDiagCursor);
+        cursor.setShape(Qt::SizeBDiagCursor);
         break;
     case Right:
-        newCursor.setShape(Qt::SizeHorCursor);
+        cursor.setShape(Qt::SizeHorCursor);
         break;
     case BottomLeft:
-        newCursor.setShape(Qt::SizeBDiagCursor);
+        cursor.setShape(Qt::SizeBDiagCursor);
         break;
     case Bottom:
-        newCursor.setShape(Qt::SizeVerCursor);
+        cursor.setShape(Qt::SizeVerCursor);
         break;
     case BottomRight:
-        newCursor.setShape(Qt::SizeFDiagCursor);
+        cursor.setShape(Qt::SizeFDiagCursor);
         break;
     case Left:
-        newCursor.setShape(Qt::SizeHorCursor);
+        cursor.setShape(Qt::SizeHorCursor);
         break;
     }
-    QGuiApplication::setOverrideCursor(newCursor);
+    setCursor(cursor);
 }

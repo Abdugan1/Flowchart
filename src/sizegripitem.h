@@ -23,10 +23,12 @@ public:
 public:
     SizeGripItem(Resizer* resizer = 0, QGraphicsItem* parent = 0);
     virtual ~SizeGripItem();
-    virtual QRectF boundingRect() const;
-    virtual void paint(QPainter* painter,
-                       const QStyleOptionGraphicsItem* option,
-                       QWidget* widget = 0);
+
+    QRectF boundingRect() const override;
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget = 0) override;
+
     void setTopLeft(const QPointF& pos);
     void setTop(qreal y);
     void setTopRight(const QPointF& pos);

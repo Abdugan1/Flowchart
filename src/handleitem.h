@@ -25,14 +25,12 @@ public:
     PositionFlags positionFlags() const;
 
 protected:
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event)    override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event)   override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)    override;
 
 private:
     QPointF restrictPosition(const QPointF& newPos);
     void changeParentBoundingRect(const QPointF& pos);
-    void changeCursor();
+    void setCursorByFlag(PositionFlags positionFlags);
 
     PositionFlags positionFlags_;
     SizeGripItem* parent_;

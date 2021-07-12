@@ -13,7 +13,7 @@ GraphicsItemGroup::GraphicsItemGroup(const QPointF &pos, QGraphicsItem *parent)
     : QGraphicsItemGroup(parent)
 {
     setPos(pos);
-    setAcceptHoverEvents(true);
+    setCursor(QCursor(Qt::OpenHandCursor));
 }
 
 QRectF GraphicsItemGroup::boundingRect() const
@@ -54,20 +54,6 @@ QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant
             emit lostSelection();
     }
     return QGraphicsItemGroup::itemChange(change, value);
-}
-
-void GraphicsItemGroup::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
-{
-    if (!QGuiApplication::overrideCursor())
-        QGuiApplication::setOverrideCursor(QCursor(Qt::OpenHandCursor));
-
-    QGraphicsItemGroup::hoverMoveEvent(event);
-}
-
-void GraphicsItemGroup::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-{
-    QGuiApplication::restoreOverrideCursor();
-    QGraphicsItemGroup::hoverLeaveEvent(event);
 }
 
 void GraphicsItemGroup::mousePressEvent(QGraphicsSceneMouseEvent *event)
