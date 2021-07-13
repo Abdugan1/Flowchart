@@ -76,7 +76,7 @@ QPointF GraphicsItemGroup::calculateBottomRight(QPointF topLeft) const
     QPointF bottomRight = diagramItems.at(0)->pos() +
             diagramItems.at(0)->boundingRect().bottomRight();
 
-    for (auto* item : diagramItems) {
+    for (auto item : qAsConst(diagramItems)) {
         QPointF pos = item->pos() + item->boundingRect().bottomRight();
         bottomRight.setX(qMax(pos.x(), bottomRight.x()));
         bottomRight.setY(qMax(pos.y(), bottomRight.y()));

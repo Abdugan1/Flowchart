@@ -49,7 +49,7 @@ void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
     QList<QGraphicsItem*> itemsUnderMouse = items(event->pos());
 
-    for (auto* item : itemsUnderMouse) {
+    for (auto item : qAsConst(itemsUnderMouse)) {
         QGraphicsSceneHoverEvent hoverMoveEvent(QEvent::GraphicsSceneHoverMove);
         scene()->sendEvent(item, &hoverMoveEvent);
     }

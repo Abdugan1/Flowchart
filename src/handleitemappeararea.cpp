@@ -28,11 +28,9 @@ void HandleItemAppearArea::paint(QPainter *painter,
                                  const QStyleOptionGraphicsItem *option,
                                  QWidget *widget)
 {
-//    Q_UNUSED(painter) //!///!!@##!@#@!#@!#@!#!#!@#@!
+    Q_UNUSED(painter)
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    painter->setPen(QPen(Qt::blue));
-    painter->drawRect(boundingRect());
 }
 
 void HandleItemAppearArea::hoverMoveEvent(QGraphicsSceneHoverEvent *event)

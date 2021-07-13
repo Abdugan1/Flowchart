@@ -23,7 +23,7 @@ QList<DiagramItem *> internal::getDiagramItemsFromQGraphics(const QList<QGraphic
 {
     QList<DiagramItem*> diagramItems;
 
-    for (QGraphicsItem* i : qAsConst(items)) {
+    for (auto i : qAsConst(items)) {
         if (DiagramItem* item = qgraphicsitem_cast<DiagramItem*>(i))
             diagramItems.append(item);
     }

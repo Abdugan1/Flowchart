@@ -27,7 +27,7 @@ SizeGripItem::SizeGripItem(Resizer* resizer, QGraphicsItem* parent)
     handleItems_.append(new HandleItem(PositionFlags::BottomLeft,   this));
     handleItems_.append(new HandleItem(PositionFlags::Left,         this));
 
-    foreach (auto item, handleItems_) {
+    for (auto item : qAsConst(handleItems_)) {
         appearAreas_.append(new HandleItemAppearArea(item, this));
     }
 
@@ -93,13 +93,13 @@ void SizeGripItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void SizeGripItem::hideHandleItems()
 {
-    for (auto* item : handleItems_)
+    for (auto item : qAsConst(handleItems_))
         item->hide();
 }
 
 void SizeGripItem::showHandleItems()
 {
-    for (auto* item : handleItems_)
+    for (auto item : qAsConst(handleItems_))
         item->show();
 }
 
@@ -115,7 +115,7 @@ void SizeGripItem::doResize()
 
 void SizeGripItem::updateHandleItemsPositions()
 {
-    foreach (auto appearArea, appearAreas_) {
+    for (auto appearArea : qAsConst(appearAreas_)) {
         HandleItem* item = appearArea->handleItem();
 
         item->setFlag(ItemSendsGeometryChanges, false);

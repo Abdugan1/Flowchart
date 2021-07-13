@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::buttonGroupClicked(QAbstractButton* button)
 {
     const QList<QAbstractButton*> buttons = buttonGroup_->buttons();
-    for (QAbstractButton* myButton : buttons) {
+    for (auto myButton : buttons) {
         if (myButton != button)
             button->setChecked(false);
     }

@@ -59,7 +59,7 @@ void DiagramScene::onItemPositionChanged(const QPointF &pos)
     QPoint horizontalBegin = senderCenter;
     QPoint horizontalEnd   = senderCenter;
 
-    for (DiagramItem* item : qAsConst(items)) {
+    for (auto item : qAsConst(items)) {
         QPoint itemCenter;
         if (item == senderItem)
             itemCenter = senderCenter;
@@ -114,7 +114,7 @@ void DiagramScene::destroyGraphicsItemGroup()
 
     destroyItemGroup(group_);
 
-    for (auto* item : groupItems) {
+    for (auto item : qAsConst(groupItems)) {
         item->setSelected(false);
         item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     }
@@ -168,7 +168,7 @@ void DiagramScene::deleteAllLines()
 {
     QList<QGraphicsItem*> items = this->items();
     using LineItem = QGraphicsLineItem;
-    for (auto* item : items) {
+    for (auto item : items) {
         LineItem* line = qgraphicsitem_cast<LineItem*>(item);
         if (line)
             delete line;
@@ -194,7 +194,7 @@ QPoint DiagramScene::getItemCenter(const DiagramItem *item)
 void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
 {
     QPointF topLeft = diagramItems.at(0)->pos();
-    for (auto* item : diagramItems) {
+    for (auto item : diagramItems) {
         QPointF pos = item->pos();
         topLeft.setX(qMin(pos.x(), topLeft.x()));
         topLeft.setY(qMin(pos.y(), topLeft.y()));
@@ -205,7 +205,7 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
     group_->setFlag(QGraphicsItem::ItemIsSelectable);
     group_->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 
-    for (auto* item : diagramItems) {
+    for (auto item : diagramItems) {
         item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
         item->setSelected(true);
         group_->addToGroup(item);
