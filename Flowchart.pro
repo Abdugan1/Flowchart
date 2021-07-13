@@ -15,6 +15,7 @@ SOURCES += \
     src/diagramview.cpp \
     src/graphicsitemgroup.cpp \
     src/handleitem.cpp \
+    src/handleitemappeararea.cpp \
     src/internal.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     src/diagramview.h \
     src/graphicsitemgroup.h \
     src/handleitem.h \
+    src/handleitemappeararea.h \
     src/internal.h \
     src/mainwindow.h \
     src/pathresizer.h \

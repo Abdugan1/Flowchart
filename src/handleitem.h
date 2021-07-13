@@ -34,7 +34,6 @@ private:
 
     PositionFlags positionFlags_;
     SizeGripItem* parent_;
-    QPointF anchor_;
 };
 
 #endif // HANDLEITEM_H

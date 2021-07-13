@@ -2,6 +2,7 @@
 #include "handleitem.h"
 #include "diagramscene.h"
 #include "diagramitem.h"
+#include "handleitemappeararea.h"
 
 #include "internal.h"
 
@@ -25,6 +26,10 @@ SizeGripItem::SizeGripItem(Resizer* resizer, QGraphicsItem* parent)
     handleItems_.append(new HandleItem(PositionFlags::Bottom,       this));
     handleItems_.append(new HandleItem(PositionFlags::BottomLeft,   this));
     handleItems_.append(new HandleItem(PositionFlags::Left,         this));
+
+    foreach (auto item, handleItems_) {
+        appearAreas_.append(new HandleItemAppearArea(item, this));
+    }
 
     updateHandleItemsPositions();
     hideHandleItems();
@@ -54,9 +59,15 @@ void SizeGripItem::paint(QPainter* painter,
 
 #define IMPL_SET_FN(TYPE, POS)                  \
     void SizeGripItem::set ## POS (TYPE v)      \
-{                                           \
-    rect_.set ## POS (v);                   \
-    doResize();                             \
+{                                               \
+    QRectF oldRect = rect_;                     \
+    rect_.set ## POS (v);                       \
+    if (rect_.width() < MinWidth                \
+        || rect_.height() < MinHeight) {        \
+    rect_ = oldRect;                            \
+    return;                                     \
+    }                                           \
+    doResize();                                 \
 }
 
 IMPL_SET_FN(qreal, Top)
@@ -80,6 +91,18 @@ void SizeGripItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
+void SizeGripItem::hideHandleItems()
+{
+    for (auto* item : handleItems_)
+        item->hide();
+}
+
+void SizeGripItem::showHandleItems()
+{
+    for (auto* item : handleItems_)
+        item->show();
+}
+
 void SizeGripItem::doResize()
 {
     if (resizer_)
@@ -92,54 +115,55 @@ void SizeGripItem::doResize()
 
 void SizeGripItem::updateHandleItemsPositions()
 {
-    foreach (HandleItem* item, handleItems_)
-    {
+    foreach (auto appearArea, appearAreas_) {
+        HandleItem* item = appearArea->handleItem();
+
         item->setFlag(ItemSendsGeometryChanges, false);
 
         switch (item->positionFlags())
         {
         case PositionFlags::TopLeft:
             item->setPos(rect_.topLeft());
+            appearArea->setPos(rect_.topLeft());
             break;
         case PositionFlags::Top:
             item->setPos(rect_.left() + rect_.width() / 2,
                          rect_.top());
+            appearArea->setPos(rect_.left() + rect_.width() / 2,
+                         rect_.top());
             break;
         case PositionFlags::TopRight:
             item->setPos(rect_.topRight());
+            appearArea->setPos(rect_.topRight());
             break;
         case PositionFlags::Right:
             item->setPos(rect_.right(),
                          rect_.top() + rect_.height() / 2);
+            appearArea->setPos(rect_.right(),
+                         rect_.top() + rect_.height() / 2);
             break;
         case PositionFlags::BottomRight:
             item->setPos(rect_.bottomRight());
+            appearArea->setPos(rect_.bottomRight());
             break;
         case PositionFlags::Bottom:
             item->setPos(rect_.left() + rect_.width() / 2,
                          rect_.bottom());
+            appearArea->setPos(rect_.left() + rect_.width() / 2,
+                         rect_.bottom());
             break;
         case PositionFlags::BottomLeft:
             item->setPos(rect_.bottomLeft());
+            appearArea->setPos(rect_.bottomLeft());
             break;
         case PositionFlags::Left:
             item->setPos(rect_.left(),
+                         rect_.top() + rect_.height() / 2);
+            appearArea->setPos(rect_.left(),
                          rect_.top() + rect_.height() / 2);
             break;
         }
 
         item->setFlag(ItemSendsGeometryChanges, true);
     }
-}
-
-void SizeGripItem::hideHandleItems()
-{
-    for (auto* item : handleItems_)
-        item->hide();
-}
-
-void SizeGripItem::showHandleItems()
-{
-    for (auto* item : handleItems_)
-        item->show();
 }

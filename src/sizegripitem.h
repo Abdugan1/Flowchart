@@ -5,6 +5,7 @@
 #include <QGraphicsRectItem>
 
 class HandleItem;
+class HandleItemAppearArea;
 
 class SizeGripItem : public QObject, public QGraphicsItem
 {
@@ -45,14 +46,22 @@ protected:
 signals:
     void itemResized();
 
-private:
-    void doResize();
-    void updateHandleItemsPositions();
+public slots:
     void hideHandleItems();
     void showHandleItems();
 
 private:
+    void doResize();
+    void updateHandleItemsPositions();
+
+private:
+    enum {
+        MinWidth = 80,
+        MinHeight = 60
+    };
+
     QList<HandleItem*> handleItems_;
+    QList<HandleItemAppearArea*> appearAreas_;
     QRectF rect_;
     Resizer* resizer_;
 };

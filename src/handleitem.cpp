@@ -8,6 +8,8 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QGuiApplication>
 #include <QCursor>
+#include <QDebug>
+#include <QPainter>
 
 using PositionFlags = HandleItem::PositionFlags;
 
@@ -31,6 +33,11 @@ void HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QPointF pos = mapToParent(event->pos());
     pos = internal::getPointByStep(pos, DiagramScene::GridSize);
     pos = restrictPosition(pos);
+
+    DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
+    pos = mapToParent(mapFromScene(scene->preventOutsideMove(
+                                       mapToScene(mapFromParent(pos)),
+                                       this)));
 
     if (pos != this->pos())
         changeParentBoundingRect(pos);
