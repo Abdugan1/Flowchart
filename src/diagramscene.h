@@ -2,6 +2,7 @@
 #define DIAGRAMSCENE_H
 
 #include <QGraphicsScene>
+#include "scenebuffer.h"
 
 class DiagramItem;
 class GraphicsItemGroup;
@@ -31,7 +32,8 @@ public slots:
     void destroyGraphicsItemGroup();
     void makeGroupOfSelectedItems();
     void deleteSelectedItems();
-
+    void copySelectedItems();
+    void pasteCopiedItems();
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
@@ -44,7 +46,7 @@ private:
 
 private:
     GraphicsItemGroup* group_ = nullptr;
-
+    SceneBuffer buffer_;
 };
 
 #endif // DIAGRAMSCENE_H

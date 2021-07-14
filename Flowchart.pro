@@ -33,6 +33,7 @@ HEADERS += \
     src/internal.h \
     src/mainwindow.h \
     src/pathresizer.h \
+    src/scenebuffer.h \
     src/sizegripitem.h
 
 FORMS +=

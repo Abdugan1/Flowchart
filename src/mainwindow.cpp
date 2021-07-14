@@ -96,6 +96,14 @@ void MainWindow::createActions()
     selectAllAction_ = new QAction(tr("Select &All"), this);
     selectAllAction_->setShortcut(tr("Ctrl+A"));
     connect(selectAllAction_, &QAction::triggered, scene_, &DiagramScene::selectAllItems);
+
+    copyAction_ = new QAction(tr("&Copy"), this);
+    copyAction_->setShortcut(tr("Ctrl+C"));
+    connect(copyAction_, &QAction::triggered, scene_, &DiagramScene::copySelectedItems);
+
+    pasteAction_ = new QAction(tr("&Paste"), this);
+    pasteAction_->setShortcut(tr("Ctrl+V"));
+    connect(pasteAction_, &QAction::triggered, scene_, &DiagramScene::pasteCopiedItems);
 }
 
 void MainWindow::createMenus()
@@ -103,6 +111,8 @@ void MainWindow::createMenus()
     itemMenu_ = menuBar()->addMenu(tr("&Item"));
     itemMenu_->addAction(deleteAction_);
     itemMenu_->addAction(selectAllAction_);
+    itemMenu_->addAction(copyAction_);
+    itemMenu_->addAction(pasteAction_);
 }
 
 QToolButton* MainWindow::createSideMenuButton(const QString &text, DiagramItem::DiagramType type)

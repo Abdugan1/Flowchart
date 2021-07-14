@@ -253,6 +253,16 @@ QPainterPath DiagramItem::getDefaultShape(DiagramType diagramType)
     return painterPath;
 }
 
+QString DiagramItem::text() const
+{
+    return textItem_->document()->toPlainText();
+}
+
+void DiagramItem::setText(const QString &text)
+{
+    textItem_->document()->setPlainText(text);
+}
+
 void DiagramItem::updateTextItemPosition()
 {
     textItem_->updatePosition();

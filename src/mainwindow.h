@@ -41,6 +41,8 @@ private:
 
     QAction* deleteAction_;
     QAction* selectAllAction_;
+    QAction* copyAction_;
+    QAction* pasteAction_;
 
     QMenu* itemMenu_;
 };

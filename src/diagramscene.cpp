@@ -1,5 +1,6 @@
 #include "diagramscene.h"
 #include "diagramitem.h"
+#include "diagramview.h"
 #include "graphicsitemgroup.h"
 #include "internal.h"
 
@@ -143,6 +144,85 @@ void DiagramScene::deleteSelectedItems()
         } else {
             delete selectedItem;
         }
+    }
+}
+
+void DiagramScene::copySelectedItems()
+{
+    if (selectedItems().isEmpty())
+        return;
+
+    buffer_.reset();
+
+    GraphicsItemGroup* group = qgraphicsitem_cast<GraphicsItemGroup*>(selectedItems().at(0));
+    QList<DiagramItem*> tmp;
+
+    if (group) {
+        tmp = internal::getDiagramItemsFromQGraphics(group_->childItems());
+        buffer_.isGroup = true;
+    } else {
+        tmp = internal::getDiagramItemsFromQGraphics(selectedItems());
+        buffer_.isGroup = false;
+    }
+
+    for (auto item : qAsConst(tmp)) {
+        ItemProperties properties;
+        properties.path = item->path();
+        properties.text = item->text();
+        properties.pos  = item->pos();
+        properties.diagramType = item->diagramType();
+        buffer_.itemProperties.append(properties);
+    }
+}
+
+void DiagramScene::pasteCopiedItems()
+{
+    QGraphicsView* view = views().at(0);
+    QPoint origin = view->mapFromGlobal(QCursor::pos());
+    QPointF relativeOrigin = view->mapToScene(origin);
+    if (buffer_.isGroup) {
+        QList<DiagramItem*> items;
+        items.reserve(buffer_.itemProperties.count());
+
+        for (auto& properies : qAsConst(buffer_.itemProperties)) {
+            DiagramItem* item = new DiagramItem(
+                        DiagramItem::DiagramType(properies.diagramType));
+            item->setPath(properies.path);
+            item->setText(properies.text);
+
+            QRectF itemRect = item->boundingRect();
+            QPointF pos;
+            pos.setX(properies.pos.x() + relativeOrigin.x() - itemRect.width()  / 2);
+            pos.setY(properies.pos.y() + relativeOrigin.y() - itemRect.height() / 2);
+
+            item->setPos(pos);
+            items.append(item);
+            addItem(item);
+        }
+        if (group_)
+            destroyGraphicsItemGroup();
+        createGraphicsItemGroup(items);
+
+        QRectF itemRect = group_->boundingRect();
+        QPointF pos;
+        pos.setX(relativeOrigin.x() - itemRect.width()  / 2);
+        pos.setY(relativeOrigin.y() - itemRect.height() / 2);
+        group_->setPos(pos);
+
+    } else {
+        ItemProperties properies = buffer_.itemProperties.at(0);
+        DiagramItem* item = new DiagramItem(
+                    DiagramItem::DiagramType(properies.diagramType));
+        item->setPath(properies.path);
+        item->setText(properies.text);
+
+        QRectF itemRect = item->boundingRect();
+        QPointF pos;
+        pos.setX(relativeOrigin.x() - itemRect.width()  / 2);
+        pos.setY(relativeOrigin.y() - itemRect.height() / 2);
+
+        item->setPos(pos);
+        addItem(item);
     }
 }
 

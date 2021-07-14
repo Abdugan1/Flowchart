@@ -43,6 +43,8 @@ public:
     QRectF boundingRect() const override;
     QRectF pathBoundingRect() const;
     static QPainterPath getDefaultShape(DiagramType diagramType);
+    QString text() const;
+    void setText(const QString& text);
 
 signals:
     void itemPositionChanged(const QPointF& pos);
