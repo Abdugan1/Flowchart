@@ -22,12 +22,12 @@ public:
 
 public:
     DiagramScene(QObject* parent = nullptr);
-    QPointF preventOutsideMove(QPointF topLeft, QGraphicsItem* item);
-    QPointF preventOutsideMove(QPointF topLeft, QPointF bottomRight);
+    QPointF preventOutsideMove(QPointF newPosTopLeft, QGraphicsItem* item);
+    QPointF preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBottomRight);
 
 public slots:
-    void onItemPositionChanged(const QPointF& pos);
-    void onItemReleased();
+    void drawLevelLineWithItemOnSameAxis(const QPointF& pos);
+    void deleteAllLevelLines();
     void selectAllItems();
     void destroyGraphicsItemGroup();
     void makeGroupOfSelectedItems();

@@ -52,10 +52,10 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
 
 
     connect(diagramItem, &DiagramItem::itemPositionChanged,
-            scene_,      &DiagramScene::onItemPositionChanged);
+            scene_,      &DiagramScene::drawLevelLineWithItemOnSameAxis);
 
     connect(diagramItem, &DiagramItem::itemReleased,
-            scene_,      &DiagramScene::onItemReleased);
+            scene_,      &DiagramScene::deleteAllLevelLines);
 
     scene_->addItem(diagramItem);
 }

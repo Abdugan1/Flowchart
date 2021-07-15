@@ -19,11 +19,10 @@ GraphicsItemGroup::GraphicsItemGroup(const QPointF &pos, QGraphicsItem *parent)
 QRectF GraphicsItemGroup::boundingRect() const
 {
     QRectF rect = QGraphicsItemGroup::boundingRect();
-    rect.setX(rect.x() - 15);
-    rect.setY(rect.y() - 15);
-    rect.setWidth(rect.width()   + 15);
-    rect.setHeight(rect.height() + 15);
-    return rect;
+    return QRectF(rect.x()      - 16,
+                  rect.y()      - 16,
+                  rect.width()  + 32,
+                  rect.height() + 32);
 }
 
 void GraphicsItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -32,7 +31,9 @@ void GraphicsItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     Q_UNUSED(widget)
 
     painter->setPen(QPen(Qt::darkCyan));
-    painter->drawRect(boundingRect());
+    QRectF rect = boundingRect();
+    painter->drawRect(QRectF(rect.x() + 1,     rect.y() + 1,
+                             rect.width() - 2, rect.height() - 2));
 }
 
 QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant &value)

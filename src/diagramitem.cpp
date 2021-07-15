@@ -48,7 +48,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
                && textItem_->textInteractionFlags() != Qt::NoTextInteraction
                && !value.toBool()) {
 
-        state_ = State::Resting;
+        state_ = State::Other;
         textItem_->setTextInteraction(false);
     }
     return QGraphicsItem::itemChange(change, value);
@@ -191,11 +191,10 @@ void DiagramItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 QRectF DiagramItem::boundingRect() const
 {
     QRectF rect = path().boundingRect();
-    rect.setX(rect.x() - SelectedPenWidth / 2);
-    rect.setY(rect.y() - SelectedPenWidth / 2);
-    rect.setWidth(rect.width() + SelectedPenWidth / 2);
-    rect.setHeight(rect.height() + SelectedPenWidth / 2);
-    return rect;
+    return QRectF(rect.x()      - SelectedPenWidth / 2,
+                  rect.y()      - SelectedPenWidth / 2,
+                  rect.width()  + SelectedPenWidth,
+                  rect.height() + SelectedPenWidth);
 }
 
 QRectF DiagramItem::pathBoundingRect() const

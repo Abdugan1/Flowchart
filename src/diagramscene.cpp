@@ -6,43 +6,43 @@
 
 #include <QPainter>
 #include <QDebug>
-#include <QGuiApplication>
 #include <QCursor>
 
 DiagramScene::DiagramScene(QObject *parent)
     : QGraphicsScene(parent)
 {
-    QFont font("Times New Roman", 14);
-    setFont(font);
 }
 
-QPointF DiagramScene::preventOutsideMove(QPointF topLeft, QGraphicsItem *item)
+QPointF DiagramScene::preventOutsideMove(QPointF newPosTopLeft, QGraphicsItem *item)
 {
     QRectF itemBoundingRect = item->boundingRect();
 
     QPointF bottomRight;
-    bottomRight.setX(itemBoundingRect.width()  + topLeft.x());
-    bottomRight.setY(itemBoundingRect.height() + topLeft.y());
+    bottomRight.setX(itemBoundingRect.width()  + newPosTopLeft.x());
+    bottomRight.setY(itemBoundingRect.height() + newPosTopLeft.y());
 
-    return preventOutsideMove(topLeft, bottomRight);
+    return preventOutsideMove(newPosTopLeft, bottomRight);
 }
 
-QPointF DiagramScene::preventOutsideMove(QPointF topLeft, QPointF bottomRight)
+QPointF DiagramScene::preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBottomRight)
 {
     QRectF sceneRect = this->sceneRect();
 
-    if (!sceneRect.contains(topLeft)) {
-        topLeft.setX(qMax(topLeft.x(), sceneRect.left()));
-        topLeft.setY(qMax(topLeft.y(), sceneRect.top()));
+    if (!sceneRect.contains(newPosTopLeft)) {
+        newPosTopLeft.setX(qMax(newPosTopLeft.x(), sceneRect.left()));
+        newPosTopLeft.setY(qMax(newPosTopLeft.y(), sceneRect.top()));
     }
-    if (!sceneRect.contains(bottomRight)) {
-        topLeft.setX(qMin(bottomRight.x(), sceneRect.right())  - (bottomRight.x() - topLeft.x()));
-        topLeft.setY(qMin(bottomRight.y(), sceneRect.bottom()) - (bottomRight.y() - topLeft.y()));
+    if (!sceneRect.contains(newPosBottomRight)) {
+        newPosTopLeft.setX(qMin(newPosBottomRight.x(), sceneRect.right())  -
+                           (newPosBottomRight.x() - newPosTopLeft.x()));
+
+        newPosTopLeft.setY(qMin(newPosBottomRight.y(), sceneRect.bottom()) -
+                           (newPosBottomRight.y() - newPosTopLeft.y()));
     }
-    return topLeft;
+    return newPosTopLeft;
 }
 
-void DiagramScene::onItemPositionChanged(const QPointF &pos)
+void DiagramScene::drawLevelLineWithItemOnSameAxis(const QPointF &pos)
 {
     deleteAllLines();
 
@@ -93,7 +93,7 @@ void DiagramScene::onItemPositionChanged(const QPointF &pos)
     }
 }
 
-void DiagramScene::onItemReleased()
+void DiagramScene::deleteAllLevelLines()
 {
     deleteAllLines();
 }
@@ -231,12 +231,12 @@ void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
     QPen pen;
     painter->setPen(pen);
 
-    qreal left = int(rect.left() - (int(rect.left()) % GridSize));
-    qreal top  = int(rect.top()  - (int(rect.top())  % GridSize));
+    int left = int(rect.left() - (int(rect.left()) % GridSize));
+    int top  = int(rect.top()  - (int(rect.top())  % GridSize));
 
     QVector<QPointF> points;
-    for (qreal x = left; x < rect.right(); x += GridSize) {
-        for (qreal y = top; y < rect.bottom(); y += GridSize) {
+    for (int x = left; x < rect.right(); x += GridSize) {
+        for (int y = top; y < rect.bottom(); y += GridSize) {
             points.append(QPointF(x, y));
         }
     }
@@ -248,7 +248,7 @@ void DiagramScene::deleteAllLines()
 {
     QList<QGraphicsItem*> items = this->items();
     using LineItem = QGraphicsLineItem;
-    for (auto item : items) {
+    for (auto item : qAsConst(items)) {
         LineItem* line = qgraphicsitem_cast<LineItem*>(item);
         if (line)
             delete line;
