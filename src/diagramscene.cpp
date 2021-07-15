@@ -1,6 +1,7 @@
 #include "diagramscene.h"
 #include "diagramitem.h"
 #include "diagramview.h"
+#include "pathresizer.h"
 #include "graphicsitemgroup.h"
 #include "internal.h"
 
@@ -40,6 +41,36 @@ QPointF DiagramScene::preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBo
                            (newPosBottomRight.y() - newPosTopLeft.y()));
     }
     return newPosTopLeft;
+}
+
+DiagramItem *DiagramScene::createDiagramItem(int diagramType)
+{
+    DiagramItem* diagramItem = new DiagramItem(DiagramItem::DiagramType(diagramType));
+
+    SizeGripItem* sizeGripItem =
+            new SizeGripItem(new PathResizer, diagramItem);
+
+    connect(sizeGripItem, &SizeGripItem::itemResized,
+            diagramItem,  &DiagramItem::updateTextItemPosition);
+
+    connect(diagramItem, &DiagramItem::itemPositionChanged,
+            this,        &DiagramScene::drawLevelLineWithItemOnSameAxis);
+
+    connect(diagramItem, &DiagramItem::itemReleased,
+            this,        &DiagramScene::deleteAllLevelLines);
+
+    return diagramItem;
+}
+
+DiagramItem *DiagramScene::createDiagramItem(const ItemProperties &itemProperties)
+{
+    DiagramItem* diagramItem = createDiagramItem(itemProperties.diagramType);
+
+    diagramItem->setPath(itemProperties.path);
+    diagramItem->setText(itemProperties.text);
+    diagramItem->setPos (itemProperties.pos );
+
+    return diagramItem;
 }
 
 void DiagramScene::drawLevelLineWithItemOnSameAxis(const QPointF &pos)
@@ -159,70 +190,55 @@ void DiagramScene::copySelectedItems()
 
     if (group) {
         tmp = internal::getDiagramItemsFromQGraphics(group_->childItems());
-        buffer_.isGroup = true;
+        buffer_.groupCopied = true;
     } else {
         tmp = internal::getDiagramItemsFromQGraphics(selectedItems());
-        buffer_.isGroup = false;
+        buffer_.groupCopied = false;
     }
 
     for (auto item : qAsConst(tmp)) {
         ItemProperties properties;
+
         properties.path = item->path();
         properties.text = item->text();
         properties.pos  = item->pos();
         properties.diagramType = item->diagramType();
-        buffer_.itemProperties.append(properties);
+
+        buffer_.itemsProperties.append(properties);
     }
 }
 
 void DiagramScene::pasteCopiedItems()
 {
-    QGraphicsView* view = views().at(0);
-    QPoint origin = view->mapFromGlobal(QCursor::pos());
-    QPointF relativeOrigin = view->mapToScene(origin);
-    if (buffer_.isGroup) {
+    QPointF mousePosition = getMousePosMappedToScene();
+
+    if (buffer_.groupCopied) {
         QList<DiagramItem*> items;
-        items.reserve(buffer_.itemProperties.count());
+        items.reserve(buffer_.itemsProperties.count());
 
-        for (auto& properies : qAsConst(buffer_.itemProperties)) {
-            DiagramItem* item = new DiagramItem(
-                        DiagramItem::DiagramType(properies.diagramType));
-            item->setPath(properies.path);
-            item->setText(properies.text);
+        for (const auto& properies : qAsConst(buffer_.itemsProperties)) {
+            DiagramItem* item = createDiagramItem(properies);
+            item->setPos(properies.pos);
 
-            QRectF itemRect = item->boundingRect();
-            QPointF pos;
-            pos.setX(properies.pos.x() + relativeOrigin.x() - itemRect.width()  / 2);
-            pos.setY(properies.pos.y() + relativeOrigin.y() - itemRect.height() / 2);
-
-            item->setPos(pos);
             items.append(item);
             addItem(item);
         }
+
         if (group_)
             destroyGraphicsItemGroup();
         createGraphicsItemGroup(items);
 
-        QRectF itemRect = group_->boundingRect();
-        QPointF pos;
-        pos.setX(relativeOrigin.x() - itemRect.width()  / 2);
-        pos.setY(relativeOrigin.y() - itemRect.height() / 2);
+        QPointF pos = getPosThatItemCenterAtMousePos(mousePosition, group_);
         group_->setPos(pos);
 
     } else {
-        ItemProperties properies = buffer_.itemProperties.at(0);
-        DiagramItem* item = new DiagramItem(
-                    DiagramItem::DiagramType(properies.diagramType));
-        item->setPath(properies.path);
-        item->setText(properies.text);
+        ItemProperties properies = buffer_.itemsProperties.at(0);
+        DiagramItem* item = createDiagramItem(properies);
 
-        QRectF itemRect = item->boundingRect();
-        QPointF pos;
-        pos.setX(relativeOrigin.x() - itemRect.width()  / 2);
-        pos.setY(relativeOrigin.y() - itemRect.height() / 2);
+        QPointF pos = getPosThatItemCenterAtMousePos(mousePosition, item);
 
-        item->setPos(pos);
         addItem(item);
+        item->setPos(pos);
     }
 }
 
@@ -294,5 +310,20 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
     group_->setSelected(true);
 
     connect(group_, &GraphicsItemGroup::lostSelection,
-            this, &DiagramScene::destroyGraphicsItemGroup);
+            this,   &DiagramScene::destroyGraphicsItemGroup);
+}
+
+QPointF DiagramScene::getMousePosMappedToScene() const
+{
+    QGraphicsView* view = views().at(0);
+    QPoint origin = view->mapFromGlobal(QCursor::pos());
+    return view->mapToScene(origin);
+}
+
+QPointF DiagramScene::getPosThatItemCenterAtMousePos(const QPointF &mousePosition,
+                                                     const QGraphicsItem *item) const
+{
+    QRectF itemRect = item->boundingRect();
+    return QPointF(mousePosition.x() - (itemRect.left() + itemRect.width()  / 2),
+                   mousePosition.y() - (itemRect.top()  + itemRect.height() / 2));
 }

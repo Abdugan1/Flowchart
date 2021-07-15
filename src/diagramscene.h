@@ -24,6 +24,8 @@ public:
     DiagramScene(QObject* parent = nullptr);
     QPointF preventOutsideMove(QPointF newPosTopLeft, QGraphicsItem* item);
     QPointF preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBottomRight);
+    DiagramItem* createDiagramItem(int diagramType);
+    DiagramItem* createDiagramItem(const ItemProperties& itemProperties);
 
 public slots:
     void drawLevelLineWithItemOnSameAxis(const QPointF& pos);
@@ -43,6 +45,10 @@ private:
     void drawLevelLine(const QLineF& line);
     QPoint getItemCenter(const DiagramItem* item);
     void createGraphicsItemGroup(QList<DiagramItem*>& diagramItems);
+
+    QPointF getMousePosMappedToScene() const;
+    QPointF getPosThatItemCenterAtMousePos(const QPointF& mousePosition,
+                                           const QGraphicsItem* item) const;
 
 private:
     GraphicsItemGroup* group_ = nullptr;

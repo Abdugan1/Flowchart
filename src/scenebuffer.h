@@ -15,12 +15,12 @@ public:
 class SceneBuffer
 {
 public:
-    QList<ItemProperties> itemProperties;
+    QList<ItemProperties> itemsProperties;
     bool isGroup = false;
 
     void reset()
     {
-        itemProperties.clear();
+        itemsProperties.clear();
         isGroup = false;
     }
 };

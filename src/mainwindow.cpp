@@ -41,21 +41,10 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
             button->setChecked(false);
     }
 
-    const DiagramItem::DiagramType type =
+    const DiagramItem::DiagramType diagramType =
             DiagramItem::DiagramType(buttonGroup_->id(button));
-    DiagramItem* diagramItem = new DiagramItem(DiagramItem::DiagramType(type));
 
-    SizeGripItem* sizeGripItem =
-            new SizeGripItem(new PathResizer, diagramItem);
-    connect(sizeGripItem, &SizeGripItem::itemResized,
-            diagramItem,  &DiagramItem::updateTextItemPosition);
-
-
-    connect(diagramItem, &DiagramItem::itemPositionChanged,
-            scene_,      &DiagramScene::drawLevelLineWithItemOnSameAxis);
-
-    connect(diagramItem, &DiagramItem::itemReleased,
-            scene_,      &DiagramScene::deleteAllLevelLines);
+    DiagramItem* diagramItem = scene_->createDiagramItem(diagramType);
 
     scene_->addItem(diagramItem);
 }
