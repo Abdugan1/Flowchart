@@ -43,6 +43,7 @@ void HandleItemAppearArea::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
 void HandleItemAppearArea::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
+    sizeGripItem_->hideHandleItems();
     QGraphicsItem::hoverLeaveEvent(event);
 }
 

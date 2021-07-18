@@ -23,6 +23,9 @@ public:
 public:
     HandleItem(PositionFlags positionFlags, SizeGripItem* parent);
     PositionFlags positionFlags() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *widget) override;
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)    override;
@@ -31,6 +34,9 @@ private:
     QPointF restrictPosition(const QPointF& newPos);
     void changeParentBoundingRect(const QPointF& pos);
     void setCursorByFlag(PositionFlags positionFlags);
+
+private:
+    QRectF visibleRect_;
 
     PositionFlags positionFlags_;
     SizeGripItem* parent_;

@@ -20,6 +20,7 @@ SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
     src/pathresizer.cpp \
+    src/scenebuffer.cpp \
     src/sizegripitem.cpp
 
 HEADERS += \

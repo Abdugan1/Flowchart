@@ -6,23 +6,39 @@
 
 class ItemProperties {
 public:
-    QPainterPath path;
-    QString text;
-    QPointF pos;
-    int diagramType;
+    QPainterPath path() const;
+    void setPath(QPainterPath newPath);
+
+    const QString &text() const;
+    void setText(const QString &newText);
+
+    QPointF pos() const;
+    void setPos(QPointF newPos);
+
+    int diagramType() const;
+    void setDiagramType(int newDiagramType);
+
+private:
+    QPainterPath path_;
+    QString text_;
+    QPointF pos_;
+    int diagramType_ = -1;
 };
 
 class SceneBuffer
 {
 public:
-    QList<ItemProperties> itemsProperties;
-    bool groupCopied = false;
+    const QList<ItemProperties> &copiedItemsProperties() const;
+    void setCopiedItemsProperties(const QList<ItemProperties> &newCopiedItemsProperties);
 
-    void reset()
-    {
-        itemsProperties.clear();
-        groupCopied = false;
-    }
+    bool groupCopied() const;
+    void setGroupCopied(bool newGroupCopied);
+
+    void reset();
+
+private:
+    QList<ItemProperties> copiedItemsProperties_;
+    bool groupCopied_ = false;
 };
 
 #endif // SCENEBUFFER_H

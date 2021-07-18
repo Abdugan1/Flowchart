@@ -10,7 +10,7 @@ class SizeGripItem;
 class HandleItemAppearArea : public QGraphicsItem
 {
 public:
-    enum { DefaultDistance = 10 };
+    enum { DefaultDistance = 3 };
 
 public:
     HandleItemAppearArea(HandleItem* handleItem, SizeGripItem* parent);

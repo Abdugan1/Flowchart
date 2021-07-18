@@ -96,14 +96,6 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
 
-void DiagramItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-{
-    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction)
-        QGuiApplication::setOverrideCursor(QCursor(Qt::IBeamCursor));
-
-    QGraphicsPathItem::hoverEnterEvent(event);
-}
-
 void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction

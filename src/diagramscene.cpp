@@ -64,11 +64,11 @@ DiagramItem *DiagramScene::createDiagramItem(int diagramType)
 
 DiagramItem *DiagramScene::createDiagramItem(const ItemProperties &itemProperties)
 {
-    DiagramItem* diagramItem = createDiagramItem(itemProperties.diagramType);
+    DiagramItem* diagramItem = createDiagramItem(itemProperties.diagramType());
 
-    diagramItem->setPath(itemProperties.path);
-    diagramItem->setText(itemProperties.text);
-    diagramItem->setPos (itemProperties.pos );
+    diagramItem->setPath(itemProperties.path());
+    diagramItem->setText(itemProperties.text());
+    diagramItem->setPos (itemProperties.pos() );
 
     return diagramItem;
 }
@@ -190,35 +190,38 @@ void DiagramScene::copySelectedItems()
 
     if (group) {
         tmp = internal::getDiagramItemsFromQGraphics(group_->childItems());
-        buffer_.groupCopied = true;
+        buffer_.setGroupCopied(true);
     } else {
         tmp = internal::getDiagramItemsFromQGraphics(selectedItems());
-        buffer_.groupCopied = false;
+        buffer_.setGroupCopied(false);
     }
 
+    QList<ItemProperties> itemsProperties;
+    itemsProperties.reserve(tmp.count());
     for (auto item : qAsConst(tmp)) {
         ItemProperties properties;
 
-        properties.path = item->path();
-        properties.text = item->text();
-        properties.pos  = item->pos();
-        properties.diagramType = item->diagramType();
+        properties.setPath(item->path());
+        properties.setText(item->text());
+        properties.setPos (item->pos() );
+        properties.setDiagramType(item->diagramType());
 
-        buffer_.itemsProperties.append(properties);
+        itemsProperties.append(properties);
     }
+    buffer_.setCopiedItemsProperties(itemsProperties);
 }
 
 void DiagramScene::pasteCopiedItems()
 {
     QPointF mousePosition = getMousePosMappedToScene();
 
-    if (buffer_.groupCopied) {
+    if (buffer_.groupCopied()) {
         QList<DiagramItem*> items;
-        items.reserve(buffer_.itemsProperties.count());
+        items.reserve(buffer_.copiedItemsProperties().count());
 
-        for (const auto& properies : qAsConst(buffer_.itemsProperties)) {
+        for (const auto& properies : qAsConst(buffer_.copiedItemsProperties())) {
             DiagramItem* item = createDiagramItem(properies);
-            item->setPos(properies.pos);
+            item->setPos(properies.pos());
 
             items.append(item);
             addItem(item);
@@ -232,7 +235,7 @@ void DiagramScene::pasteCopiedItems()
         group_->setPos(pos);
 
     } else {
-        ItemProperties properies = buffer_.itemsProperties.at(0);
+        ItemProperties properies = buffer_.copiedItemsProperties().at(0);
         DiagramItem* item = createDiagramItem(properies);
 
         QPointF pos = getPosThatItemCenterAtMousePos(mousePosition, item);

@@ -4,7 +4,6 @@
 
 #include "internal.h"
 
-#include <QBrush>
 #include <QGraphicsSceneHoverEvent>
 #include <QGuiApplication>
 #include <QCursor>
@@ -14,11 +13,11 @@
 using PositionFlags = HandleItem::PositionFlags;
 
 HandleItem::HandleItem(PositionFlags positionFlags, SizeGripItem* parent)
-    : QGraphicsRectItem(-4, -4, 8, 8, parent),
-      positionFlags_(positionFlags),
-      parent_(parent)
+    : QGraphicsRectItem(-10, -10, 20, 20, parent)
+    , visibleRect_(-4, -4, 8, 8)
+    , positionFlags_(positionFlags)
+    , parent_(parent)
 {
-    setBrush(QBrush(Qt::lightGray));
     setFlag(ItemIsMovable);
     setCursorByFlag(positionFlags);
 }
@@ -26,6 +25,17 @@ HandleItem::HandleItem(PositionFlags positionFlags, SizeGripItem* parent)
 PositionFlags HandleItem::positionFlags() const
 {
     return positionFlags_;
+}
+
+void HandleItem::paint(QPainter *painter,
+                       const QStyleOptionGraphicsItem *option,
+                       QWidget *widget)
+{
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+
+    painter->setBrush(QBrush(Qt::lightGray));
+    painter->drawRect(visibleRect_);
 }
 
 void HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
