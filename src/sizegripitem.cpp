@@ -11,7 +11,7 @@
 using PositionFlags = HandleItem::PositionFlags;
 
 SizeGripItem::SizeGripItem(Resizer* resizer, QGraphicsItem* parent)
-    : QGraphicsItem(parent),
+    : QGraphicsObject(parent),
       resizer_(resizer)
 {
     DiagramItem* diagramItem = qgraphicsitem_cast<DiagramItem*>(parent);
@@ -108,7 +108,7 @@ void SizeGripItem::doResize()
     if (resizer_)
     {
         (*resizer_)(parentItem(), rect_);
-        emit itemResized();
+        emit resizeBeenMade();
         updateHandleItemsPositions();
     }
 }

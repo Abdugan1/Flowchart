@@ -47,12 +47,6 @@ DiagramItem *DiagramScene::createDiagramItem(int diagramType)
 {
     DiagramItem* diagramItem = new DiagramItem(DiagramItem::DiagramType(diagramType));
 
-    SizeGripItem* sizeGripItem =
-            new SizeGripItem(new PathResizer, diagramItem);
-
-    connect(sizeGripItem, &SizeGripItem::itemResized,
-            diagramItem,  &DiagramItem::updateTextItemPosition);
-
     connect(diagramItem, &DiagramItem::itemPositionChanged,
             this,        &DiagramScene::drawLevelLineWithItemOnSameAxis);
 

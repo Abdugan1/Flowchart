@@ -1,5 +1,6 @@
 #include "diagramitem.h"
 #include "diagramscene.h"
+#include "pathresizer.h"
 
 #include "internal.h"
 
@@ -23,6 +24,10 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     textItem_->setZValue(1000.0);
     textItem_->setAlignment(Qt::AlignCenter);
     textItem_->updatePosition();
+
+    sizeGripItem_ = new SizeGripItem(new PathResizer, this);
+    connect(sizeGripItem_, &SizeGripItem::resizeBeenMade,
+            this,          &DiagramItem::updateTextItemPosition);
 
     setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);
@@ -152,18 +157,6 @@ DiagramItem::DiagramType DiagramItem::diagramType() const
     return diagramType_;
 }
 
-QPixmap DiagramItem::image() const
-{
-    QPixmap pixmap(DefaultSize::Width, DefaultSize::Height);
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setPen(QPen(Qt::black, 6));
-    painter.setBrush(QBrush(Qt::white));
-    painter.drawPath(getDefaultShape(diagramType()));
-    return pixmap;
-}
-
 void DiagramItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget)
@@ -242,6 +235,18 @@ QPainterPath DiagramItem::getDefaultShape(DiagramType diagramType)
     }
     }
     return painterPath;
+}
+
+QPixmap DiagramItem::image(DiagramType diagramType)
+{
+    QPixmap pixmap(DefaultSize::Width, DefaultSize::Height);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen(QPen(Qt::black, 6));
+    painter.setBrush(QBrush(Qt::white));
+    painter.drawPath(getDefaultShape(diagramType));
+    return pixmap;
 }
 
 QString DiagramItem::text() const

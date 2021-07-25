@@ -5,6 +5,8 @@
 
 #include <QGraphicsPathItem>
 
+class SizeGripItem;
+
 class DiagramItem : public QObject, public QGraphicsPathItem
 {
     Q_OBJECT
@@ -36,11 +38,16 @@ private:
 public:
     DiagramItem(DiagramType diagramType, QGraphicsItem* parent = nullptr);
     DiagramType diagramType() const;
-    QPixmap image() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *widget) override;
+
     QRectF boundingRect() const override;
     QRectF pathBoundingRect() const;
+
     static QPainterPath getDefaultShape(DiagramType diagramType);
+    static QPixmap image(DiagramType diagramType);
 
     QString text() const;
     void setText(const QString& text);
@@ -70,7 +77,8 @@ private:
     DiagramType diagramType_;
     State state_;
 
-    DiagramTextItem* textItem_;
+    DiagramTextItem *textItem_;
+    SizeGripItem    *sizeGripItem_;
 };
 
 #endif // DIAGRAMITEM_H

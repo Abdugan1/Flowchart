@@ -107,7 +107,7 @@ void MainWindow::createMenus()
 QToolButton* MainWindow::createSideMenuButton(const QString &text, DiagramItem::DiagramType type)
 {
     QIcon icon;
-    icon.addPixmap(DiagramItem(DiagramItem::DiagramType(type)).image());
+    icon.addPixmap(DiagramItem::image(type));
 
     QToolButton* button = new QToolButton;
     button->setObjectName("sideMenuButton");

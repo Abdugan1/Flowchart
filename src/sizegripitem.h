@@ -1,13 +1,12 @@
 #ifndef SIZEGRIPITEM_H
 #define SIZEGRIPITEM_H
 
-#include <QGraphicsItem>
-#include <QGraphicsRectItem>
+#include <QGraphicsObject>
 
 class HandleItem;
 class HandleItemAppearArea;
 
-class SizeGripItem : public QObject, public QGraphicsItem
+class SizeGripItem : public QGraphicsObject
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
@@ -22,13 +21,13 @@ public:
     };
 
 public:
-    SizeGripItem(Resizer* resizer = 0, QGraphicsItem* parent = 0);
+    SizeGripItem(Resizer* resizer, QGraphicsItem* parent);
     virtual ~SizeGripItem();
 
     QRectF boundingRect() const override;
     void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
-               QWidget* widget = 0) override;
+               QWidget* widget) override;
 
     void setTopLeft(const QPointF& pos);
     void setTop(qreal y);
@@ -44,7 +43,7 @@ protected:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
 signals:
-    void itemResized();
+    void resizeBeenMade();
 
 public slots:
     void hideHandleItems();
@@ -56,7 +55,7 @@ private:
 
 private:
     enum {
-        MinWidth = 80,
+        MinWidth  = 80,
         MinHeight = 60
     };
 
