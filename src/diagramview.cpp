@@ -4,7 +4,9 @@
 #include <QtEvents>
 #include <QDebug>
 #include <QGraphicsSceneHoverEvent>
-
+#include <QMimeData>
+#include <QFileInfo>
+#include <QMessageBox>
 
 DiagramView::DiagramView(QWidget *parent)
     : QGraphicsView(parent)
@@ -71,12 +73,45 @@ void DiagramView::mouseReleaseEvent(QMouseEvent *event)
     QGraphicsView::mouseReleaseEvent(event);
 }
 
+void DiagramView::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        QFileInfo fileInfo(event->mimeData()->urls().first().toLocalFile());
+        if (fileInfo.suffix() == "json")
+            event->acceptProposedAction();
+    }
+}
+
+void DiagramView::dragMoveEvent(QDragMoveEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        QFileInfo fileInfo(event->mimeData()->urls().first().toLocalFile());
+        if (fileInfo.suffix() == "json")
+            event->acceptProposedAction();
+    }
+}
+
+void DiagramView::dropEvent(QDropEvent *event)
+{
+    QMessageBox::StandardButton reply =
+            QMessageBox::warning(this, tr("Warning"),
+                                 tr("Are you sure you want to open another flowchart?"
+                                    "\nThe current flowchart will be lost."),
+                                 QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        QString fileName = event->mimeData()->urls().first().toLocalFile();
+        emit saveFileDropped(fileName);
+    }
+}
+
 void DiagramView::init()
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setDragMode(QGraphicsView::RubberBandDrag);
     setMouseTracking(true);
+    setAcceptDrops(true);
 
     connect(this, &DiagramView::rubberBandChanged, this,
             [this](QRect rubberBandRect, QPointF fromScenePoint, QPointF toScenePoint)

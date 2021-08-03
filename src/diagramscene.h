@@ -34,8 +34,8 @@ public:
             const QList<DiagramItem*>& diagramItems) const;
 
 public slots:
-    void drawLevelLineWithItemOnSameAxis(const QPointF& pos);
-    void deleteAllLevelLines();
+    void drawPositionLines(const QPointF& pos);
+    void deleteAllPositionLines();
     void selectAllItems();
     void clearScene();
     void destroyGraphicsItemGroup();
@@ -52,12 +52,15 @@ private:
     void drawLevelLine(const QLineF& line);
     QPoint getItemCenter(const DiagramItem* item);
     void createGraphicsItemGroup(QList<DiagramItem*>& diagramItems);
+    void setItemPosWithoutDrawingPositionLines(DiagramItem* item, const QPointF& pos);
 
     QPointF getMousePosMappedToScene() const;
     QPointF getPosThatItemCenterAtMousePos(const QPointF& mousePosition,
                                            const QGraphicsItem* item) const;
 
 private:
+    bool drawPositionLines_ = true;
+
     GraphicsItemGroup* group_ = nullptr;
     SceneBuffer buffer_;
 };

@@ -27,6 +27,8 @@ private slots:
     void onSaveAsJson();
     void onOpenDiagram();
 
+    void loadFromSaveFile(const QString& fileName);
+
 private:
     void createSideMenu();
     void createActions();

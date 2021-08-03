@@ -20,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(view_,  &DiagramView::rubberBandSelectingFinished,
             scene_, &DiagramScene::makeGroupOfSelectedItems);
 
+    connect(view_, &DiagramView::saveFileDropped,
+            this,  &MainWindow::loadFromSaveFile);
+
     QHBoxLayout * hLayout = new QHBoxLayout;
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
@@ -77,21 +80,25 @@ void MainWindow::onOpenDiagram()
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open diagram"),
                                                         QDir::currentPath(),
                                                         tr("JSON files (*.json)"));
-
-        QFile file(fileName);
-        if (!file.open(QFile::ReadOnly))
-            return;
-
-        QByteArray saveData = file.readAll();
-        QJsonObject jsonObject(QJsonDocument::fromJson(saveData).object());
-        QList<ItemProperties> itemsProperties = getItemsPropertiesFromJson(jsonObject);
-
-        scene_->clearScene();
-        for (const auto& itemProperties : qAsConst(itemsProperties)) {
-            scene_->addItem(scene_->createDiagramItem(itemProperties));
-        }
-        file.close();
+        loadFromSaveFile(fileName);
     }
+}
+
+void MainWindow::loadFromSaveFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly))
+        return;
+
+    QByteArray saveData = file.readAll();
+    QJsonObject jsonObject(QJsonDocument::fromJson(saveData).object());
+    QList<ItemProperties> itemsProperties = getItemsPropertiesFromJson(jsonObject);
+
+    scene_->clearScene();
+    for (const auto& itemProperties : qAsConst(itemsProperties)) {
+        scene_->addItem(scene_->createDiagramItem(itemProperties));
+    }
+    file.close();
 }
 
 void MainWindow::createSideMenu()

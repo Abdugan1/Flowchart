@@ -48,10 +48,10 @@ DiagramItem *DiagramScene::createDiagramItem(int diagramType)
     DiagramItem* diagramItem = new DiagramItem(DiagramItem::DiagramType(diagramType));
 
     connect(diagramItem, &DiagramItem::itemPositionChanged,
-            this,        &DiagramScene::drawLevelLineWithItemOnSameAxis);
+            this,        &DiagramScene::drawPositionLines);
 
     connect(diagramItem, &DiagramItem::itemReleased,
-            this,        &DiagramScene::deleteAllLevelLines);
+            this,        &DiagramScene::deleteAllPositionLines);
 
     return diagramItem;
 }
@@ -62,7 +62,7 @@ DiagramItem *DiagramScene::createDiagramItem(const ItemProperties &itemPropertie
 
     diagramItem->resize(itemProperties.size() );
     diagramItem->setText(itemProperties.text());
-    diagramItem->setPos (itemProperties.pos() );
+    setItemPosWithoutDrawingPositionLines(diagramItem, itemProperties.pos());
 
     return diagramItem;
 }
@@ -85,8 +85,11 @@ QList<ItemProperties> DiagramScene::getDiagramItemsProperties(const QList<Diagra
     return itemsProperties;
 }
 
-void DiagramScene::drawLevelLineWithItemOnSameAxis(const QPointF &pos)
+void DiagramScene::drawPositionLines(const QPointF &pos)
 {
+    if (!drawPositionLines_)
+        return;
+
     deleteAllLines();
 
     // Dont draw green dash line, if several items selected
@@ -136,7 +139,7 @@ void DiagramScene::drawLevelLineWithItemOnSameAxis(const QPointF &pos)
     }
 }
 
-void DiagramScene::deleteAllLevelLines()
+void DiagramScene::deleteAllPositionLines()
 {
     deleteAllLines();
 }
@@ -251,7 +254,7 @@ void DiagramScene::pasteCopiedItems()
         QPointF pos = getPosThatItemCenterAtMousePos(mousePosition, item);
 
         addItem(item);
-        item->setPos(pos);
+        setItemPosWithoutDrawingPositionLines(item, pos);
     }
 }
 
@@ -326,6 +329,13 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
 
     connect(group_, &GraphicsItemGroup::lostSelection,
             this,   &DiagramScene::destroyGraphicsItemGroup);
+}
+
+void DiagramScene::setItemPosWithoutDrawingPositionLines(DiagramItem *item, const QPointF &pos)
+{
+    drawPositionLines_ = false;
+    item->setPos(pos);
+    drawPositionLines_ = true;
 }
 
 QPointF DiagramScene::getMousePosMappedToScene() const
