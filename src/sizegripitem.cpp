@@ -79,6 +79,13 @@ IMPL_SET_FN(const QPointF&, TopRight)
 IMPL_SET_FN(const QPointF&, BottomRight)
 IMPL_SET_FN(const QPointF&, BottomLeft)
 
+
+void SizeGripItem::setRect(const QRectF &rect)
+{
+    rect_ = rect;
+    doResize();
+}
+
 void SizeGripItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     showHandleItems();

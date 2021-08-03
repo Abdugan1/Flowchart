@@ -38,6 +38,8 @@ public:
     void setBottomLeft(const QPointF& pos);
     void setLeft(qreal x);
 
+    void setRect(const QRectF& rect);
+
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;

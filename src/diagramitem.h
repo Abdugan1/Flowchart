@@ -46,6 +46,9 @@ public:
     QRectF boundingRect() const override;
     QRectF pathBoundingRect() const;
 
+    void resize(const QSizeF& size);
+    void resize(qreal width, qreal height);
+
     static QPainterPath getDefaultShape(DiagramType diagramType);
     static QPixmap image(DiagramType diagramType);
 

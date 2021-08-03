@@ -24,19 +24,25 @@ public:
 
 private slots:
     void buttonGroupClicked(QAbstractButton* button);
+    void onSaveAsJson();
+    void onOpenDiagram();
 
 private:
     void createSideMenu();
     void createActions();
     void createMenus();
+    QToolButton* createSideMenuDiagramButton(const QString& text,
+                                             DiagramItem::DiagramType type);
     QToolButton* createSideMenuButton(const QString& text,
-                                      DiagramItem::DiagramType type);
+                                      const QPixmap& pixmap);
 
 private:
     DiagramScene* scene_;
     DiagramView*  view_;
 
     QButtonGroup* buttonGroup_;
+    QToolButton*  saveJsonButton_;
+    QToolButton*  loadFromJsonButton_;
     QFrame*       sideMenu_;
 
     QAction* deleteAction_;
@@ -44,7 +50,11 @@ private:
     QAction* copyAction_;
     QAction* pasteAction_;
 
+    QAction* saveAsJsonAction_;
+    QAction* openDiagramAction_;
+
     QMenu* itemMenu_;
+    QMenu* fileMenu_;
 };
 
 #endif // MAINWINDOW_H

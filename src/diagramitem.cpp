@@ -187,6 +187,16 @@ QRectF DiagramItem::pathBoundingRect() const
     return path().boundingRect();
 }
 
+void DiagramItem::resize(const QSizeF &size)
+{
+    sizeGripItem_->setRect(QRectF(0, 0, size.width(), size.height()));
+}
+
+void DiagramItem::resize(qreal width, qreal height)
+{
+    resize(QSizeF(width, height));
+}
+
 QPainterPath DiagramItem::getDefaultShape(DiagramType diagramType)
 {
     int w = DefaultSize::Width;

@@ -17,6 +17,7 @@ SOURCES += \
     src/handleitem.cpp \
     src/handleitemappeararea.cpp \
     src/internal.cpp \
+    src/itemproperties.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/pathresizer.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     src/handleitem.h \
     src/handleitemappeararea.h \
     src/internal.h \
+    src/itemproperties.h \
     src/mainwindow.h \
     src/pathresizer.h \
     src/scenebuffer.h \

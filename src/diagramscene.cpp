@@ -60,11 +60,29 @@ DiagramItem *DiagramScene::createDiagramItem(const ItemProperties &itemPropertie
 {
     DiagramItem* diagramItem = createDiagramItem(itemProperties.diagramType());
 
-    diagramItem->setPath(itemProperties.path());
+    diagramItem->resize(itemProperties.size() );
     diagramItem->setText(itemProperties.text());
     diagramItem->setPos (itemProperties.pos() );
 
     return diagramItem;
+}
+
+QList<DiagramItem *> DiagramScene::getDiagramItems() const
+{
+    return internal::getDiagramItemsFromQGraphics(items());
+}
+
+QList<ItemProperties> DiagramScene::getDiagramItemsProperties(const QList<DiagramItem *> &diagramItems) const
+{
+    QList<ItemProperties> itemsProperties;
+    itemsProperties.reserve(diagramItems.count());
+    for (auto item : qAsConst(diagramItems)) {
+        ItemProperties properties;
+        obtainItemProperties(item, &properties);
+
+        itemsProperties.append(properties);
+    }
+    return itemsProperties;
 }
 
 void DiagramScene::drawLevelLineWithItemOnSameAxis(const QPointF &pos)
@@ -133,6 +151,13 @@ void DiagramScene::selectAllItems()
     }
 }
 
+void DiagramScene::clearScene()
+{
+    QList<QGraphicsItem*> items = this->items();
+    for (auto item : qAsConst(items))
+        delete item;
+}
+
 void DiagramScene::destroyGraphicsItemGroup()
 {
     QList<DiagramItem*> groupItems
@@ -190,23 +215,14 @@ void DiagramScene::copySelectedItems()
         buffer_.setGroupCopied(false);
     }
 
-    QList<ItemProperties> itemsProperties;
-    itemsProperties.reserve(tmp.count());
-    for (auto item : qAsConst(tmp)) {
-        ItemProperties properties;
-
-        properties.setPath(item->path());
-        properties.setText(item->text());
-        properties.setPos (item->pos() );
-        properties.setDiagramType(item->diagramType());
-
-        itemsProperties.append(properties);
-    }
-    buffer_.setCopiedItemsProperties(itemsProperties);
+    buffer_.setCopiedItemsProperties(getDiagramItemsProperties(tmp));
 }
 
 void DiagramScene::pasteCopiedItems()
 {
+    if (buffer_.isEmpty())
+        return;
+
     QPointF mousePosition = getMousePosMappedToScene();
 
     if (buffer_.groupCopied()) {
@@ -255,6 +271,8 @@ void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
     }
 
     painter->drawPoints(points.data(), points.size());
+
+    painter->drawRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
 }
 
 void DiagramScene::deleteAllLines()

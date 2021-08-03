@@ -1,51 +1,5 @@
 #include "scenebuffer.h"
 
-QPainterPath ItemProperties::path() const
-{
-    return path_;
-}
-
-void ItemProperties::setPath(QPainterPath newPath)
-{
-    path_ = newPath;
-}
-
-const QString &ItemProperties::text() const
-{
-    return text_;
-}
-
-void ItemProperties::setText(const QString &newText)
-{
-    text_ = newText;
-}
-
-QPointF ItemProperties::pos() const
-{
-    return pos_;
-}
-
-void ItemProperties::setPos(QPointF newPos)
-{
-    pos_ = newPos;
-}
-
-int ItemProperties::diagramType() const
-{
-    return diagramType_;
-}
-
-void ItemProperties::setDiagramType(int newDiagramType)
-{
-    diagramType_ = newDiagramType;
-}
-
-
-//!----------------------------------------------------------------!//
-//!------------------SceneBuffer implementation--------------------!//
-//!----------------------------------------------------------------!//
-
-
 const QList<ItemProperties> &SceneBuffer::copiedItemsProperties() const
 {
     return copiedItemsProperties_;
@@ -64,6 +18,11 @@ bool SceneBuffer::groupCopied() const
 void SceneBuffer::setGroupCopied(bool newGroupCopied)
 {
     groupCopied_ = newGroupCopied;
+}
+
+bool SceneBuffer::isEmpty() const
+{
+    return copiedItemsProperties_.isEmpty();
 }
 
 void SceneBuffer::reset()
