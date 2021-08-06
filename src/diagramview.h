@@ -15,6 +15,10 @@ signals:
     void rubberBandSelectingFinished();
     void saveFileDropped(const QString& fileName);
 
+public slots:
+    void updateDiagramCountInfoTextArea();
+    void updateCurrentMousePosInfoTextArea();
+
 protected:
     void wheelEvent(QWheelEvent *event)         override;
     void mousePressEvent(QMouseEvent *event)    override;
@@ -25,11 +29,16 @@ protected:
     void dragMoveEvent(QDragMoveEvent  *event)  override;
     void dropEvent(QDropEvent *event) override;
 
+    void paintEvent(QPaintEvent *event) override;
+
 private:
     void init();
     bool isRubberBandFinishedSelecting(const QRect& rubberBandRect,
                                        const QPointF& fromScenePoint,
                                        const QPointF& toScenePoint);
+
+private:
+    int lastDiagramCount_ = 0;
 };
 
 #endif // DIAGRAMVIEW_H

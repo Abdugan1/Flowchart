@@ -1,12 +1,17 @@
 #include "diagramview.h"
 #include "diagramitem.h"
 
+#include "internal.h"
+
 #include <QtEvents>
 #include <QDebug>
 #include <QGraphicsSceneHoverEvent>
 #include <QMimeData>
 #include <QFileInfo>
 #include <QMessageBox>
+
+const QString DiagramCountInfoText      = QObject::tr("Diagram count: %1");
+const QString CurrentMousePosInfoText   = QObject::tr("Current position (%1, %2)");
 
 DiagramView::DiagramView(QWidget *parent)
     : QGraphicsView(parent)
@@ -18,6 +23,32 @@ DiagramView::DiagramView(QGraphicsScene *scene, QWidget *parent)
     : QGraphicsView(scene, parent)
 {
     init();
+}
+
+void DiagramView::updateDiagramCountInfoTextArea()
+{
+    if (internal::getDiagramItemsFromQGraphics(
+                items()).count() == lastDiagramCount_) {
+        update();
+
+    } else {
+        QRectF viewportRect = viewport()->rect();
+        const QString text = DiagramCountInfoText.arg("XXXXXX");
+        QFontMetrics fm(font());
+        update(viewportRect.width()  - fm.horizontalAdvance(text),
+               viewportRect.height() - fm.height() * 2,
+               fm.horizontalAdvance(text), fm.height());
+    }
+}
+
+void DiagramView::updateCurrentMousePosInfoTextArea()
+{
+    QRectF viewportRect = viewport()->rect();
+    const QString text = CurrentMousePosInfoText.arg("XXXX","XXXX");
+    QFontMetrics fm(font());
+    update(viewportRect.width()  - fm.horizontalAdvance(text),
+           viewportRect.height() - fm.height(),
+           fm.horizontalAdvance(text), fm.height());
 }
 
 void DiagramView::wheelEvent(QWheelEvent *event)
@@ -49,6 +80,8 @@ void DiagramView::mousePressEvent(QMouseEvent *event)
 
 void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
+    updateCurrentMousePosInfoTextArea();
+
     QList<QGraphicsItem*> itemsUnderMouse = items(event->pos());
 
     for (auto item : qAsConst(itemsUnderMouse)) {
@@ -105,6 +138,35 @@ void DiagramView::dropEvent(QDropEvent *event)
     }
 }
 
+void DiagramView::paintEvent(QPaintEvent *event)
+{
+    QGraphicsView::paintEvent(event);
+    QRectF viewportRect = viewport()->rect();
+    QFontMetrics fm(font());
+
+    // Setup current mouse position info text
+    QPoint currMousePos = mapToScene(mapFromGlobal(QCursor::pos())).toPoint();
+    QString currMousePosInfoText =
+            CurrentMousePosInfoText.arg(currMousePos.x()).arg(currMousePos.y());
+    QPointF pointMouse(viewportRect.width()  - fm.horizontalAdvance(currMousePosInfoText),
+                       viewportRect.height() - fm.descent());
+
+    // Setup current diagram items count info text
+    lastDiagramCount_ = internal::getDiagramItemsFromQGraphics(items()).count();
+    QString diagramCountInfoText = DiagramCountInfoText.arg(lastDiagramCount_);
+    QPointF pointDiagram(viewportRect.width()  - fm.horizontalAdvance(diagramCountInfoText),
+                         viewportRect.height() - fm.height());
+
+    QPainter painter;
+    painter.begin(viewport());
+
+    painter.setFont(font());
+    painter.drawText(pointDiagram, diagramCountInfoText);
+    painter.drawText(pointMouse, currMousePosInfoText);
+
+    painter.end();
+}
+
 void DiagramView::init()
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -112,6 +174,7 @@ void DiagramView::init()
     setDragMode(QGraphicsView::RubberBandDrag);
     setMouseTracking(true);
     setAcceptDrops(true);
+    setFont(QFont(":/fonts/Montserrat-Regular.ttf", 12));
 
     connect(this, &DiagramView::rubberBandChanged, this,
             [this](QRect rubberBandRect, QPointF fromScenePoint, QPointF toScenePoint)

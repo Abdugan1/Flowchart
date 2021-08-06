@@ -154,13 +154,6 @@ void DiagramScene::selectAllItems()
     }
 }
 
-void DiagramScene::clearScene()
-{
-    QList<QGraphicsItem*> items = this->items();
-    for (auto item : qAsConst(items))
-        delete item;
-}
-
 void DiagramScene::destroyGraphicsItemGroup()
 {
     QList<DiagramItem*> groupItems

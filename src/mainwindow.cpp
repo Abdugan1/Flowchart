@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(view_, &DiagramView::saveFileDropped,
             this,  &MainWindow::loadFromSaveFile);
 
+    connect(scene_, &DiagramScene::changed,
+            view_,  &DiagramView::updateDiagramCountInfoTextArea);
+
     QHBoxLayout * hLayout = new QHBoxLayout;
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
@@ -94,7 +97,7 @@ void MainWindow::loadFromSaveFile(const QString &fileName)
     QJsonObject jsonObject(QJsonDocument::fromJson(saveData).object());
     QList<ItemProperties> itemsProperties = getItemsPropertiesFromJson(jsonObject);
 
-    scene_->clearScene();
+    scene_->clear();
     for (const auto& itemProperties : qAsConst(itemsProperties)) {
         scene_->addItem(scene_->createDiagramItem(itemProperties));
     }
@@ -115,17 +118,20 @@ void MainWindow::createSideMenu()
     layout->addWidget(createSideMenuDiagramButton(tr("Process"),       DiagramItem::Process)  );
     layout->addWidget(createSideMenuDiagramButton(tr("Desicion"),      DiagramItem::Desicion) );
     layout->addWidget(createSideMenuDiagramButton(tr("In/Out"),        DiagramItem::InOut)    );
-    layout->addWidget(createSideMenuDiagramButton(tr("For loop"),      DiagramItem::ForLoop)  );
 
     layout->setSpacing(0);
-    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum,
-                                                  QSizePolicy::Expanding);
-    layout->addItem(spacer);
 
-    sideMenu_ = new QFrame;
+    sideMenu_ = new QScrollArea;
     sideMenu_->setObjectName("sideMenu");
-    sideMenu_->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Ignored));
-    sideMenu_->setLayout(layout);
+    sideMenu_->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
+                                         QSizePolicy::QSizePolicy::Expanding));
+    sideMenu_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    sideMenu_->horizontalScrollBar()->setEnabled(false);
+
+    QWidget* widget = new QWidget;
+    widget->setLayout(layout);
+
+    sideMenu_->setWidget(widget);
 }
 
 void MainWindow::createActions()

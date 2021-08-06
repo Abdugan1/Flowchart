@@ -45,7 +45,7 @@ private:
     QButtonGroup* buttonGroup_;
     QToolButton*  saveJsonButton_;
     QToolButton*  loadFromJsonButton_;
-    QFrame*       sideMenu_;
+    QScrollArea*  sideMenu_;
 
     QAction* deleteAction_;
     QAction* selectAllAction_;

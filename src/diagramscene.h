@@ -37,7 +37,6 @@ public slots:
     void drawPositionLines(const QPointF& pos);
     void deleteAllPositionLines();
     void selectAllItems();
-    void clearScene();
     void destroyGraphicsItemGroup();
     void makeGroupOfSelectedItems();
     void deleteSelectedItems();
