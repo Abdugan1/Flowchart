@@ -118,6 +118,7 @@ void MainWindow::createSideMenu()
     layout->addWidget(createSideMenuDiagramButton(tr("Process"),       DiagramItem::Process)  );
     layout->addWidget(createSideMenuDiagramButton(tr("Desicion"),      DiagramItem::Desicion) );
     layout->addWidget(createSideMenuDiagramButton(tr("In/Out"),        DiagramItem::InOut)    );
+    layout->addWidget(createSideMenuDiagramButton(tr("For loop"),      DiagramItem::ForLoop)  );
 
     layout->setSpacing(0);
 

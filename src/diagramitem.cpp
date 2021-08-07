@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QKeyEvent>
 #include <QDebug>
 #include <QTextCursor>
 #include <QTextDocument>
@@ -32,6 +33,7 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+    setFlag(QGraphicsItem::ItemIsFocusable,          true);
 
     setAcceptHoverEvents(true);
 }
@@ -92,12 +94,11 @@ void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    state_ = State::TextEditing;
     if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
         QGraphicsPathItem::mouseDoubleClickEvent(event);
         return;
     }
-    textItem_->setTextInteraction(true);
+    enableTextEditing();
     QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
 
@@ -116,6 +117,21 @@ void DiagramItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
         QGuiApplication::restoreOverrideCursor();
 
     QGraphicsPathItem::hoverLeaveEvent(event);
+}
+
+void DiagramItem::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_F2) {
+        enableTextEditing();
+    }
+
+    QGraphicsPathItem::keyPressEvent(event);
+}
+
+void DiagramItem::enableTextEditing()
+{
+    state_ = State::TextEditing;
+    textItem_->setTextInteraction(true);
 }
 
 void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)

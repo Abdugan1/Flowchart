@@ -73,9 +73,11 @@ protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event)        override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event)       override;
 
-private:
-    void setTextCursorMappedToTextItem(const QPointF& clickPos);
+    void keyPressEvent(QKeyEvent *event) override;
 
+private:
+    void enableTextEditing();
+    void setTextCursorMappedToTextItem(const QPointF& clickPos);
 private:
     DiagramType diagramType_;
     State state_;
