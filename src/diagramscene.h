@@ -41,7 +41,9 @@ public slots:
     void makeGroupOfSelectedItems();
     void deleteSelectedItems();
     void copySelectedItems();
-    void pasteCopiedItems();
+    void copyItems(const QList<QGraphicsItem*>& items);
+    void pasteItemsToMousePos();
+    void pasteItems(const QPointF& posToPaste);
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;

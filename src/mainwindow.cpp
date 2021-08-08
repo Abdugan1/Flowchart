@@ -26,6 +26,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(scene_, &DiagramScene::changed,
             view_,  &DiagramView::updateDiagramCountInfoTextArea);
 
+    connect(view_,  &DiagramView::copyActionTriggered,
+            scene_, &DiagramScene::copyItems);
+
+    connect(view_,  &DiagramView::pasteActionTriggered,
+            scene_, &DiagramScene::pasteItems);
+
     QHBoxLayout * hLayout = new QHBoxLayout;
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
@@ -151,7 +157,7 @@ void MainWindow::createActions()
 
     pasteAction_ = new QAction(tr("&Paste"), this);
     pasteAction_->setShortcut(QKeySequence::Paste);
-    connect(pasteAction_, &QAction::triggered, scene_, &DiagramScene::pasteCopiedItems);
+    connect(pasteAction_, &QAction::triggered, scene_, &DiagramScene::pasteItemsToMousePos);
 
     saveAsJsonAction_ = new QAction(tr("&Save Diagram"), this);
     saveAsJsonAction_->setShortcut(QKeySequence::Save);

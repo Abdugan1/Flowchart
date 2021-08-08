@@ -195,31 +195,40 @@ void DiagramScene::deleteSelectedItems()
 
 void DiagramScene::copySelectedItems()
 {
-    if (selectedItems().isEmpty())
+    copyItems(selectedItems());
+}
+
+void DiagramScene::copyItems(const QList<QGraphicsItem *> &items)
+{
+    if (items.isEmpty())
         return;
 
     buffer_.reset();
 
-    GraphicsItemGroup* group = qgraphicsitem_cast<GraphicsItemGroup*>(selectedItems().at(0));
+    GraphicsItemGroup* group = qgraphicsitem_cast<GraphicsItemGroup*>(items.at(0));
     QList<DiagramItem*> tmp;
 
     if (group) {
         tmp = internal::getDiagramItemsFromQGraphics(group_->childItems());
         buffer_.setGroupCopied(true);
     } else {
-        tmp = internal::getDiagramItemsFromQGraphics(selectedItems());
+        tmp = internal::getDiagramItemsFromQGraphics(items);
         buffer_.setGroupCopied(false);
     }
 
     buffer_.setCopiedItemsProperties(getDiagramItemsProperties(tmp));
 }
 
-void DiagramScene::pasteCopiedItems()
+void DiagramScene::pasteItemsToMousePos()
+{
+    QPointF mousePosition = getMousePosMappedToScene();
+    pasteItems(mousePosition);
+}
+
+void DiagramScene::pasteItems(const QPointF &posToPaste)
 {
     if (buffer_.isEmpty())
         return;
-
-    QPointF mousePosition = getMousePosMappedToScene();
 
     if (buffer_.groupCopied()) {
         QList<DiagramItem*> items;
@@ -237,14 +246,14 @@ void DiagramScene::pasteCopiedItems()
             destroyGraphicsItemGroup();
         createGraphicsItemGroup(items);
 
-        QPointF pos = getPosThatItemCenterAtMousePos(mousePosition, group_);
+        QPointF pos = getPosThatItemCenterAtMousePos(posToPaste, group_);
         group_->setPos(pos);
 
     } else {
         ItemProperties properies = buffer_.copiedItemsProperties().at(0);
         DiagramItem* item = createDiagramItem(properies);
 
-        QPointF pos = getPosThatItemCenterAtMousePos(mousePosition, item);
+        QPointF pos = getPosThatItemCenterAtMousePos(posToPaste, item);
 
         addItem(item);
         setItemPosWithoutDrawingPositionLines(item, pos);

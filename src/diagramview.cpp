@@ -9,6 +9,7 @@
 #include <QMimeData>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QMenu>
 
 const QString DiagramCountInfoText      = QObject::tr("Diagram count: %1");
 const QString CurrentMousePosInfoText   = QObject::tr("Current position (%1, %2)");
@@ -167,8 +168,15 @@ void DiagramView::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
+void DiagramView::contextMenuEvent(QContextMenuEvent *event)
+{
+    contextMenu_->exec(event->globalPos());
+}
+
 void DiagramView::init()
 {
+    initContextMenu();
+
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setDragMode(QGraphicsView::RubberBandDrag);
@@ -182,6 +190,30 @@ void DiagramView::init()
         if (isRubberBandFinishedSelecting(rubberBandRect, fromScenePoint, toScenePoint))
             emit rubberBandSelectingFinished();
     });
+}
+
+void DiagramView::initContextMenu()
+{
+    contextMenu_ = new QMenu(this);
+
+    QAction* copyAction  = new QAction(tr("&Copy"));
+    connect(copyAction, &QAction::triggered, this,
+            [this]()
+    {
+        QPointF pos = mapToScene(mapFromGlobal(contextMenu_->pos()));
+        QList<QGraphicsItem*> itemsUnderMouse = scene()->items(pos, Qt::IntersectsItemShape, Qt::AscendingOrder);
+        emit copyActionTriggered(itemsUnderMouse);
+    });
+
+    QAction* pasteAction = new QAction(tr("&Paste"));
+    connect(pasteAction, &QAction::triggered, this,
+            [this]()
+    {
+        emit pasteActionTriggered(mapToScene(mapFromGlobal(contextMenu_->pos())));
+    });
+
+    contextMenu_->addAction(copyAction);
+    contextMenu_->addAction(pasteAction);
 }
 
 bool DiagramView::isRubberBandFinishedSelecting(const QRect &rubberBandRect,
