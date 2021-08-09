@@ -275,6 +275,44 @@ QPixmap DiagramItem::image(DiagramType diagramType)
     return pixmap;
 }
 
+QString DiagramItem::getToolTip(int diagramType)
+{
+    QString toolTip;
+    switch (diagramType) {
+    case Terminal:
+    {
+        toolTip = tr("<p><b>Terminal</b></p>"
+                    "Indicates the beginning and ending of a program or sub-process");
+        break;
+    }
+    case Process:
+    {
+        toolTip = tr("<p><b>Process</b></p>"
+                    "Represents a set of operations that changes value, form, or location of data");
+        break;
+    }
+    case Desicion:
+    {
+        toolTip = tr("<p><b>Desicion</b></p>"
+                    "Shows a conditional operation that determines which one of the two paths the program will take");
+        break;
+    }
+    case InOut:
+    {
+        toolTip = tr("<p><b>Input/Output</b></p>"
+                    "Indicates the process of inputting and outputting data");
+        break;
+    }
+    case ForLoop:
+    {
+        toolTip = tr("<p><b>For loop</b></p>"
+                    "Used for steps like setting a switch or initializing a routine");
+        break;
+    }
+    }
+    return toolTip;
+}
+
 QString DiagramItem::text() const
 {
     return textItem_->document()->toPlainText();

@@ -57,15 +57,14 @@ QToolButton#sideMenuButton:hover {
 QScrollBar:vertical
 {
     background-color: transparent;
-    width: 15px;
+    width: 13px;
     margin: 5px 3px 5px 3px;
-    border-radius: 4px;
 }
 
 QScrollBar::handle:vertical
 {
     background-color: #151a1e;
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 QScrollBar::handle:vertical:hover

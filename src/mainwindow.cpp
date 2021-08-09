@@ -32,6 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(view_,  &DiagramView::pasteActionTriggered,
             scene_, &DiagramScene::pasteItems);
 
+    connect(view_,  &DiagramView::deleteActionTriggered,
+            scene_, &DiagramScene::deleteItems);
+
     QHBoxLayout * hLayout = new QHBoxLayout;
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
@@ -103,7 +106,7 @@ void MainWindow::loadFromSaveFile(const QString &fileName)
     QJsonObject jsonObject(QJsonDocument::fromJson(saveData).object());
     QList<ItemProperties> itemsProperties = getItemsPropertiesFromJson(jsonObject);
 
-    scene_->clear();
+    scene_->clearScene();
     for (const auto& itemProperties : qAsConst(itemsProperties)) {
         scene_->addItem(scene_->createDiagramItem(itemProperties));
     }
@@ -166,6 +169,9 @@ void MainWindow::createActions()
     openDiagramAction_ = new QAction(tr("&Open Diagram"), this);
     openDiagramAction_->setShortcut(QKeySequence::Open);
     connect(openDiagramAction_, &QAction::triggered, this, &MainWindow::onOpenDiagram);
+
+    aboutQtAction_ = new QAction(tr("About &Qt"), this);
+    connect(aboutQtAction_, &QAction::triggered, qApp, &QApplication::aboutQt);
 }
 
 void MainWindow::createMenus()
@@ -179,12 +185,16 @@ void MainWindow::createMenus()
     itemMenu_->addAction(selectAllAction_);
     itemMenu_->addAction(copyAction_);
     itemMenu_->addAction(pasteAction_);
+
+    helpMenu_ = menuBar()->addMenu(tr("&Help"));
+    helpMenu_->addAction(aboutQtAction_);
 }
 
 QToolButton* MainWindow::createSideMenuDiagramButton(const QString &text,
                                                      DiagramItem::DiagramType type)
 {
     QToolButton* button = createSideMenuButton(text, DiagramItem::image(type));
+    button->setToolTip(DiagramItem::getToolTip(type));
 
     buttonGroup_->addButton(button, int(type));
 

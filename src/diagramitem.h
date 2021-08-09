@@ -51,6 +51,7 @@ public:
 
     static QPainterPath getDefaultShape(DiagramType diagramType);
     static QPixmap image(DiagramType diagramType);
+    static QString getToolTip(int diagramType);
 
     QString text() const;
     void setText(const QString& text);

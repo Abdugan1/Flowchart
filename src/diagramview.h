@@ -18,6 +18,7 @@ signals:
     void saveFileDropped(const QString& fileName);
     void copyActionTriggered(const QList<QGraphicsItem*>& items);
     void pasteActionTriggered(const QPointF& posToPaste);
+    void deleteActionTriggered(const QList<QGraphicsItem*>& items);
 
 public slots:
     void updateDiagramCountInfoTextArea();
@@ -46,6 +47,7 @@ private:
 
 private:
     int lastDiagramCount_ = 0;
+
     QMenu* contextMenu_;
 };
 

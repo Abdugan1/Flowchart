@@ -201,7 +201,7 @@ void DiagramView::initContextMenu()
             [this]()
     {
         QPointF pos = mapToScene(mapFromGlobal(contextMenu_->pos()));
-        QList<QGraphicsItem*> itemsUnderMouse = scene()->items(pos, Qt::IntersectsItemShape, Qt::AscendingOrder);
+        QList<QGraphicsItem*> itemsUnderMouse = scene()->items(pos);
         emit copyActionTriggered(itemsUnderMouse);
     });
 
@@ -212,8 +212,18 @@ void DiagramView::initContextMenu()
         emit pasteActionTriggered(mapToScene(mapFromGlobal(contextMenu_->pos())));
     });
 
+    QAction* deleteAction = new QAction(tr("&Delete"));
+    connect(deleteAction, &QAction::triggered, this,
+            [this]()
+    {
+        QPointF pos = mapToScene(mapFromGlobal(contextMenu_->pos()));
+        QList<QGraphicsItem*> itemsUnderMouse = scene()->items(pos);
+        emit deleteActionTriggered(itemsUnderMouse);
+    });
+
     contextMenu_->addAction(copyAction);
     contextMenu_->addAction(pasteAction);
+    contextMenu_->addAction(deleteAction);
 }
 
 bool DiagramView::isRubberBandFinishedSelecting(const QRect &rubberBandRect,

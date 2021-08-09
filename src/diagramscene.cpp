@@ -180,16 +180,22 @@ void DiagramScene::makeGroupOfSelectedItems()
 
 void DiagramScene::deleteSelectedItems()
 {
-    if (!selectedItems().isEmpty()) {
-        QGraphicsItem* selectedItem = selectedItems().at(0);
+    deleteItems(selectedItems());
+}
 
-        // item could be a group, or it could be a single item
-        if (qgraphicsitem_cast<GraphicsItemGroup*>(selectedItem)) {
-            delete group_;
-            group_ = nullptr;
-        } else {
-            delete selectedItem;
-        }
+void DiagramScene::deleteItems(const QList<QGraphicsItem *> &items)
+{
+    if (items.isEmpty())
+        return;
+
+    QGraphicsItem* itemToDelete = items.at(0);
+
+    // item could be a group, or it could be a single item
+    if (qgraphicsitem_cast<GraphicsItemGroup*>(itemToDelete)) {
+        delete group_;
+        group_ = nullptr;
+    } else {
+        delete itemToDelete;
     }
 }
 
@@ -258,6 +264,15 @@ void DiagramScene::pasteItems(const QPointF &posToPaste)
         addItem(item);
         setItemPosWithoutDrawingPositionLines(item, pos);
     }
+}
+
+void DiagramScene::clearScene()
+{
+    if (group_) {
+        delete group_;
+        group_ = nullptr;
+    }
+    clear();
 }
 
 void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)

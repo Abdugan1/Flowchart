@@ -51,12 +51,14 @@ private:
     QAction* selectAllAction_;
     QAction* copyAction_;
     QAction* pasteAction_;
+    QAction* aboutQtAction_;
 
     QAction* saveAsJsonAction_;
     QAction* openDiagramAction_;
 
     QMenu* itemMenu_;
     QMenu* fileMenu_;
+    QMenu* helpMenu_;
 };
 
 #endif // MAINWINDOW_H
