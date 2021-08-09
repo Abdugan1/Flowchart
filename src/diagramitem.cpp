@@ -1,7 +1,9 @@
 #include "diagramitem.h"
 #include "diagramscene.h"
-#include "pathresizer.h"
+#include "diagramtextitem.h"
+#include "sizegripitem.h"
 
+#include "constants.h"
 #include "internal.h"
 
 #include <QGraphicsScene>
@@ -15,18 +17,18 @@
 #include <QGuiApplication>
 
 DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *parent)
-    : QGraphicsPathItem(parent)
+    : QGraphicsItem(parent)
     , diagramType_(diagramType)
     , textItem_(new DiagramTextItem(this))
 {
-    setPath(getDefaultShape(diagramType));
-    setBrush(Qt::white);
+    path_ = getDefaultShape(diagramType);
+    size_ = QSizeF(Constants::DiagramItem::DefaultWidth, Constants::DiagramItem::DefaultHeight);
 
     textItem_->setZValue(1000.0);
     textItem_->setAlignment(Qt::AlignCenter);
     textItem_->updatePosition();
 
-    sizeGripItem_ = new SizeGripItem(new PathResizer, this);
+    sizeGripItem_ = new SizeGripItem(this);
     connect(sizeGripItem_, &SizeGripItem::resizeBeenMade,
             this,          &DiagramItem::updateTextItemPosition);
 
@@ -38,12 +40,17 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     setAcceptHoverEvents(true);
 }
 
+DiagramItem::~DiagramItem()
+{
+    delete sizeGripItem_;
+}
+
 QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange && scene()) {
         QPointF newPos = value.toPointF();
         DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
-        newPos = internal::getPointByStep(newPos, DiagramScene::GridSize / 2);
+        newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize / 2);
         newPos = scene->preventOutsideMove(newPos, this);
 
         return newPos;
@@ -55,7 +62,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
                && textItem_->textInteractionFlags() != Qt::NoTextInteraction
                && !value.toBool()) {
 
-        state_ = State::Other;
+        textEditing_ = false;
         textItem_->setTextInteraction(false);
     }
     return QGraphicsItem::itemChange(change, value);
@@ -63,60 +70,73 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 
 void DiagramItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
-        QPointF clickPos = mapToItem(textItem_, event->pos());
-        setTextCursorMappedToTextItem(clickPos);
+    if (path_.contains(event->pos())) {
+
+        if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
+            QPointF clickPos = mapToItem(textItem_, event->pos());
+            setTextCursorMappedToTextItem(clickPos);
+        }
+
     }
 
-    QGraphicsPathItem::mousePressEvent(event);
+    QGraphicsItem::mousePressEvent(event);
 }
 
 void DiagramItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (state_ == State::TextEditing)
+    if (textEditing_)
         return;
 
     if (!QGuiApplication::overrideCursor())
         QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
 
-    QGraphicsPathItem::mouseMoveEvent(event);
+    QGraphicsItem::mouseMoveEvent(event);
 }
 
 void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (state_ == State::TextEditing)
+    if (textEditing_)
         return;
 
     emit itemReleased();
     QGuiApplication::restoreOverrideCursor();
-    QGraphicsPathItem::mouseReleaseEvent(event);
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
-        QGraphicsPathItem::mouseDoubleClickEvent(event);
+        QGraphicsItem::mouseDoubleClickEvent(event);
         return;
     }
     enableTextEditing();
-    QGraphicsPathItem::mouseDoubleClickEvent(event);
+    QGraphicsItem::mouseDoubleClickEvent(event);
 }
 
 void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction
-            && !QGuiApplication::overrideCursor())
-        QGuiApplication::setOverrideCursor(QCursor(Qt::IBeamCursor));
+    sizeGripItem_->showHandleItems();
 
-    QGraphicsPathItem::hoverMoveEvent(event);
+    if (path_.contains(event->pos())) {
+        if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction
+                && !QGuiApplication::overrideCursor())
+            QGuiApplication::setOverrideCursor(QCursor(Qt::IBeamCursor));
+
+    } else {
+        QGuiApplication::restoreOverrideCursor();
+    }
+
+    QGraphicsItem::hoverMoveEvent(event);
 }
 
 void DiagramItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
+    sizeGripItem_->hideHandleItems();
+
     if (QGuiApplication::overrideCursor())
         QGuiApplication::restoreOverrideCursor();
 
-    QGraphicsPathItem::hoverLeaveEvent(event);
+    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void DiagramItem::keyPressEvent(QKeyEvent *event)
@@ -125,12 +145,12 @@ void DiagramItem::keyPressEvent(QKeyEvent *event)
         enableTextEditing();
     }
 
-    QGraphicsPathItem::keyPressEvent(event);
+    QGraphicsItem::keyPressEvent(event);
 }
 
 void DiagramItem::enableTextEditing()
 {
-    state_ = State::TextEditing;
+    textEditing_ = true;
     textItem_->setTextInteraction(true);
 }
 
@@ -168,39 +188,61 @@ void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)
     textItem_->setTextCursor(cursor);
 }
 
+const QSizeF &DiagramItem::size() const
+{
+    return size_;
+}
+
+void DiagramItem::setSize(const QSizeF &newSize)
+{
+    size_ = newSize;
+}
+
+QPainterPath DiagramItem::path() const
+{
+    return path_;
+}
+
+void DiagramItem::setPath(QPainterPath newPath)
+{
+    path_ = newPath;
+}
+
 DiagramItem::DiagramType DiagramItem::diagramType() const
 {
     return diagramType_;
 }
 
-void DiagramItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void DiagramItem::paint(QPainter *painter,
+                        const QStyleOptionGraphicsItem *option,
+                        QWidget *widget)
 {
     Q_UNUSED(widget)
 
     bool selected = (option->state & QStyle::State_Selected);
 
     QColor polygonColor = (selected ? QColor(Qt::green) : QColor(Qt::black));
-    int width = (selected ? SelectedPenWidth : DefaultPenWidth);
+    int width = (selected ? Constants::DiagramItem::SelectedPenWidth :
+                            Constants::DiagramItem::DefaultPenWidth);
 
     QPen pen(polygonColor);
     pen.setWidth(width);
     painter->setPen(pen);
     painter->setBrush(QBrush(Qt::white));
-    painter->drawPath(path());
+    painter->drawPath(path_);
 }
 
 QRectF DiagramItem::boundingRect() const
 {
-    QRectF rect = path().boundingRect();
-    return QRectF(rect.x()      - SelectedPenWidth / 2,
-                  rect.y()      - SelectedPenWidth / 2,
-                  rect.width()  + SelectedPenWidth,
-                  rect.height() + SelectedPenWidth);
+    return QRectF(Constants::DiagramItem::SelectedPenWidth / 2,
+                  Constants::DiagramItem::SelectedPenWidth / 2,
+                  size_.width()  + Constants::DiagramItem::SelectedPenWidth,
+                  size_.height() + Constants::DiagramItem::SelectedPenWidth);
 }
 
 QRectF DiagramItem::pathBoundingRect() const
 {
-    return path().boundingRect();
+    return path_.boundingRect();
 }
 
 void DiagramItem::resize(const QSizeF &size)
@@ -215,8 +257,8 @@ void DiagramItem::resize(qreal width, qreal height)
 
 QPainterPath DiagramItem::getDefaultShape(DiagramType diagramType)
 {
-    int w = DefaultSize::Width;
-    int h = DefaultSize::Height;
+    int w = Constants::DiagramItem::DefaultWidth;
+    int h = Constants::DiagramItem::DefaultHeight;
     QPainterPath painterPath;
     switch (diagramType) {
     case Terminal:
@@ -265,13 +307,16 @@ QPainterPath DiagramItem::getDefaultShape(DiagramType diagramType)
 
 QPixmap DiagramItem::image(DiagramType diagramType)
 {
-    QPixmap pixmap(DefaultSize::Width, DefaultSize::Height);
+    QPixmap pixmap(Constants::DiagramItem::DefaultWidth,
+                   Constants::DiagramItem::DefaultHeight);
     pixmap.fill(Qt::transparent);
+
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(QPen(Qt::black, 6));
     painter.setBrush(QBrush(Qt::white));
     painter.drawPath(getDefaultShape(diagramType));
+
     return pixmap;
 }
 

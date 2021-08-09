@@ -83,13 +83,6 @@ void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
     updateCurrentMousePosInfoTextArea();
 
-    QList<QGraphicsItem*> itemsUnderMouse = items(event->pos());
-
-    for (auto item : qAsConst(itemsUnderMouse)) {
-        QGraphicsSceneHoverEvent hoverMoveEvent(QEvent::GraphicsSceneHoverMove);
-        scene()->sendEvent(item, &hoverMoveEvent);
-    }
-
     if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::CTRL
             && !isInteractive()) {
         setInteractive(true);

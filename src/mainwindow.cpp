@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "pathresizer.h"
+#include "constants.h"
 
 #include <QtWidgets>
 
@@ -12,7 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
     createSideMenu();
     createMenus();
 
-    scene_->setSceneRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
+    scene_->setSceneRect(QRectF(0, 0,
+                                Constants::DiagramScene::A4Width,
+                                Constants::DiagramScene::A4Height));
 
     view_->setObjectName("graphicsView");
     view_->setRenderHint(QPainter::Antialiasing, true);

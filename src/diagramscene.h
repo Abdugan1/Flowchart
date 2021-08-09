@@ -10,15 +10,6 @@ class GraphicsItemGroup;
 class DiagramScene : public QGraphicsScene
 {
     Q_OBJECT
-public:
-    enum DefaultSize {
-        Width = 645,
-        Height = 975
-    };
-
-    enum {
-        GridSize = 20
-    };
 
 public:
     DiagramScene(QObject* parent = nullptr);

@@ -6,6 +6,7 @@
 class DiagramTextItem : public QGraphicsTextItem
 {
     Q_OBJECT
+
 public:
     DiagramTextItem(const QString& text, QGraphicsItem* parent = nullptr);
     DiagramTextItem(QGraphicsItem* parent = nullptr);

@@ -1,7 +1,9 @@
 #include "handleitem.h"
 #include "sizegripitem.h"
+#include "diagramitem.h"
 #include "diagramscene.h"
 
+#include "constants.h"
 #include "internal.h"
 
 #include <QGraphicsSceneHoverEvent>
@@ -12,11 +14,11 @@
 
 using PositionFlags = HandleItem::PositionFlags;
 
-HandleItem::HandleItem(PositionFlags positionFlags, SizeGripItem* parent)
-    : QGraphicsRectItem(-10, -10, 20, 20, parent)
+HandleItem::HandleItem(PositionFlags positionFlags, SizeGripItem *sizeGripItem)
+    : QGraphicsRectItem(-10, -10, 20, 20, sizeGripItem->diagramItem())
     , visibleRect_(-4, -4, 8, 8)
     , positionFlags_(positionFlags)
-    , parent_(parent)
+    , sizeGripItem_(sizeGripItem)
 {
     setFlag(ItemIsMovable);
     setCursorByFlag(positionFlags);
@@ -41,7 +43,7 @@ void HandleItem::paint(QPainter *painter,
 void HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF pos = mapToParent(event->pos());
-    pos = internal::getPointByStep(pos, DiagramScene::GridSize);
+    pos = internal::getPointByStep(pos, Constants::DiagramScene::GridSize);
     pos = restrictPosition(pos);
 
     DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
@@ -71,28 +73,28 @@ void HandleItem::changeParentBoundingRect(const QPointF &pos)
     switch (positionFlags_)
     {
     case TopLeft:
-        parent_->setTopLeft(pos);
+        sizeGripItem_->setTopLeft(pos);
         break;
     case Top:
-        parent_->setTop(pos.y());
+        sizeGripItem_->setTop(pos.y());
         break;
     case TopRight:
-        parent_->setTopRight(pos);
+        sizeGripItem_->setTopRight(pos);
         break;
     case Right:
-        parent_->setRight(pos.x());
+        sizeGripItem_->setRight(pos.x());
         break;
     case BottomRight:
-        parent_->setBottomRight(pos);
+        sizeGripItem_->setBottomRight(pos);
         break;
     case Bottom:
-        parent_->setBottom(pos.y());
+        sizeGripItem_->setBottom(pos.y());
         break;
     case BottomLeft:
-        parent_->setBottomLeft(pos);
+        sizeGripItem_->setBottomLeft(pos);
         break;
     case Left:
-        parent_->setLeft(pos.x());
+        sizeGripItem_->setLeft(pos.x());
         break;
     }
 }

@@ -3,31 +3,15 @@
 
 #include <QGraphicsObject>
 
+class DiagramItem;
 class HandleItem;
-class HandleItemAppearArea;
 
-class SizeGripItem : public QGraphicsObject
+class SizeGripItem : public QObject
 {
     Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
 
 public:
-    class Resizer
-    {
-    public:
-        virtual void operator()(QGraphicsItem* item,
-                                QRectF& rect) = 0;
-        virtual ~Resizer() {}
-    };
-
-public:
-    SizeGripItem(Resizer* resizer, QGraphicsItem* parent);
-    virtual ~SizeGripItem();
-
-    QRectF boundingRect() const override;
-    void paint(QPainter* painter,
-               const QStyleOptionGraphicsItem* option,
-               QWidget* widget) override;
+    SizeGripItem(DiagramItem* diagramItem, QObject* parent = nullptr);
 
     void setTopLeft(const QPointF& pos);
     void setTop(qreal y);
@@ -40,9 +24,7 @@ public:
 
     void setRect(const QRectF& rect);
 
-protected:
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    DiagramItem *diagramItem() const;
 
 signals:
     void resizeBeenMade();
@@ -53,18 +35,14 @@ public slots:
 
 private:
     void doResize();
+    void resizeDiagramItem();
     void updateHandleItemsPositions();
 
 private:
-    enum {
-        MinWidth  = 80,
-        MinHeight = 60
-    };
 
+    DiagramItem* diagramItem_;
     QList<HandleItem*> handleItems_;
-    QList<HandleItemAppearArea*> appearAreas_;
     QRectF rect_;
-    Resizer* resizer_;
 };
 
 #endif // SIZEGRIPITEM_H

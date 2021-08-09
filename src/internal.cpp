@@ -1,5 +1,6 @@
 #include "internal.h"
 #include "diagramitem.h"
+#include <QDebug>
 
 #include <QPointF>
 

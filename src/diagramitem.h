@@ -1,15 +1,15 @@
 #ifndef DIAGRAMITEM_H
 #define DIAGRAMITEM_H
 
-#include "diagramtextitem.h"
+#include <QGraphicsItem>
 
-#include <QGraphicsPathItem>
-
+class DiagramTextItem;
 class SizeGripItem;
 
-class DiagramItem : public QObject, public QGraphicsPathItem
+class DiagramItem : public QObject, public QGraphicsItem
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 
 public:
     enum DiagramType {
@@ -20,23 +20,11 @@ public:
         ForLoop,
     };
 
-    enum State {
-        Other,
-        TextEditing
-    };
-
-private:
-    enum DefaultSize {
-        Width  = 200,
-        Height = 80
-    };
-    enum {
-        DefaultPenWidth  = 1,
-        SelectedPenWidth = 2
-    };
+    enum {Type = UserType + 1};
 
 public:
     DiagramItem(DiagramType diagramType, QGraphicsItem* parent = nullptr);
+    ~DiagramItem();
     DiagramType diagramType() const;
 
     void paint(QPainter *painter,
@@ -44,6 +32,7 @@ public:
                QWidget *widget) override;
 
     QRectF boundingRect() const override;
+    int type() const override {return Type;}
     QRectF pathBoundingRect() const;
 
     void resize(const QSizeF& size);
@@ -55,6 +44,12 @@ public:
 
     QString text() const;
     void setText(const QString& text);
+
+    QPainterPath path() const;
+    void setPath(QPainterPath newPath);
+
+    const QSizeF &size() const;
+    void setSize(const QSizeF &newSize);
 
 signals:
     void itemPositionChanged(const QPointF& pos);
@@ -79,9 +74,12 @@ protected:
 private:
     void enableTextEditing();
     void setTextCursorMappedToTextItem(const QPointF& clickPos);
+
 private:
+    QPainterPath path_;
+    QSizeF size_;
     DiagramType diagramType_;
-    State state_;
+    bool textEditing_ = false;
 
     DiagramTextItem *textItem_;
     SizeGripItem    *sizeGripItem_;

@@ -1,8 +1,9 @@
 #include "diagramscene.h"
 #include "diagramitem.h"
 #include "diagramview.h"
-#include "pathresizer.h"
 #include "graphicsitemgroup.h"
+
+#include "constants.h"
 #include "internal.h"
 
 #include <QPainter>
@@ -280,19 +281,19 @@ void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
     QPen pen;
     painter->setPen(pen);
 
-    int left = int(rect.left() - (int(rect.left()) % GridSize));
-    int top  = int(rect.top()  - (int(rect.top())  % GridSize));
+    int left = int(rect.left() - (int(rect.left()) % Constants::DiagramScene::GridSize));
+    int top  = int(rect.top()  - (int(rect.top())  % Constants::DiagramScene::GridSize));
 
     QVector<QPointF> points;
-    for (int x = left; x < rect.right(); x += GridSize) {
-        for (int y = top; y < rect.bottom(); y += GridSize) {
+    for (int x = left; x < rect.right(); x += Constants::DiagramScene::GridSize) {
+        for (int y = top; y < rect.bottom(); y += Constants::DiagramScene::GridSize) {
             points.append(QPointF(x, y));
         }
     }
 
     painter->drawPoints(points.data(), points.size());
 
-    painter->drawRect(QRectF(0, 0, DiagramScene::Width, DiagramScene::Height));
+    painter->drawRect(QRectF(0, 0, Constants::DiagramScene::A4Width, Constants::DiagramScene::A4Height));
 }
 
 void DiagramScene::deleteAllLines()

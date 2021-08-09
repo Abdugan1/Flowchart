@@ -1,11 +1,12 @@
 #include "handleitemappeararea.h"
 #include "sizegripitem.h"
+#include "diagramitem.h"
 #include "handleitem.h"
 
 #include <QPainter>
 
 HandleItemAppearArea::HandleItemAppearArea(HandleItem *handleItem, SizeGripItem *parent)
-    : QGraphicsItem(parent)
+    : QGraphicsItem(parent->diagramItem())
 {
     sizeGripItem_ = parent;
     handleItem_   = handleItem;

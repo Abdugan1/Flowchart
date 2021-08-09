@@ -20,11 +20,11 @@ SOURCES += \
     src/itemproperties.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/pathresizer.cpp \
     src/scenebuffer.cpp \
     src/sizegripitem.cpp
 
 HEADERS += \
+    src/constants.h \
     src/diagramitem.h \
     src/diagramscene.h \
     src/diagramtextitem.h \
@@ -35,7 +35,6 @@ HEADERS += \
     src/internal.h \
     src/itemproperties.h \
     src/mainwindow.h \
-    src/pathresizer.h \
     src/scenebuffer.h \
     src/sizegripitem.h
 

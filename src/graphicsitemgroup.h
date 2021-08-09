@@ -10,7 +10,9 @@ class GraphicsItemGroup : public QObject, public QGraphicsItemGroup
 public:
     GraphicsItemGroup(const QPointF& pos, QGraphicsItem *parent = nullptr);
     QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *widget) override;
 
 signals:
     void lostSelection();
@@ -23,7 +25,6 @@ protected:
 
 private:
     QPointF calculateBottomRight(QPointF topLeft) const;
-
 };
 
 #endif // GRAPHICSITEMGROUP_H

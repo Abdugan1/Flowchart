@@ -1,6 +1,8 @@
 #include "graphicsitemgroup.h"
 #include "diagramscene.h"
 #include "diagramitem.h"
+
+#include "constants.h"
 #include "internal.h"
 
 #include <QPainter>
@@ -41,7 +43,7 @@ QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant
     if (change == ItemPositionChange) {
         QPointF newPos = value.toPointF();
 
-        newPos = internal::getPointByStep(newPos, DiagramScene::GridSize / 2);
+        newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize / 2);
 
         QPointF bottomRight = calculateBottomRight(newPos);
         newPos = static_cast<DiagramScene*>(scene())->
