@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 
 class QMenu;
+class QRubberBand;
 
 class DiagramView : public QGraphicsView
 {
@@ -14,7 +15,7 @@ public:
     DiagramView(QGraphicsScene* scene, QWidget* parent = nullptr);
 
 signals:
-    void rubberBandSelectingFinished();
+    void rubberBandSelectingFinished(const QRectF& rubberBandRect);
     void saveFileDropped(const QString& fileName);
     void copyActionTriggered(const QList<QGraphicsItem*>& items);
     void pasteActionTriggered(const QPointF& posToPaste);
@@ -36,11 +37,15 @@ protected:
 
     void paintEvent(QPaintEvent *event) override;
 
-    void contextMenuEvent(QContextMenuEvent *event) override;
-
 private:
     void init();
+
     void initContextMenu();
+
+    void initRubberBand();
+    void updateRubberBand();
+    void finishRubberBand();
+
     bool isRubberBandFinishedSelecting(const QRect& rubberBandRect,
                                        const QPointF& fromScenePoint,
                                        const QPointF& toScenePoint);
@@ -48,6 +53,11 @@ private:
 private:
     int lastDiagramCount_ = 0;
 
+    QPointF clickedPos_;
+    QPointF movedPos_;
+    bool rubberBandActive_ = false;
+
+    QRubberBand* rubberBand_ = nullptr;
     QMenu* contextMenu_;
 };
 

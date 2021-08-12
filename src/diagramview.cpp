@@ -1,6 +1,7 @@
 #include "diagramview.h"
 #include "diagramitem.h"
 
+#include "constants.h"
 #include "internal.h"
 
 #include <QtEvents>
@@ -10,9 +11,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QMenu>
-
-const QString DiagramCountInfoText      = QObject::tr("Diagram count: %1");
-const QString CurrentMousePosInfoText   = QObject::tr("Current position (%1, %2)");
+#include <QRubberBand>
 
 DiagramView::DiagramView(QWidget *parent)
     : QGraphicsView(parent)
@@ -34,7 +33,7 @@ void DiagramView::updateDiagramCountInfoTextArea()
 
     } else {
         QRectF viewportRect = viewport()->rect();
-        const QString text = DiagramCountInfoText.arg("XXXXXX");
+        const QString text = Constants::DiagramView::DiagramCountInfoText.arg("XXXXXX");
         QFontMetrics fm(font());
         update(viewportRect.width()  - fm.horizontalAdvance(text),
                viewportRect.height() - fm.height() * 2,
@@ -45,7 +44,7 @@ void DiagramView::updateDiagramCountInfoTextArea()
 void DiagramView::updateCurrentMousePosInfoTextArea()
 {
     QRectF viewportRect = viewport()->rect();
-    const QString text = CurrentMousePosInfoText.arg("XXXX","XXXX");
+    const QString text = Constants::DiagramView::CurrentMousePosInfoText.arg("XXXX","XXXX");
     QFontMetrics fm(font());
     update(viewportRect.width()  - fm.horizontalAdvance(text),
            viewportRect.height() - fm.height(),
@@ -72,31 +71,48 @@ void DiagramView::wheelEvent(QWheelEvent *event)
 
 void DiagramView::mousePressEvent(QMouseEvent *event)
 {
+    clickedPos_ = event->pos();
+
     if (event->modifiers() == Qt::CTRL) {
-        setInteractive(false);
-        setDragMode(QGraphicsView::ScrollHandDrag);
+            setInteractive(false);
+            setDragMode(QGraphicsView::ScrollHandDrag);
+
+    } else  {
+        QList<QGraphicsItem*> items = scene()->items(mapToScene(event->pos()));
+        if (items.count() <= 0 && event->button() == Qt::LeftButton) {
+            initRubberBand();
+        } else if (event->button() == Qt::RightButton) {
+            contextMenu_->exec(mapToGlobal(event->pos()));
+        }
     }
+
     QGraphicsView::mousePressEvent(event);
 }
 
 void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
+    movedPos_ = event->pos();
+
     updateCurrentMousePosInfoTextArea();
 
-    if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::CTRL
+    if (rubberBandActive_)
+        updateRubberBand();
+
+    if (event->button() == Qt::LeftButton && event->modifiers() != Qt::CTRL
             && !isInteractive()) {
         setInteractive(true);
         setDragMode(NoDrag);
-        setDragMode(RubberBandDrag);
     }
     QGraphicsView::mouseMoveEvent(event);
 }
 
 void DiagramView::mouseReleaseEvent(QMouseEvent *event)
 {
+    if (rubberBandActive_)
+        finishRubberBand();
+
     setInteractive(true);
     setDragMode(NoDrag);
-    setDragMode(RubberBandDrag);
     QGraphicsView::mouseReleaseEvent(event);
 }
 
@@ -141,13 +157,13 @@ void DiagramView::paintEvent(QPaintEvent *event)
     // Setup current mouse position info text
     QPoint currMousePos = mapToScene(mapFromGlobal(QCursor::pos())).toPoint();
     QString currMousePosInfoText =
-            CurrentMousePosInfoText.arg(currMousePos.x()).arg(currMousePos.y());
+            Constants::DiagramView::CurrentMousePosInfoText.arg(currMousePos.x()).arg(currMousePos.y());
     QPointF pointMouse(viewportRect.width()  - fm.horizontalAdvance(currMousePosInfoText),
                        viewportRect.height() - fm.descent());
 
     // Setup current diagram items count info text
     lastDiagramCount_ = internal::getDiagramItemsFromQGraphics(items()).count();
-    QString diagramCountInfoText = DiagramCountInfoText.arg(lastDiagramCount_);
+    QString diagramCountInfoText = Constants::DiagramView::DiagramCountInfoText.arg(lastDiagramCount_);
     QPointF pointDiagram(viewportRect.width()  - fm.horizontalAdvance(diagramCountInfoText),
                          viewportRect.height() - fm.height());
 
@@ -161,28 +177,15 @@ void DiagramView::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
-void DiagramView::contextMenuEvent(QContextMenuEvent *event)
-{
-    contextMenu_->exec(event->globalPos());
-}
-
 void DiagramView::init()
 {
     initContextMenu();
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setDragMode(QGraphicsView::RubberBandDrag);
     setMouseTracking(true);
     setAcceptDrops(true);
     setFont(QFont(":/fonts/Montserrat-Regular.ttf", 12));
-
-    connect(this, &DiagramView::rubberBandChanged, this,
-            [this](QRect rubberBandRect, QPointF fromScenePoint, QPointF toScenePoint)
-    {
-        if (isRubberBandFinishedSelecting(rubberBandRect, fromScenePoint, toScenePoint))
-            emit rubberBandSelectingFinished();
-    });
 }
 
 void DiagramView::initContextMenu()
@@ -219,9 +222,25 @@ void DiagramView::initContextMenu()
     contextMenu_->addAction(deleteAction);
 }
 
-bool DiagramView::isRubberBandFinishedSelecting(const QRect &rubberBandRect,
-                                                const QPointF &fromScenePoint,
-                                                const QPointF &toScenePoint)
+void DiagramView::initRubberBand()
 {
-    return (rubberBandRect.isNull() && fromScenePoint.isNull() && toScenePoint.isNull());
+    if (!rubberBand_)
+        rubberBand_ = new QRubberBand(QRubberBand::Rectangle, this);
+    rubberBand_->setGeometry(QRect(clickedPos_.toPoint(), QSize()));
+    rubberBand_->show();
+    rubberBandActive_ = true;
+}
+
+void DiagramView::updateRubberBand()
+{
+    rubberBand_->setGeometry(QRect(clickedPos_.toPoint(),
+                                   movedPos_.toPoint()).normalized());
+}
+
+void DiagramView::finishRubberBand()
+{
+    rubberBand_->hide();
+    rubberBandActive_ = false;
+    emit rubberBandSelectingFinished(QRectF(mapToScene(rubberBand_->geometry().topLeft()),
+                                            mapToScene(rubberBand_->geometry().bottomRight())));
 }

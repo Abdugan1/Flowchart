@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include <QtGlobal>
+#include <QObject>
 
 namespace Constants {
 
@@ -25,6 +26,12 @@ static const int A4Height = 975;
 
 static const int GridSize = 20;
 
+}
+
+namespace DiagramView {
+
+const QString DiagramCountInfoText      = QObject::tr("Diagram count: %1");
+const QString CurrentMousePosInfoText   = QObject::tr("Current position (%1, %2)");
 }
 
 }

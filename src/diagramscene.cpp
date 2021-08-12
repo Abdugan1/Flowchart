@@ -86,7 +86,7 @@ QList<ItemProperties> DiagramScene::getDiagramItemsProperties(const QList<Diagra
     return itemsProperties;
 }
 
-void DiagramScene::drawPositionLines(const QPointF &pos)
+void DiagramScene::drawPositionLines()
 {
     if (!drawPositionLines_)
         return;
@@ -100,7 +100,7 @@ void DiagramScene::drawPositionLines(const QPointF &pos)
     DiagramItem* senderItem   = static_cast<DiagramItem*>(sender());
     QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items());
 
-    QPoint senderCenter  = pos.toPoint() + senderItem->boundingRect().center().toPoint();
+    QPoint senderCenter  = getItemCenter(senderItem);
     QPoint verticalBegin = senderCenter;
     QPoint verticalEnd   = senderCenter;
 
@@ -170,10 +170,10 @@ void DiagramScene::destroyGraphicsItemGroup()
     group_ = nullptr;
 }
 
-void DiagramScene::makeGroupOfSelectedItems()
-{
+void DiagramScene::selectAndMakeGroup(const QRectF &rect)
+{    
     QList<DiagramItem*> selectedItems =
-            internal::getDiagramItemsFromQGraphics(this->selectedItems());
+            internal::getDiagramItemsFromQGraphics(this->items(rect));
 
     if (selectedItems.count() > 0)
         createGraphicsItemGroup(selectedItems);
@@ -320,7 +320,7 @@ void DiagramScene::drawLevelLine(const QLineF& line)
 
 QPoint DiagramScene::getItemCenter(const DiagramItem *item)
 {
-    return (item->pos().toPoint() + item->boundingRect().center().toPoint());
+    return (item->pos().toPoint() + item->pathBoundingRect().center().toPoint());
 }
 
 void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)

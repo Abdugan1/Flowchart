@@ -52,7 +52,7 @@ public:
     void setSize(const QSizeF &newSize);
 
 signals:
-    void itemPositionChanged(const QPointF& pos);
+    void itemPositionChanged();
     void itemReleased();
 
 public slots:

@@ -56,7 +56,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
         return newPos;
 
     } else if (change == ItemPositionHasChanged) {
-        emit itemPositionChanged(value.toPointF());
+        emit itemPositionChanged();
 
     } else if (change == ItemSelectedChange
                && textItem_->textInteractionFlags() != Qt::NoTextInteraction
@@ -234,10 +234,10 @@ void DiagramItem::paint(QPainter *painter,
 
 QRectF DiagramItem::boundingRect() const
 {
-    return QRectF(Constants::DiagramItem::SelectedPenWidth / 2,
-                  Constants::DiagramItem::SelectedPenWidth / 2,
-                  size_.width()  + Constants::DiagramItem::SelectedPenWidth,
-                  size_.height() + Constants::DiagramItem::SelectedPenWidth);
+    return QRectF(-Constants::DiagramItem::SelectedPenWidth / 2,
+                  -Constants::DiagramItem::SelectedPenWidth / 2,
+                   size_.width()  + Constants::DiagramItem::SelectedPenWidth,
+                   size_.height() + Constants::DiagramItem::SelectedPenWidth);
 }
 
 QRectF DiagramItem::pathBoundingRect() const

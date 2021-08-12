@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     view_->setRenderHint(QPainter::Antialiasing, true);
 
     connect(view_,  &DiagramView::rubberBandSelectingFinished,
-            scene_, &DiagramScene::makeGroupOfSelectedItems);
+            scene_, &DiagramScene::selectAndMakeGroup);
 
     connect(view_, &DiagramView::saveFileDropped,
             this,  &MainWindow::loadFromSaveFile);
