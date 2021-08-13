@@ -7,8 +7,6 @@
 #include "constants.h"
 #include "internal.h"
 
-#include <QDebug>
-
 using PositionFlags = HandleItem::PositionFlags;
 
 SizeGripItem::SizeGripItem(DiagramItem *diagramItem, QObject *parent)
@@ -17,41 +15,122 @@ SizeGripItem::SizeGripItem(DiagramItem *diagramItem, QObject *parent)
 {
     rect_ = diagramItem->pathBoundingRect();
 
-    handleItems_.append(new HandleItem(PositionFlags::TopLeft,      this));
-    handleItems_.append(new HandleItem(PositionFlags::Top,          this));
-    handleItems_.append(new HandleItem(PositionFlags::TopRight,     this));
-    handleItems_.append(new HandleItem(PositionFlags::Right,        this));
-    handleItems_.append(new HandleItem(PositionFlags::BottomRight,  this));
-    handleItems_.append(new HandleItem(PositionFlags::Bottom,       this));
-    handleItems_.append(new HandleItem(PositionFlags::BottomLeft,   this));
-    handleItems_.append(new HandleItem(PositionFlags::Left,         this));
+    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::TopLeft    ), this));
+    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::Top        ), this));
+    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::TopRight   ), this));
+    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::Right      ), this));
+    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::BottomRight), this));
+    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::Bottom     ), this));
+    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::BottomLeft ), this));
+    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::Left       ), this));
 
     updateHandleItemsPositions();
     hideHandleItems();
 }
 
-#define IMPL_SET_FN(TYPE, POS)                                      \
-    void SizeGripItem::set ## POS (TYPE v)                          \
-{                                                                   \
-    QRectF oldRect = rect_;                                         \
-    rect_.set ## POS (v);                                           \
-    if (rect_.width() < Constants::DiagramItem::MinWidth            \
-        || rect_.height() < Constants::DiagramItem::MinHeight) {    \
-    rect_ = oldRect;                                                \
-    return;                                                         \
-    }                                                               \
-    doResize();                                                     \
+void SizeGripItem::setTop(qreal y)
+{
+    QRectF oldRect = rect_;
+    rect_.setTop(y);
+    if (rect_.height() < Constants::DiagramItem::MinHeight) {
+        rect_ = oldRect;
+        return;
+    }
+    doResize();
 }
 
-IMPL_SET_FN(qreal, Top)
-IMPL_SET_FN(qreal, Right)
-IMPL_SET_FN(qreal, Bottom)
-IMPL_SET_FN(qreal, Left)
-IMPL_SET_FN(const QPointF&, TopLeft)
-IMPL_SET_FN(const QPointF&, TopRight)
-IMPL_SET_FN(const QPointF&, BottomRight)
-IMPL_SET_FN(const QPointF&, BottomLeft)
+void SizeGripItem::setRight(qreal x)
+{
+    QRectF oldRect = rect_;
+    rect_.setRight(x);
+    if (rect_.width() < Constants::DiagramItem::MinWidth) {
+        rect_ = oldRect;
+        return;
+    }
+    doResize();
+}
 
+void SizeGripItem::setBottom(qreal y)
+{
+    QRectF oldRect = rect_;
+    rect_.setBottom(y);
+    if (rect_.height() < Constants::DiagramItem::MinHeight) {
+        rect_ = oldRect;
+        return;
+    }
+    doResize();
+}
+
+void SizeGripItem::setLeft(qreal v)
+{
+    QRectF oldRect = rect_;
+    rect_.setLeft(v);
+    if (rect_.width() < Constants::DiagramItem::MinWidth) {
+        rect_ = oldRect;
+        return;
+    }
+    doResize();
+}
+
+void SizeGripItem::setTopLeft(const QPointF &pos)
+{
+    QRectF oldRect = rect_;
+    rect_.setTopLeft(pos);
+
+    if (rect_.width() < Constants::DiagramItem::MinWidth)
+        rect_.setLeft(oldRect.left());
+
+    if (rect_.height() < Constants::DiagramItem::MinHeight)
+        rect_.setTop(oldRect.top());
+
+    if (rect_ != oldRect)
+        doResize();
+}
+
+void SizeGripItem::setTopRight(const QPointF &pos)
+{
+    QRectF oldRect = rect_;
+    rect_.setTopRight(pos);
+
+    if (rect_.width() < Constants::DiagramItem::MinWidth)
+        rect_.setRight(oldRect.right());
+
+    if (rect_.height() < Constants::DiagramItem::MinHeight)
+        rect_.setTop(oldRect.top());
+
+    if (rect_ != oldRect)
+        doResize();
+}
+
+void SizeGripItem::setBottomRight(const QPointF &pos)
+{
+    QRectF oldRect = rect_;
+    rect_.setBottomRight(pos);
+
+    if (rect_.width() < Constants::DiagramItem::MinWidth)
+        rect_.setRight(oldRect.right());
+
+    if (rect_.height() < Constants::DiagramItem::MinHeight)
+        rect_.setBottom(oldRect.bottom());
+
+    if (rect_ != oldRect)
+        doResize();
+}
+
+void SizeGripItem::setBottomLeft(const QPointF &pos)
+{
+    QRectF oldRect = rect_;
+    rect_.setBottomLeft(pos);
+
+    if (rect_.width() < Constants::DiagramItem::MinWidth)
+        rect_.setLeft(oldRect.left());
+
+    if (rect_.height() < Constants::DiagramItem::MinHeight)
+        rect_.setBottom(oldRect.bottom());
+
+    if (rect_ != oldRect)
+        doResize();
+}
 
 void SizeGripItem::setRect(const QRectF &rect)
 {
@@ -62,13 +141,13 @@ void SizeGripItem::setRect(const QRectF &rect)
 void SizeGripItem::hideHandleItems()
 {
     for (auto item : qAsConst(handleItems_))
-        item->hide();
+        item->handleItem()->hide();
 }
 
 void SizeGripItem::showHandleItems()
 {
     for (auto item : qAsConst(handleItems_))
-        item->show();
+        item->handleItem()->show();
 }
 
 void SizeGripItem::doResize()
@@ -107,7 +186,7 @@ void SizeGripItem::updateHandleItemsPositions()
     for (auto item : qAsConst(handleItems_)) {
         item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
 
-        switch (item->positionFlags())
+        switch (item->handleItem()->positionFlags())
         {
         case PositionFlags::TopLeft:
             item->setPos(rect_.topLeft());

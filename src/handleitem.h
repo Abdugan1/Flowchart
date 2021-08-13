@@ -22,11 +22,13 @@ public:
     };
 
 public:
-    HandleItem(PositionFlags positionFlags, SizeGripItem* sizeGripItem);
+    HandleItem(PositionFlags positionFlags, QGraphicsItem* parent = nullptr);
     PositionFlags positionFlags() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
+
+    void setSizeGripItem(SizeGripItem *newSizeGripItem);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)    override;

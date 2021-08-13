@@ -51,7 +51,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
         QPointF newPos = value.toPointF();
         DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
         newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize / 2);
-        newPos = scene->preventOutsideMove(newPos, this);
+        newPos = scene->preventOutsideMove(newPos, newPos + QPointF(size_.width(), size_.height()));
 
         return newPos;
 

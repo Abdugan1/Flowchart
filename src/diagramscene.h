@@ -14,7 +14,6 @@ class DiagramScene : public QGraphicsScene
 public:
     DiagramScene(QObject* parent = nullptr);
 
-    QPointF preventOutsideMove(QPointF newPosTopLeft, QGraphicsItem* item);
     QPointF preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBottomRight);
 
     DiagramItem* createDiagramItem(int diagramType);

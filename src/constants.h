@@ -34,6 +34,18 @@ const QString DiagramCountInfoText      = QObject::tr("Diagram count: %1");
 const QString CurrentMousePosInfoText   = QObject::tr("Current position (%1, %2)");
 }
 
+namespace HandleItem {
+
+static const qreal VisibleWidth  = 8.0;
+static const qreal VisibleHeight = 8.0;
+
+static const qreal OverralHeight = 16.0;
+static const qreal OverralWidth  = 16.0;
+
+static const qreal Margin = 3.0;
+
+}
+
 }
 
 #endif // CONSTANTS_H

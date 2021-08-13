@@ -15,17 +15,6 @@ DiagramScene::DiagramScene(QObject *parent)
 {
 }
 
-QPointF DiagramScene::preventOutsideMove(QPointF newPosTopLeft, QGraphicsItem *item)
-{
-    QRectF itemBoundingRect = item->boundingRect();
-
-    QPointF bottomRight;
-    bottomRight.setX(itemBoundingRect.width()  + newPosTopLeft.x());
-    bottomRight.setY(itemBoundingRect.height() + newPosTopLeft.y());
-
-    return preventOutsideMove(newPosTopLeft, bottomRight);
-}
-
 QPointF DiagramScene::preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBottomRight)
 {
     QRectF sceneRect = this->sceneRect();

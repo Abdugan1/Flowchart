@@ -3,21 +3,27 @@
 #include "diagramitem.h"
 #include "handleitem.h"
 
-#include <QPainter>
+#include "constants.h"
 
-HandleItemAppearArea::HandleItemAppearArea(HandleItem *handleItem, SizeGripItem *parent)
-    : QGraphicsItem(parent->diagramItem())
+#include <QPainter>
+#include <QDebug>
+
+HandleItemAppearArea::HandleItemAppearArea(HandleItem *handleItem, SizeGripItem *sizeGripItem)
+    : QGraphicsItem(sizeGripItem->diagramItem())
 {
-    sizeGripItem_ = parent;
+    sizeGripItem_ = sizeGripItem;
     handleItem_   = handleItem;
+    handleItem_->setParentItem(this);
+    handleItem_->setSizeGripItem(sizeGripItem);
 
     setAcceptHoverEvents(true);
 
     appearArea_ = handleItem_->boundingRect();
-    appearArea_.setX(appearArea_.x() - DefaultDistance);
-    appearArea_.setY(appearArea_.y() - DefaultDistance);
-    appearArea_.setWidth(appearArea_.width()   + DefaultDistance);
-    appearArea_.setHeight(appearArea_.height() + DefaultDistance);
+
+    appearArea_.setX(appearArea_.x() - Constants::HandleItem::Margin);
+    appearArea_.setY(appearArea_.y() - Constants::HandleItem::Margin);
+    appearArea_.setWidth(appearArea_.width()   + Constants::HandleItem::Margin);
+    appearArea_.setHeight(appearArea_.height() + Constants::HandleItem::Margin);
 }
 
 QRectF HandleItemAppearArea::boundingRect() const

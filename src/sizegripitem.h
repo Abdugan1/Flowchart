@@ -5,6 +5,7 @@
 
 class DiagramItem;
 class HandleItem;
+class HandleItemAppearArea;
 
 class SizeGripItem : public QObject
 {
@@ -41,7 +42,7 @@ private:
 private:
 
     DiagramItem* diagramItem_;
-    QList<HandleItem*> handleItems_;
+    QList<HandleItemAppearArea*> handleItems_;
     QRectF rect_;
 };
 

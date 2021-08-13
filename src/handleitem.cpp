@@ -2,6 +2,7 @@
 #include "sizegripitem.h"
 #include "diagramitem.h"
 #include "diagramscene.h"
+#include "handleitemappeararea.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -9,16 +10,21 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QGuiApplication>
 #include <QCursor>
-#include <QDebug>
 #include <QPainter>
 
 using PositionFlags = HandleItem::PositionFlags;
 
-HandleItem::HandleItem(PositionFlags positionFlags, SizeGripItem *sizeGripItem)
-    : QGraphicsRectItem(-10, -10, 20, 20, sizeGripItem->diagramItem())
-    , visibleRect_(-4, -4, 8, 8)
+HandleItem::HandleItem(PositionFlags positionFlags, QGraphicsItem *parent)
+    : QGraphicsRectItem(-Constants::HandleItem::OverralWidth  / 2,
+                        -Constants::HandleItem::OverralHeight / 2,
+                         Constants::HandleItem::OverralWidth,
+                         Constants::HandleItem::OverralHeight,
+                         parent)
+    , visibleRect_(-Constants::HandleItem::VisibleWidth  / 2,
+                   -Constants::HandleItem::VisibleHeight / 2,
+                    Constants::HandleItem::VisibleWidth,
+                    Constants::HandleItem::VisibleHeight)
     , positionFlags_(positionFlags)
-    , sizeGripItem_(sizeGripItem)
 {
     setFlag(ItemIsMovable);
     setCursorByFlag(positionFlags);
@@ -47,11 +53,13 @@ void HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     pos = restrictPosition(pos);
 
     DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
-    pos = mapToParent(mapFromScene(scene->preventOutsideMove(
-                                       mapToScene(mapFromParent(pos)),
-                                       this)));
 
-    if (pos != this->pos())
+    // Workaround
+    QPointF fromParentToScene = mapToScene(mapFromItem(QGraphicsItem::parentItem(), pos));
+    pos =  mapToItem(QGraphicsItem::parentItem()->parentItem(),
+                     mapFromScene(scene->preventOutsideMove(fromParentToScene, fromParentToScene)));
+
+    if (mapToScene(pos) != mapToScene(QGraphicsItem::pos()))
         changeParentBoundingRect(pos);
 }
 
@@ -130,4 +138,9 @@ void HandleItem::setCursorByFlag(PositionFlags positionFlags)
         break;
     }
     setCursor(cursor);
+}
+
+void HandleItem::setSizeGripItem(SizeGripItem *newSizeGripItem)
+{
+    sizeGripItem_ = newSizeGripItem;
 }

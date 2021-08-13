@@ -10,13 +10,12 @@ class SizeGripItem;
 class HandleItemAppearArea : public QGraphicsItem
 {
 public:
-    enum { DefaultDistance = 3 };
-
-public:
-    HandleItemAppearArea(HandleItem* handleItem, SizeGripItem* parent);
+    HandleItemAppearArea(HandleItem* handleItem, SizeGripItem* sizeGripItem);
 
     QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *widget) override;
 
     HandleItem *handleItem() const;
 
