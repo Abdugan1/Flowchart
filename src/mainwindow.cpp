@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "constants.h"
+#include "internal.h"
 
 #include <QtWidgets>
 
@@ -15,9 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     scene_->setSceneRect(QRectF(0, 0,
                                 Constants::DiagramScene::A4Width,
                                 Constants::DiagramScene::A4Height));
-
-    view_->setObjectName("graphicsView");
-    view_->setRenderHint(QPainter::Antialiasing, true);
 
     connect(view_,  &DiagramView::rubberBandSelectingFinished,
             scene_, &DiagramScene::selectAndMakeGroup);
@@ -74,7 +72,7 @@ void MainWindow::onSaveAsJson()
         return;
 
     QList<ItemProperties> itemsProperties =
-            scene_->getDiagramItemsProperties(scene_->getDiagramItems());
+            internal::getDiagramItemsProperties(scene_->getDiagramItems());
 
     QJsonObject jsonObject = getJsonFromItemsProperties(itemsProperties);
 

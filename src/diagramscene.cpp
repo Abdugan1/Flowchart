@@ -62,19 +62,6 @@ QList<DiagramItem *> DiagramScene::getDiagramItems() const
     return internal::getDiagramItemsFromQGraphics(items());
 }
 
-QList<ItemProperties> DiagramScene::getDiagramItemsProperties(const QList<DiagramItem *> &diagramItems) const
-{
-    QList<ItemProperties> itemsProperties;
-    itemsProperties.reserve(diagramItems.count());
-    for (auto item : qAsConst(diagramItems)) {
-        ItemProperties properties;
-        obtainItemProperties(item, &properties);
-
-        itemsProperties.append(properties);
-    }
-    return itemsProperties;
-}
-
 void DiagramScene::drawPositionLines()
 {
     if (!drawPositionLines_)
@@ -212,7 +199,7 @@ void DiagramScene::copyItems(const QList<QGraphicsItem *> &items)
         buffer_.setGroupCopied(false);
     }
 
-    buffer_.setCopiedItemsProperties(getDiagramItemsProperties(tmp));
+    buffer_.setCopiedItemsProperties(internal::getDiagramItemsProperties(tmp));
 }
 
 void DiagramScene::pasteItemsToMousePos()
@@ -307,7 +294,7 @@ void DiagramScene::drawLevelLine(const QLineF& line)
     addItem(lineItem);
 }
 
-QPoint DiagramScene::getItemCenter(const DiagramItem *item)
+QPoint DiagramScene::getItemCenter(const DiagramItem *item) const
 {
     return (item->pos().toPoint() + item->pathBoundingRect().center().toPoint());
 }

@@ -1,6 +1,5 @@
 #include "sizegripitem.h"
 #include "handleitem.h"
-#include "diagramscene.h"
 #include "diagramitem.h"
 #include "handleitemappeararea.h"
 

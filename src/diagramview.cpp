@@ -183,8 +183,13 @@ void DiagramView::init()
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    setObjectName("graphicsView");
+    setRenderHint(QPainter::Antialiasing);
+
     setMouseTracking(true);
     setAcceptDrops(true);
+
     setFont(QFont(":/fonts/Montserrat-Regular.ttf", 12));
 }
 

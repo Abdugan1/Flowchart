@@ -1,8 +1,10 @@
 #include "internal.h"
 #include "diagramitem.h"
-#include <QDebug>
+#include "itemproperties.h"
 
+#include <QDebug>
 #include <QPointF>
+#include <QGraphicsScene>
 
 QPointF internal::getPointByStep(QPointF point, int step)
 {
@@ -30,4 +32,33 @@ QList<DiagramItem *> internal::getDiagramItemsFromQGraphics(const QList<QGraphic
     }
 
     return diagramItems;
+}
+
+QPointF internal::preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBottomRight, const QRectF &rect)
+{
+    if (!rect.contains(newPosTopLeft)) {
+        newPosTopLeft.setX(qMax(newPosTopLeft.x(), rect.left()));
+        newPosTopLeft.setY(qMax(newPosTopLeft.y(), rect.top()));
+    }
+    if (!rect.contains(newPosBottomRight)) {
+        newPosTopLeft.setX(qMin(newPosBottomRight.x(), rect.right())  -
+                           (newPosBottomRight.x() - newPosTopLeft.x()));
+
+        newPosTopLeft.setY(qMin(newPosBottomRight.y(), rect.bottom()) -
+                           (newPosBottomRight.y() - newPosTopLeft.y()));
+    }
+    return newPosTopLeft;
+}
+
+QList<ItemProperties> internal::getDiagramItemsProperties(const QList<DiagramItem *> &diagramItems)
+{
+    QList<ItemProperties> itemsProperties;
+    itemsProperties.reserve(diagramItems.count());
+    for (auto item : qAsConst(diagramItems)) {
+        ItemProperties properties;
+        obtainItemProperties(item, &properties);
+
+        itemsProperties.append(properties);
+    }
+    return itemsProperties;
 }
