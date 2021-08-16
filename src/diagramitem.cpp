@@ -1,5 +1,4 @@
 #include "diagramitem.h"
-#include "diagramscene.h"
 #include "diagramtextitem.h"
 #include "sizegripitem.h"
 
@@ -49,9 +48,12 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 {
     if (change == ItemPositionChange && scene()) {
         QPointF newPos = value.toPointF();
-        DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
+
         newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize / 2);
-        newPos = scene->preventOutsideMove(newPos, newPos + QPointF(size_.width(), size_.height()));
+
+        newPos = internal::preventOutsideMove(newPos, newPos + QPointF(size_.width(), size_.height()),
+                                              QRectF(0, 0, Constants::DiagramScene::A4Width,
+                                                     Constants::DiagramScene::A4Height));
 
         return newPos;
 

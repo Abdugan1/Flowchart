@@ -1,5 +1,4 @@
 #include "graphicsitemgroup.h"
-#include "diagramscene.h"
 #include "diagramitem.h"
 
 #include "constants.h"
@@ -21,21 +20,25 @@ GraphicsItemGroup::GraphicsItemGroup(const QPointF &pos, QGraphicsItem *parent)
 QRectF GraphicsItemGroup::boundingRect() const
 {
     QRectF rect = QGraphicsItemGroup::boundingRect();
-    return QRectF(rect.x()      - 16,
-                  rect.y()      - 16,
-                  rect.width()  + 32,
-                  rect.height() + 32);
+    return QRectF(rect.x()      - Constants::GraphicsItemGroup::Margin - Constants::GraphicsItemGroup::PenWidth / 2,
+                  rect.y()      - Constants::GraphicsItemGroup::Margin - Constants::GraphicsItemGroup::PenWidth / 2,
+                  rect.width()  + Constants::GraphicsItemGroup::Margin * 2 + Constants::GraphicsItemGroup::PenWidth,
+                  rect.height() + Constants::GraphicsItemGroup::Margin * 2 + Constants::GraphicsItemGroup::PenWidth);
 }
 
-void GraphicsItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void GraphicsItemGroup::paint(QPainter *painter,
+                              const QStyleOptionGraphicsItem *option,
+                              QWidget *widget)
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
     painter->setPen(QPen(Qt::darkCyan));
     QRectF rect = boundingRect();
-    painter->drawRect(QRectF(rect.x() + 1,     rect.y() + 1,
-                             rect.width() - 2, rect.height() - 2));
+    painter->drawRect(QRectF(rect.x()      + Constants::GraphicsItemGroup::PenWidth / 2,
+                             rect.y()      + Constants::GraphicsItemGroup::PenWidth / 2,
+                             rect.width()  - Constants::GraphicsItemGroup::PenWidth,
+                             rect.height() - Constants::GraphicsItemGroup::PenWidth));
 }
 
 QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -46,8 +49,9 @@ QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant
         newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize / 2);
 
         QPointF bottomRight = calculateBottomRight(newPos);
-        newPos = static_cast<DiagramScene*>(scene())->
-                preventOutsideMove(newPos, bottomRight);
+        newPos = internal::preventOutsideMove(newPos, bottomRight,
+                                              QRectF(0, 0,Constants::DiagramScene::A4Width,
+                                                     Constants::DiagramScene::A4Height));
 
         return newPos;
 

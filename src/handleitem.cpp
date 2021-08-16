@@ -1,7 +1,6 @@
 #include "handleitem.h"
 #include "sizegripitem.h"
 #include "diagramitem.h"
-#include "diagramscene.h"
 #include "handleitemappeararea.h"
 
 #include "constants.h"
@@ -52,12 +51,12 @@ void HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     pos = internal::getPointByStep(pos, Constants::DiagramScene::GridSize);
     pos = restrictPosition(pos);
 
-    DiagramScene* scene = static_cast<DiagramScene*>(this->scene());
-
     // Workaround
     QPointF fromParentToScene = mapToScene(mapFromItem(QGraphicsItem::parentItem(), pos));
     pos =  mapToItem(QGraphicsItem::parentItem()->parentItem(),
-                     mapFromScene(scene->preventOutsideMove(fromParentToScene, fromParentToScene)));
+                     mapFromScene(internal::preventOutsideMove(fromParentToScene, fromParentToScene,
+                                                               QRectF(0, 0, Constants::DiagramScene::A4Width,
+                                                                      Constants::DiagramScene::A4Height))));
 
     if (mapToScene(pos) != mapToScene(QGraphicsItem::pos()))
         changeParentBoundingRect(pos);

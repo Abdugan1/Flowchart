@@ -14,14 +14,10 @@ class DiagramScene : public QGraphicsScene
 public:
     DiagramScene(QObject* parent = nullptr);
 
-    QPointF preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBottomRight);
-
     DiagramItem* createDiagramItem(int diagramType);
     DiagramItem* createDiagramItem(const ItemProperties& itemProperties);
 
     QList<DiagramItem*> getDiagramItems() const;
-    QList<ItemProperties> getDiagramItemsProperties(
-            const QList<DiagramItem*>& diagramItems) const;
 
 public slots:
     void drawPositionLines();
@@ -43,7 +39,7 @@ protected:
 private:
     void deleteAllLines();
     void drawLevelLine(const QLineF& line);
-    QPoint getItemCenter(const DiagramItem* item);
+    QPoint getItemCenter(const DiagramItem* item) const;
     void createGraphicsItemGroup(QList<DiagramItem*>& diagramItems);
     void setItemPosWithoutDrawingPositionLines(DiagramItem* item, const QPointF& pos);
 
