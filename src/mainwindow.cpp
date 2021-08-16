@@ -3,6 +3,7 @@
 #include "internal.h"
 
 #include <QtWidgets>
+#include <QStandardPaths>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -96,8 +97,24 @@ void MainWindow::onOpenDiagram()
     }
 }
 
+void MainWindow::exportToPng()
+{
+    scene_->clearAllSelection();
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export to PNG"),
+                                                    QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
+                                                    tr("PNG files (*.png)"));
+    if (!fileName.isEmpty()) {
+        QImage image = scene_->toImage();
+        image.save(fileName);
+    }
+}
+
 void MainWindow::loadFromSaveFile(const QString &fileName)
 {
+    if (fileName.isEmpty())
+        return;
+
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly))
         return;
@@ -170,6 +187,10 @@ void MainWindow::createActions()
     openDiagramAction_->setShortcut(QKeySequence::Open);
     connect(openDiagramAction_, &QAction::triggered, this, &MainWindow::onOpenDiagram);
 
+    exportToPngAction_ = new QAction(tr("&Export To PNG"), this);
+    exportToPngAction_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
+    connect(exportToPngAction_, &QAction::triggered, this, &MainWindow::exportToPng);
+
     aboutQtAction_ = new QAction(tr("About &Qt"), this);
     connect(aboutQtAction_, &QAction::triggered, qApp, &QApplication::aboutQt);
 }
@@ -179,6 +200,7 @@ void MainWindow::createMenus()
     fileMenu_ = menuBar()->addMenu(tr("&File"));
     fileMenu_->addAction(saveAsJsonAction_);
     fileMenu_->addAction(openDiagramAction_);
+    fileMenu_->addAction(exportToPngAction_);
 
     itemMenu_ = menuBar()->addMenu(tr("&Item"));
     itemMenu_->addAction(deleteAction_);

@@ -21,7 +21,7 @@ static const int SelectedPenWidth = 2;
 
 namespace DiagramScene {
 
-static const int A4Width  = 645;
+static const int A4Width  = 680;
 static const int A4Height = 975;
 
 static const int GridSize = 20;

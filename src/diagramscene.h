@@ -19,6 +19,10 @@ public:
 
     QList<DiagramItem*> getDiagramItems() const;
 
+    QImage toImage();
+
+    void clearAllSelection();
+
 public slots:
     void drawPositionLines();
     void deleteAllPositionLines();

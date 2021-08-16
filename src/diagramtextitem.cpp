@@ -67,7 +67,9 @@ void DiagramTextItem::updatePosition()
 void DiagramTextItem::init()
 {
     setTextInteractionFlags(Qt::NoTextInteraction);
-    setFont(QFont("Times New Roman", 14));
+    QFont font("Times New Roman", 14);
+    font.setStyleStrategy(QFont::PreferAntialias);
+    setFont(font);
     setAcceptHoverEvents(true);
 
     updateGeometry();

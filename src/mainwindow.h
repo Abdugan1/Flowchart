@@ -26,6 +26,7 @@ private slots:
     void buttonGroupClicked(QAbstractButton* button);
     void onSaveAsJson();
     void onOpenDiagram();
+    void exportToPng();
 
     void loadFromSaveFile(const QString& fileName);
 
@@ -55,6 +56,8 @@ private:
 
     QAction* saveAsJsonAction_;
     QAction* openDiagramAction_;
+
+    QAction* exportToPngAction_;
 
     QMenu* itemMenu_;
     QMenu* fileMenu_;

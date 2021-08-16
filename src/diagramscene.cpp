@@ -44,6 +44,29 @@ QList<DiagramItem *> DiagramScene::getDiagramItems() const
     return internal::getDiagramItemsFromQGraphics(items());
 }
 
+QImage DiagramScene::toImage()
+{
+    QImage image(sceneRect().size().toSize(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    render(&painter);
+
+    return image;
+}
+
+void DiagramScene::clearAllSelection()
+{
+    QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items());
+    if (!items.isEmpty()) {
+        if (group_)
+            destroyGraphicsItemGroup();
+        else
+            items.first()->setSelected(false);
+    }
+}
+
 void DiagramScene::drawPositionLines()
 {
     if (!drawPositionLines_)
