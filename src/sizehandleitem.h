@@ -1,12 +1,12 @@
-#ifndef HANDLEITEM_H
-#define HANDLEITEM_H
+#ifndef SIZEHANDLEITEM_H
+#define SIZEHANDLEITEM_H
 
 #include <QGraphicsRectItem>
 
 class SizeGripItem;
 class DiagramItem;
 
-class HandleItem : public QGraphicsRectItem
+class SizeHandleItem : public QGraphicsRectItem
 {
 public:
     enum PositionFlags
@@ -22,7 +22,7 @@ public:
     };
 
 public:
-    HandleItem(PositionFlags positionFlags, QGraphicsItem* parent = nullptr);
+    SizeHandleItem(PositionFlags positionFlags, QGraphicsItem* parent = nullptr);
     PositionFlags positionFlags() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
@@ -45,4 +45,4 @@ private:
     SizeGripItem* sizeGripItem_;
 };
 
-#endif // HANDLEITEM_H
+#endif // SIZEHANDLEITEM_H

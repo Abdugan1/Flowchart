@@ -4,7 +4,7 @@
 #include <QGraphicsObject>
 
 class DiagramItem;
-class HandleItem;
+class SizeHandleItem;
 class HandleItemAppearArea;
 
 class SizeGripItem : public QObject

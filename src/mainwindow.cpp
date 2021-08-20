@@ -73,7 +73,7 @@ void MainWindow::onSaveAsJson()
         return;
 
     QList<ItemProperties> itemsProperties =
-            internal::getDiagramItemsProperties(scene_->getDiagramItems());
+            internal::getDiagramItemsProperties(scene_->getDiagramItems(Qt::AscendingOrder));
 
     QJsonObject jsonObject = getJsonFromItemsProperties(itemsProperties);
 

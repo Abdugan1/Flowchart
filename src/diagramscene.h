@@ -17,7 +17,7 @@ public:
     DiagramItem* createDiagramItem(int diagramType);
     DiagramItem* createDiagramItem(const ItemProperties& itemProperties);
 
-    QList<DiagramItem*> getDiagramItems() const;
+    QList<DiagramItem*> getDiagramItems(Qt::SortOrder order = Qt::DescendingOrder) const;
 
     QImage toImage();
 

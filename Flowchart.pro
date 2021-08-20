@@ -9,34 +9,38 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/arrowhandleitem.cpp \
+    src/arrowmanageritem.cpp \
     src/diagramitem.cpp \
     src/diagramscene.cpp \
     src/diagramtextitem.cpp \
     src/diagramview.cpp \
     src/graphicsitemgroup.cpp \
-    src/handleitem.cpp \
     src/handleitemappeararea.cpp \
     src/internal.cpp \
     src/itemproperties.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/scenebuffer.cpp \
-    src/sizegripitem.cpp
+    src/sizegripitem.cpp \
+    src/sizehandleitem.cpp
 
 HEADERS += \
+    src/arrowhandleitem.h \
+    src/arrowmanageritem.h \
     src/constants.h \
     src/diagramitem.h \
     src/diagramscene.h \
     src/diagramtextitem.h \
     src/diagramview.h \
     src/graphicsitemgroup.h \
-    src/handleitem.h \
     src/handleitemappeararea.h \
     src/internal.h \
     src/itemproperties.h \
     src/mainwindow.h \
     src/scenebuffer.h \
-    src/sizegripitem.h
+    src/sizegripitem.h \
+    src/sizehandleitem.h
 
 FORMS +=
 

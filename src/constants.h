@@ -14,8 +14,8 @@ static const qreal DefaultHeight = 80.0;
 static const qreal MinWidth  = 80.0;
 static const qreal MinHeight = 60.0;
 
-static const int DefaultPenWidth  = 1;
-static const int SelectedPenWidth = 2;
+static const qreal DefaultPenWidth  = 1.0;
+static const qreal SelectedPenWidth = 2.0;
 
 }
 
@@ -40,17 +40,35 @@ namespace HandleItem {
 static const qreal VisibleWidth  = 8.0;
 static const qreal VisibleHeight = 8.0;
 
-static const qreal OverralHeight = 16.0;
 static const qreal OverralWidth  = 16.0;
+static const qreal OverralHeight = 16.0;
 
 static const qreal Margin = 3.0;
 
 }
 
+namespace ArrowHandleItem {
+
+static const qreal InnerCircleDiameter = 10.0;
+static const qreal OuterStrokeDiameter = 16.0;
+
+static const qreal OverralWidth  = 16.0;
+static const qreal OverralHeight = 16.0;
+
+static const qreal OuterStrokePenWidth = 1.0;
+
+}
+
+namespace ArrowManagerItem {
+
+static const qreal Margin = 20.0;
+
+}
+
 namespace GraphicsItemGroup {
 
-static const int Margin = 16;
-static const int PenWidth = 1;
+static const int Margin = 0;
+static const qreal PenWidth = 1.0;
 
 }
 

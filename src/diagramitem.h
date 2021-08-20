@@ -5,6 +5,7 @@
 
 class DiagramTextItem;
 class SizeGripItem;
+class ArrowManagerItem;
 
 class DiagramItem : public QObject, public QGraphicsItem
 {
@@ -81,8 +82,9 @@ private:
     DiagramType diagramType_;
     bool textEditing_ = false;
 
-    DiagramTextItem *textItem_;
-    SizeGripItem    *sizeGripItem_;
+    DiagramTextItem*  textItem_;
+    SizeGripItem*     sizeGripItem_;
+    ArrowManagerItem* arrowManagerItem_;
 };
 
 #endif // DIAGRAMITEM_H

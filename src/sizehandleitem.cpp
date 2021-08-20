@@ -1,4 +1,4 @@
-#include "handleitem.h"
+#include "sizehandleitem.h"
 #include "sizegripitem.h"
 #include "diagramitem.h"
 #include "handleitemappeararea.h"
@@ -11,9 +11,9 @@
 #include <QCursor>
 #include <QPainter>
 
-using PositionFlags = HandleItem::PositionFlags;
+using PositionFlags = SizeHandleItem::PositionFlags;
 
-HandleItem::HandleItem(PositionFlags positionFlags, QGraphicsItem *parent)
+SizeHandleItem::SizeHandleItem(PositionFlags positionFlags, QGraphicsItem *parent)
     : QGraphicsRectItem(-Constants::HandleItem::OverralWidth  / 2,
                         -Constants::HandleItem::OverralHeight / 2,
                          Constants::HandleItem::OverralWidth,
@@ -29,23 +29,24 @@ HandleItem::HandleItem(PositionFlags positionFlags, QGraphicsItem *parent)
     setCursorByFlag(positionFlags);
 }
 
-PositionFlags HandleItem::positionFlags() const
+PositionFlags SizeHandleItem::positionFlags() const
 {
     return positionFlags_;
 }
 
-void HandleItem::paint(QPainter *painter,
+void SizeHandleItem::paint(QPainter *painter,
                        const QStyleOptionGraphicsItem *option,
                        QWidget *widget)
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    painter->setBrush(QBrush(Qt::lightGray));
+    painter->setPen(QPen(Qt::darkGray));
+    painter->setBrush(QBrush(Qt::white));
     painter->drawRect(visibleRect_);
 }
 
-void HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void SizeHandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF pos = mapToParent(event->pos());
     pos = internal::getPointByStep(pos, Constants::DiagramScene::GridSize);
@@ -62,7 +63,7 @@ void HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         changeParentBoundingRect(pos);
 }
 
-QPointF HandleItem::restrictPosition(const QPointF& newPos)
+QPointF SizeHandleItem::restrictPosition(const QPointF& newPos)
 {
     QPointF retVal = pos();
 
@@ -75,7 +76,7 @@ QPointF HandleItem::restrictPosition(const QPointF& newPos)
     return retVal;
 }
 
-void HandleItem::changeParentBoundingRect(const QPointF &pos)
+void SizeHandleItem::changeParentBoundingRect(const QPointF &pos)
 {
     switch (positionFlags_)
     {
@@ -106,7 +107,7 @@ void HandleItem::changeParentBoundingRect(const QPointF &pos)
     }
 }
 
-void HandleItem::setCursorByFlag(PositionFlags positionFlags)
+void SizeHandleItem::setCursorByFlag(PositionFlags positionFlags)
 {
     QCursor cursor;
     switch (positionFlags)
@@ -139,7 +140,7 @@ void HandleItem::setCursorByFlag(PositionFlags positionFlags)
     setCursor(cursor);
 }
 
-void HandleItem::setSizeGripItem(SizeGripItem *newSizeGripItem)
+void SizeHandleItem::setSizeGripItem(SizeGripItem *newSizeGripItem)
 {
     sizeGripItem_ = newSizeGripItem;
 }

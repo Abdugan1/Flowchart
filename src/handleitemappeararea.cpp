@@ -1,14 +1,14 @@
 #include "handleitemappeararea.h"
 #include "sizegripitem.h"
 #include "diagramitem.h"
-#include "handleitem.h"
+#include "sizehandleitem.h"
 
 #include "constants.h"
 
 #include <QPainter>
 #include <QDebug>
 
-HandleItemAppearArea::HandleItemAppearArea(HandleItem *handleItem, SizeGripItem *sizeGripItem)
+HandleItemAppearArea::HandleItemAppearArea(SizeHandleItem *handleItem, SizeGripItem *sizeGripItem)
     : QGraphicsItem(sizeGripItem->diagramItem())
 {
     sizeGripItem_ = sizeGripItem;
@@ -54,7 +54,7 @@ void HandleItemAppearArea::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
-HandleItem *HandleItemAppearArea::handleItem() const
+SizeHandleItem *HandleItemAppearArea::handleItem() const
 {
     return handleItem_;
 }

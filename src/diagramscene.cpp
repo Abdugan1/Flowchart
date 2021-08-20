@@ -39,9 +39,9 @@ DiagramItem *DiagramScene::createDiagramItem(const ItemProperties &itemPropertie
     return diagramItem;
 }
 
-QList<DiagramItem *> DiagramScene::getDiagramItems() const
+QList<DiagramItem *> DiagramScene::getDiagramItems(Qt::SortOrder order) const
 {
-    return internal::getDiagramItemsFromQGraphics(items());
+    return internal::getDiagramItemsFromQGraphics(items(order));
 }
 
 QImage DiagramScene::toImage()
@@ -128,7 +128,7 @@ void DiagramScene::deleteAllPositionLines()
 
 void DiagramScene::selectAllItems()
 {
-    QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items());
+    QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items(Qt::AscendingOrder));
     if (!items.isEmpty()) {
         if (group_)
             destroyGraphicsItemGroup();
@@ -154,7 +154,8 @@ void DiagramScene::destroyGraphicsItemGroup()
 void DiagramScene::selectAndMakeGroup(const QRectF &rect)
 {    
     QList<DiagramItem*> selectedItems =
-            internal::getDiagramItemsFromQGraphics(this->items(rect));
+            internal::getDiagramItemsFromQGraphics(this->items(rect, Qt::IntersectsItemShape,
+                                                               Qt::AscendingOrder));
 
     if (selectedItems.count() > 0)
         createGraphicsItemGroup(selectedItems);

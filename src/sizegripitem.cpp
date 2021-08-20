@@ -1,12 +1,12 @@
 #include "sizegripitem.h"
-#include "handleitem.h"
+#include "sizehandleitem.h"
 #include "diagramitem.h"
 #include "handleitemappeararea.h"
 
 #include "constants.h"
 #include "internal.h"
 
-using PositionFlags = HandleItem::PositionFlags;
+using PositionFlags = SizeHandleItem::PositionFlags;
 
 SizeGripItem::SizeGripItem(DiagramItem *diagramItem, QObject *parent)
     : QObject(parent)
@@ -14,14 +14,14 @@ SizeGripItem::SizeGripItem(DiagramItem *diagramItem, QObject *parent)
 {
     rect_ = diagramItem->pathBoundingRect();
 
-    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::TopLeft    ), this));
-    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::Top        ), this));
-    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::TopRight   ), this));
-    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::Right      ), this));
-    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::BottomRight), this));
-    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::Bottom     ), this));
-    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::BottomLeft ), this));
-    handleItems_.append(new HandleItemAppearArea(new HandleItem(PositionFlags::Left       ), this));
+    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::TopLeft    ), this));
+    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::Top        ), this));
+    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::TopRight   ), this));
+    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::Right      ), this));
+    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::BottomRight), this));
+    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::Bottom     ), this));
+    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::BottomLeft ), this));
+    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::Left       ), this));
 
     updateHandleItemsPositions();
     hideHandleItems();

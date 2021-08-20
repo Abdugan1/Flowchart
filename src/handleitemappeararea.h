@@ -4,20 +4,20 @@
 #include <QGraphicsItem>
 #include <QtCore/qglobal.h>
 
-class HandleItem;
+class SizeHandleItem;
 class SizeGripItem;
 
 class HandleItemAppearArea : public QGraphicsItem
 {
 public:
-    HandleItemAppearArea(HandleItem* handleItem, SizeGripItem* sizeGripItem);
+    HandleItemAppearArea(SizeHandleItem* handleItem, SizeGripItem* sizeGripItem);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
 
-    HandleItem *handleItem() const;
+    SizeHandleItem *handleItem() const;
 
 protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
@@ -25,7 +25,7 @@ protected:
 
 private:
     SizeGripItem* sizeGripItem_;
-    HandleItem* handleItem_;
+    SizeHandleItem* handleItem_;
     QRectF appearArea_;
 };
 
