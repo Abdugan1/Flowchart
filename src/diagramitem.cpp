@@ -1,7 +1,7 @@
 #include "diagramitem.h"
 #include "diagramtextitem.h"
-#include "sizegripitem.h"
-#include "arrowmanageritem.h"
+#include "sizegrip.h"
+#include "arrowmanager.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -29,13 +29,13 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     textItem_->setAlignment(Qt::AlignCenter);
     textItem_->updatePosition();
 
-    sizeGripItem_ = new SizeGripItem(this);
-    connect(sizeGripItem_, &SizeGripItem::resizeBeenMade,
+    sizeGripItem_ = new SizeGrip(this);
+    connect(sizeGripItem_, &SizeGrip::resizeBeenMade,
             this,          &DiagramItem::updateTextItemPosition);
 
-    arrowManagerItem_ = new ArrowManagerItem(this);
-    connect(sizeGripItem_,     &SizeGripItem::resizeBeenMade,
-            arrowManagerItem_, &ArrowManagerItem::updateHandleItemsPositions);
+    arrowManagerItem_ = new ArrowManager(this);
+    connect(sizeGripItem_,     &SizeGrip::resizeBeenMade,
+            arrowManagerItem_, &ArrowManager::updateHandleItemsPositions);
 
     setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);

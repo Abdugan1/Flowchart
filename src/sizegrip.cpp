@@ -1,4 +1,4 @@
-#include "sizegripitem.h"
+#include "sizegrip.h"
 #include "sizehandleitem.h"
 #include "diagramitem.h"
 #include "handleitemappeararea.h"
@@ -8,26 +8,27 @@
 
 using PositionFlags = SizeHandleItem::PositionFlags;
 
-SizeGripItem::SizeGripItem(DiagramItem *diagramItem, QObject *parent)
-    : QObject(parent)
-    , diagramItem_(diagramItem)
+SizeGrip::SizeGrip(DiagramItem *diagramItem, QObject *parent)
+    : HandleManager(diagramItem, parent)
 {
     rect_ = diagramItem->pathBoundingRect();
 
-    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::TopLeft    ), this));
-    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::Top        ), this));
-    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::TopRight   ), this));
-    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::Right      ), this));
-    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::BottomRight), this));
-    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::Bottom     ), this));
-    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::BottomLeft ), this));
-    handleItems_.append(new HandleItemAppearArea(new SizeHandleItem(PositionFlags::Left       ), this));
+    using HIAA = HandleItemAppearArea;
+
+    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::TopLeft    ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::Top        ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::TopRight   ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::Left       ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::Right      ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::BottomLeft ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::Bottom     ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::BottomRight), this));
 
     updateHandleItemsPositions();
     hideHandleItems();
 }
 
-void SizeGripItem::setTop(qreal y)
+void SizeGrip::setTop(qreal y)
 {
     QRectF oldRect = rect_;
     rect_.setTop(y);
@@ -38,7 +39,7 @@ void SizeGripItem::setTop(qreal y)
     doResize();
 }
 
-void SizeGripItem::setRight(qreal x)
+void SizeGrip::setRight(qreal x)
 {
     QRectF oldRect = rect_;
     rect_.setRight(x);
@@ -49,7 +50,7 @@ void SizeGripItem::setRight(qreal x)
     doResize();
 }
 
-void SizeGripItem::setBottom(qreal y)
+void SizeGrip::setBottom(qreal y)
 {
     QRectF oldRect = rect_;
     rect_.setBottom(y);
@@ -60,7 +61,7 @@ void SizeGripItem::setBottom(qreal y)
     doResize();
 }
 
-void SizeGripItem::setLeft(qreal v)
+void SizeGrip::setLeft(qreal v)
 {
     QRectF oldRect = rect_;
     rect_.setLeft(v);
@@ -71,7 +72,7 @@ void SizeGripItem::setLeft(qreal v)
     doResize();
 }
 
-void SizeGripItem::setTopLeft(const QPointF &pos)
+void SizeGrip::setTopLeft(const QPointF &pos)
 {
     QRectF oldRect = rect_;
     rect_.setTopLeft(pos);
@@ -86,7 +87,7 @@ void SizeGripItem::setTopLeft(const QPointF &pos)
         doResize();
 }
 
-void SizeGripItem::setTopRight(const QPointF &pos)
+void SizeGrip::setTopRight(const QPointF &pos)
 {
     QRectF oldRect = rect_;
     rect_.setTopRight(pos);
@@ -101,7 +102,7 @@ void SizeGripItem::setTopRight(const QPointF &pos)
         doResize();
 }
 
-void SizeGripItem::setBottomRight(const QPointF &pos)
+void SizeGrip::setBottomRight(const QPointF &pos)
 {
     QRectF oldRect = rect_;
     rect_.setBottomRight(pos);
@@ -116,7 +117,7 @@ void SizeGripItem::setBottomRight(const QPointF &pos)
         doResize();
 }
 
-void SizeGripItem::setBottomLeft(const QPointF &pos)
+void SizeGrip::setBottomLeft(const QPointF &pos)
 {
     QRectF oldRect = rect_;
     rect_.setBottomLeft(pos);
@@ -131,40 +132,30 @@ void SizeGripItem::setBottomLeft(const QPointF &pos)
         doResize();
 }
 
-void SizeGripItem::setRect(const QRectF &rect)
+void SizeGrip::setRect(const QRectF &rect)
 {
     rect_ = rect;
     doResize();
 }
 
-void SizeGripItem::hideHandleItems()
-{
-    for (auto item : qAsConst(handleItems_))
-        item->handleItem()->hide();
-}
-
-void SizeGripItem::showHandleItems()
-{
-    for (auto item : qAsConst(handleItems_))
-        item->handleItem()->show();
-}
-
-void SizeGripItem::doResize()
+void SizeGrip::doResize()
 {
     resizeDiagramItem();
     emit resizeBeenMade();
     updateHandleItemsPositions();
 }
 
-void SizeGripItem::resizeDiagramItem()
+void SizeGrip::resizeDiagramItem()
 {
-    diagramItem_->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
-    QRectF itemRect = diagramItem_->pathBoundingRect();
+    DiagramItem* diagramItem = HandleManager::diagramItem();
+
+    diagramItem->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
+    QRectF itemRect = diagramItem->pathBoundingRect();
 
     qreal sx = rect_.width()  / itemRect.width();
     qreal sy = rect_.height() / itemRect.height();
 
-    QPainterPath oldPath = diagramItem_->path();
+    QPainterPath oldPath = diagramItem->path();
     QPainterPath newPath = oldPath * QTransform::fromScale(sx, sy);
 
     QRectF pathRect = newPath.boundingRect();
@@ -172,56 +163,51 @@ void SizeGripItem::resizeDiagramItem()
     qreal dx = rect_.x() - pathRect.x();
     qreal dy = rect_.y() - pathRect.y();
 
-    diagramItem_->moveBy(dx, dy);
-    diagramItem_->setPath(newPath);
-    diagramItem_->setSize(QSizeF(rect_.width(), rect_.height()));
+    diagramItem->moveBy(dx, dy);
+    diagramItem->setPath(newPath);
+    diagramItem->setSize(QSizeF(rect_.width(), rect_.height()));
 
     rect_ = pathRect;
-    diagramItem_->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+    diagramItem->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
 
-void SizeGripItem::updateHandleItemsPositions()
+void SizeGrip::updateHandleItemsPositions()
 {
-    for (auto item : qAsConst(handleItems_)) {
-        item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
+    for (auto appearArea : qAsConst(HandleManager::appearAreaItems())) {
 
-        switch (item->handleItem()->positionFlags())
+        auto sizeHandle = qgraphicsitem_cast<SizeHandleItem*>(appearArea->handleItem());
+
+        switch (sizeHandle->positionFlags())
         {
         case PositionFlags::TopLeft:
-            item->setPos(rect_.topLeft());
+            appearArea->setPos(rect_.topLeft());
             break;
         case PositionFlags::Top:
-            item->setPos(rect_.left() + rect_.width() / 2,
+            appearArea->setPos(rect_.left() + rect_.width() / 2,
                          rect_.top());
             break;
         case PositionFlags::TopRight:
-            item->setPos(rect_.topRight());
+            appearArea->setPos(rect_.topRight());
             break;
         case PositionFlags::Right:
-            item->setPos(rect_.right(),
+            appearArea->setPos(rect_.right(),
                          rect_.top() + rect_.height() / 2);
             break;
         case PositionFlags::BottomRight:
-            item->setPos(rect_.bottomRight());
+            appearArea->setPos(rect_.bottomRight());
             break;
         case PositionFlags::Bottom:
-            item->setPos(rect_.left() + rect_.width() / 2,
+            appearArea->setPos(rect_.left() + rect_.width() / 2,
                          rect_.bottom());
             break;
         case PositionFlags::BottomLeft:
-            item->setPos(rect_.bottomLeft());
+            appearArea->setPos(rect_.bottomLeft());
             break;
         case PositionFlags::Left:
-            item->setPos(rect_.left(),
+            appearArea->setPos(rect_.left(),
                          rect_.top() + rect_.height() / 2);
             break;
         }
 
-        item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     }
-}
-
-DiagramItem *SizeGripItem::diagramItem() const
-{
-    return diagramItem_;
 }

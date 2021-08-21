@@ -1,5 +1,5 @@
 #include "sizehandleitem.h"
-#include "sizegripitem.h"
+#include "sizegrip.h"
 #include "diagramitem.h"
 #include "handleitemappeararea.h"
 
@@ -14,15 +14,15 @@
 using PositionFlags = SizeHandleItem::PositionFlags;
 
 SizeHandleItem::SizeHandleItem(PositionFlags positionFlags, QGraphicsItem *parent)
-    : QGraphicsRectItem(-Constants::HandleItem::OverralWidth  / 2,
-                        -Constants::HandleItem::OverralHeight / 2,
-                         Constants::HandleItem::OverralWidth,
-                         Constants::HandleItem::OverralHeight,
+    : QGraphicsRectItem(-Constants::SizeHandleItem::OverralWidth  / 2,
+                        -Constants::SizeHandleItem::OverralHeight / 2,
+                         Constants::SizeHandleItem::OverralWidth,
+                         Constants::SizeHandleItem::OverralHeight,
                          parent)
-    , visibleRect_(-Constants::HandleItem::VisibleWidth  / 2,
-                   -Constants::HandleItem::VisibleHeight / 2,
-                    Constants::HandleItem::VisibleWidth,
-                    Constants::HandleItem::VisibleHeight)
+    , visibleRect_(-Constants::SizeHandleItem::VisibleWidth  / 2,
+                   -Constants::SizeHandleItem::VisibleHeight / 2,
+                    Constants::SizeHandleItem::VisibleWidth,
+                    Constants::SizeHandleItem::VisibleHeight)
     , positionFlags_(positionFlags)
 {
     setFlag(ItemIsMovable);
@@ -140,7 +140,7 @@ void SizeHandleItem::setCursorByFlag(PositionFlags positionFlags)
     setCursor(cursor);
 }
 
-void SizeHandleItem::setSizeGripItem(SizeGripItem *newSizeGripItem)
+void SizeHandleItem::setSizeGripItem(SizeGrip *newSizeGripItem)
 {
     sizeGripItem_ = newSizeGripItem;
 }

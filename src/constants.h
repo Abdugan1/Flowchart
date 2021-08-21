@@ -35,15 +35,19 @@ const QString CurrentMousePosInfoText   = QObject::tr("Current position (%1, %2)
 
 }
 
-namespace HandleItem {
+namespace HandleItemAppearArea {
+
+static const qreal Margin = 3.0;
+
+}
+
+namespace SizeHandleItem {
 
 static const qreal VisibleWidth  = 8.0;
 static const qreal VisibleHeight = 8.0;
 
 static const qreal OverralWidth  = 16.0;
 static const qreal OverralHeight = 16.0;
-
-static const qreal Margin = 3.0;
 
 }
 

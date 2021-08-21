@@ -3,7 +3,7 @@
 
 #include <QGraphicsRectItem>
 
-class SizeGripItem;
+class SizeGrip;
 class DiagramItem;
 
 class SizeHandleItem : public QGraphicsRectItem
@@ -28,7 +28,7 @@ public:
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
 
-    void setSizeGripItem(SizeGripItem *newSizeGripItem);
+    void setSizeGripItem(SizeGrip *newSizeGripItem);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)    override;
@@ -42,7 +42,7 @@ private:
     QRectF visibleRect_;
 
     PositionFlags positionFlags_;
-    SizeGripItem* sizeGripItem_;
+    SizeGrip* sizeGripItem_;
 };
 
 #endif // SIZEHANDLEITEM_H

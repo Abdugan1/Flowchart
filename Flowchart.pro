@@ -10,24 +10,25 @@ CONFIG += c++11
 
 SOURCES += \
     src/arrowhandleitem.cpp \
-    src/arrowmanageritem.cpp \
+    src/arrowmanager.cpp \
     src/diagramitem.cpp \
     src/diagramscene.cpp \
     src/diagramtextitem.cpp \
     src/diagramview.cpp \
     src/graphicsitemgroup.cpp \
     src/handleitemappeararea.cpp \
+    src/handlemanager.cpp \
     src/internal.cpp \
     src/itemproperties.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/scenebuffer.cpp \
-    src/sizegripitem.cpp \
+    src/sizegrip.cpp \
     src/sizehandleitem.cpp
 
 HEADERS += \
     src/arrowhandleitem.h \
-    src/arrowmanageritem.h \
+    src/arrowmanager.h \
     src/constants.h \
     src/diagramitem.h \
     src/diagramscene.h \
@@ -35,11 +36,12 @@ HEADERS += \
     src/diagramview.h \
     src/graphicsitemgroup.h \
     src/handleitemappeararea.h \
+    src/handlemanager.h \
     src/internal.h \
     src/itemproperties.h \
     src/mainwindow.h \
     src/scenebuffer.h \
-    src/sizegripitem.h \
+    src/sizegrip.h \
     src/sizehandleitem.h
 
 FORMS +=

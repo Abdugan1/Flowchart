@@ -1,29 +1,32 @@
 #include "handleitemappeararea.h"
-#include "sizegripitem.h"
+#include "sizegrip.h"
 #include "diagramitem.h"
 #include "sizehandleitem.h"
+#include "handlemanager.h"
 
 #include "constants.h"
 
 #include <QPainter>
 #include <QDebug>
 
-HandleItemAppearArea::HandleItemAppearArea(SizeHandleItem *handleItem, SizeGripItem *sizeGripItem)
-    : QGraphicsItem(sizeGripItem->diagramItem())
+HandleItemAppearArea::HandleItemAppearArea(QGraphicsItem *handleItem, HandleManager *handleManager)
+    : QGraphicsItem(handleManager->diagramItem())
 {
-    sizeGripItem_ = sizeGripItem;
+    sizeGripItem_ = handleManager;
     handleItem_   = handleItem;
     handleItem_->setParentItem(this);
-    handleItem_->setSizeGripItem(sizeGripItem);
+
+    if (auto sizeHandle = qgraphicsitem_cast<SizeHandleItem*>(handleItem))
+        sizeHandle->setSizeGripItem(qobject_cast<SizeGrip*>(handleManager));
 
     setAcceptHoverEvents(true);
 
     appearArea_ = handleItem_->boundingRect();
 
-    appearArea_.setX(appearArea_.x() - Constants::HandleItem::Margin);
-    appearArea_.setY(appearArea_.y() - Constants::HandleItem::Margin);
-    appearArea_.setWidth(appearArea_.width()   + Constants::HandleItem::Margin);
-    appearArea_.setHeight(appearArea_.height() + Constants::HandleItem::Margin);
+    appearArea_.setX(appearArea_.x() - Constants::HandleItemAppearArea::Margin);
+    appearArea_.setY(appearArea_.y() - Constants::HandleItemAppearArea::Margin);
+    appearArea_.setWidth(appearArea_.width()   + Constants::HandleItemAppearArea::Margin);
+    appearArea_.setHeight(appearArea_.height() + Constants::HandleItemAppearArea::Margin);
 }
 
 QRectF HandleItemAppearArea::boundingRect() const
@@ -54,7 +57,7 @@ void HandleItemAppearArea::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
-SizeHandleItem *HandleItemAppearArea::handleItem() const
+QGraphicsItem *HandleItemAppearArea::handleItem() const
 {
     return handleItem_;
 }
