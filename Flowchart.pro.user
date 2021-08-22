@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.15.1, 2021-08-21T14:21:38. -->
+<!-- Written by QtCreator 4.15.1, 2021-08-22T18:59:10. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -573,7 +573,6 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">0</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Flowchart</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.AndroidRunConfiguration:D:/Qt projects/Flowchart/Flowchart/Flowchart.pro</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">D:/Qt projects/Flowchart/Flowchart/Flowchart.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>

@@ -1,8 +1,11 @@
 #include "handleitemappeararea.h"
-#include "sizegrip.h"
 #include "diagramitem.h"
-#include "sizehandleitem.h"
+
 #include "handlemanager.h"
+#include "sizegrip.h"
+#include "sizehandleitem.h"
+#include "arrowmanager.h"
+#include "arrowhandleitem.h"
 
 #include "constants.h"
 
@@ -18,6 +21,10 @@ HandleItemAppearArea::HandleItemAppearArea(QGraphicsItem *handleItem, HandleMana
 
     if (auto sizeHandle = qgraphicsitem_cast<SizeHandleItem*>(handleItem))
         sizeHandle->setSizeGripItem(qobject_cast<SizeGrip*>(handleManager));
+    else if (auto arrowHandle = qgraphicsitem_cast<ArrowHandleItem*>(handleItem))
+        arrowHandle->setArrowManager(qobject_cast<ArrowManager*>(handleManager));
+
+
 
     setAcceptHoverEvents(true);
 

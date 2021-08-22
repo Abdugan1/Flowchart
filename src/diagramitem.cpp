@@ -29,13 +29,13 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     textItem_->setAlignment(Qt::AlignCenter);
     textItem_->updatePosition();
 
-    sizeGripItem_ = new SizeGrip(this);
-    connect(sizeGripItem_, &SizeGrip::resizeBeenMade,
+    sizeGrip_ = new SizeGrip(this);
+    connect(sizeGrip_, &SizeGrip::resizeBeenMade,
             this,          &DiagramItem::updateTextItemPosition);
 
-    arrowManagerItem_ = new ArrowManager(this);
-    connect(sizeGripItem_,     &SizeGrip::resizeBeenMade,
-            arrowManagerItem_, &ArrowManager::updateHandleItemsPositions);
+    arrowManager_ = new ArrowManager(this);
+    connect(sizeGrip_,     &SizeGrip::resizeBeenMade,
+            arrowManager_, &ArrowManager::updateHandleItemsPositions);
 
     setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);
@@ -47,8 +47,8 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
 
 DiagramItem::~DiagramItem()
 {
-    delete sizeGripItem_;
-    delete arrowManagerItem_;
+    delete sizeGrip_;
+    delete arrowManager_;
 }
 
 QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -56,7 +56,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
     if (change == ItemPositionChange && scene()) {
         QPointF newPos = value.toPointF();
 
-        newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize / 2);
+        newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize);
 
         newPos = internal::preventOutsideMove(newPos, newPos + QPointF(size_.width(), size_.height()),
                                               QRectF(0, 0, Constants::DiagramScene::A4Width,
@@ -96,8 +96,8 @@ void DiagramItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if (textEditing_)
         return;
 
-    sizeGripItem_->hideHandleItems();
-    arrowManagerItem_->hideHandleItems();
+    sizeGrip_->hideHandleItems();
+    arrowManager_->hideHandleItems();
 
     if (!QGuiApplication::overrideCursor())
         QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
@@ -127,8 +127,8 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    sizeGripItem_->showHandleItems();
-    arrowManagerItem_->showHandleItems();
+    sizeGrip_->showHandleItems();
+    arrowManager_->showHandleItems();
 
     if (path_.contains(event->pos())) {
         if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction
@@ -144,8 +144,8 @@ void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
 void DiagramItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    sizeGripItem_->hideHandleItems();
-    arrowManagerItem_->hideHandleItems();
+    sizeGrip_->hideHandleItems();
+    arrowManager_->hideHandleItems();
 
     if (QGuiApplication::overrideCursor())
         QGuiApplication::restoreOverrideCursor();
@@ -200,6 +200,11 @@ void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)
     textItem_->setFocus(Qt::MouseFocusReason);
     textItem_->setSelected(true);
     textItem_->setTextCursor(cursor);
+}
+
+ArrowManager *DiagramItem::arrowManager() const
+{
+    return arrowManager_;
 }
 
 const QSizeF &DiagramItem::size() const
@@ -261,7 +266,7 @@ QRectF DiagramItem::pathBoundingRect() const
 
 void DiagramItem::resize(const QSizeF &size)
 {
-    sizeGripItem_->setRect(QRectF(0, 0, size.width(), size.height()));
+    sizeGrip_->setRect(QRectF(0, 0, size.width(), size.height()));
 }
 
 void DiagramItem::resize(qreal width, qreal height)

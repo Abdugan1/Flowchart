@@ -1,10 +1,13 @@
 #include "arrowhandleitem.h"
+#include "arrowmanager.h"
 
 #include "constants.h"
 
+#include <QDebug>
 #include <QPainter>
 #include <QCursor>
 #include <QStyleOptionGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
 
 using PositionFlags = ArrowHandleItem::PositionFlags;
 
@@ -46,4 +49,15 @@ void ArrowHandleItem::paint(QPainter *painter,
 PositionFlags ArrowHandleItem::positionFlag() const
 {
     return positionFlag_;
+}
+
+void ArrowHandleItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    arrowManager_->emitHandleClicked(mapToScene(this->pos()));
+    QGraphicsEllipseItem::mousePressEvent(event);
+}
+
+void ArrowHandleItem::setArrowManager(ArrowManager *newArrowManager)
+{
+    arrowManager_ = newArrowManager;
 }

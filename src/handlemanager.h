@@ -16,8 +16,8 @@ class HandleManager : public QObject
 public:
     explicit HandleManager(DiagramItem* diagramItem, QObject *parent = nullptr);
 
-    virtual void hideHandleItems();
-    virtual void showHandleItems();
+    void hideHandleItems();
+    void showHandleItems();
 
     DiagramItem *diagramItem() const;
 

@@ -40,6 +40,7 @@ HEADERS += \
     src/internal.h \
     src/itemproperties.h \
     src/mainwindow.h \
+    src/node.h \
     src/scenebuffer.h \
     src/sizegrip.h \
     src/sizehandleitem.h

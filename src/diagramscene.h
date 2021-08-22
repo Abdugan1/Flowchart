@@ -6,10 +6,17 @@
 
 class DiagramItem;
 class GraphicsItemGroup;
+class Node;
 
 class DiagramScene : public QGraphicsScene
 {
     Q_OBJECT
+
+public:
+    enum Mode {
+        Normal,
+        Line,
+    };
 
 public:
     DiagramScene(QObject* parent = nullptr);
@@ -37,6 +44,9 @@ public slots:
     void pasteItems(const QPointF& posToPaste);
     void clearScene();
 
+private slots:
+    void onHandleClicked(const QPointF& mappedToScenePos);
+
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
 
@@ -51,11 +61,18 @@ private:
     QPointF getPosThatItemCenterAtMousePos(const QPointF& mousePosition,
                                            const QGraphicsItem* item) const;
 
+    void solveAStar();
+
 private:
     bool drawPositionLines_ = true;
 
     GraphicsItemGroup* group_ = nullptr;
     SceneBuffer buffer_;
+    Mode mode_;
+    QGraphicsLineItem* line_ = nullptr;
+    QVector<Node> nodes_;
+    Node* nodeStart_ = nullptr;
+    Node* nodeEnd_   = nullptr;
 };
 
 #endif // DIAGRAMSCENE_H

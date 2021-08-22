@@ -2,17 +2,68 @@
 #include "diagramitem.h"
 #include "diagramview.h"
 #include "graphicsitemgroup.h"
+#include "arrowmanager.h"
 
+#include "node.h"
 #include "constants.h"
 #include "internal.h"
 
 #include <QPainter>
 #include <QDebug>
 #include <QCursor>
+#include <QFile>
 
 DiagramScene::DiagramScene(QObject *parent)
     : QGraphicsScene(parent)
+    , mode_(Normal)
 {
+    const int w = Constants::DiagramScene::A4Width  / Constants::DiagramScene::GridSize + 1;
+    const int h = Constants::DiagramScene::A4Height / Constants::DiagramScene::GridSize + 1;
+    qDebug() << "w:" << w;
+    qDebug() << "h:" << h;
+    nodes_.resize(w * h);
+    qreal x = 0.0;
+    qreal y = 0.0;
+    for (int i = 0; i < h; ++i) {
+        for (int j = 0; j < w; ++j) {
+            nodes_[i * w + j].pos.setX(x);
+            nodes_[i * w + j].pos.setY(y);
+            nodes_[i * w + j].parent = nullptr;
+            nodes_[i * w + j].visited = false;
+
+            x += Constants::DiagramScene::GridSize;
+        }
+        x = 0.0;
+        y += Constants::DiagramScene::GridSize;
+    }
+
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            if (y > 0)
+                nodes_[y * w + x].neighbours.push_back(&nodes_[(y - 1) * w + (x + 0)]);
+            if (y < w - 1)
+                nodes_[y * w + x].neighbours.push_back(&nodes_[(y + 1) * w + (x + 0)]);
+            if (x > 0)
+                nodes_[y * w + x].neighbours.push_back(&nodes_[(y + 0) * w + (x - 1)]);
+            if (x < w - 1)
+                nodes_[y * w + x].neighbours.push_back(&nodes_[(y + 0) * w + (x + 1)]);
+        }
+    }
+
+    QString str;
+
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            str += "(" + QString::number(nodes_[y * w + x].pos.x()) + ", " + QString::number(nodes_[y * w + x].pos.y()) + ") ";
+        }
+        str += "\n";
+    }
+
+    QFile file("nodes.txt");
+    file.open(QFile::WriteOnly);
+    QTextStream out(&file);
+    out << str;
+    file.close();
 }
 
 DiagramItem *DiagramScene::createDiagramItem(int diagramType)
@@ -24,6 +75,9 @@ DiagramItem *DiagramScene::createDiagramItem(int diagramType)
 
     connect(diagramItem, &DiagramItem::itemReleased,
             this,        &DiagramScene::deleteAllPositionLines);
+
+    connect(diagramItem->arrowManager(), &ArrowManager::handleClicked,
+            this,                        &DiagramScene::onHandleClicked);
 
     return diagramItem;
 }
@@ -258,6 +312,42 @@ void DiagramScene::clearScene()
     clear();
 }
 
+void DiagramScene::onHandleClicked(const QPointF &mappedToScenePos)
+{
+    const int w = Constants::DiagramScene::A4Width  / Constants::DiagramScene::GridSize + 1;
+
+    QPoint nodePos = mappedToScenePos.toPoint();
+    nodePos = QPoint(nodePos.x() / Constants::DiagramScene::GridSize,
+                     nodePos.y() / Constants::DiagramScene::GridSize);
+    qDebug() << nodePos;
+
+    if (mode_ == Normal) {
+        mode_ = Line;
+        nodeStart_ = &nodes_[nodePos.y() * w + nodePos.x()];
+        qDebug() << "nodeStart:" << nodeStart_->pos;
+    } else {
+        nodeEnd_ = &nodes_[nodePos.y() * w + nodePos.x()];
+        qDebug() << "nodeEnd:" << nodeEnd_->pos;
+        solveAStar();
+
+        QList<QLineF> lines;
+        if (nodeEnd_ != nullptr) {
+            Node* p = nodeEnd_;
+            while (p->parent != nullptr) {
+                QLineF line(p->pos.x(), p->pos.y(), p->parent->pos.x(), p->parent->pos.y());
+                lines.append(line);
+                p = p->parent;
+            }
+        }
+
+        for (auto line : lines) {
+            addLine(line);
+        }
+
+        mode_ = Normal;
+    }
+}
+
 void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
     QPen pen;
@@ -351,4 +441,66 @@ QPointF DiagramScene::getPosThatItemCenterAtMousePos(const QPointF &mousePositio
     QRectF itemRect = item->boundingRect();
     return QPointF(mousePosition.x() - (itemRect.left() + itemRect.width()  / 2),
                    mousePosition.y() - (itemRect.top()  + itemRect.height() / 2));
+}
+
+void DiagramScene::solveAStar()
+{
+    const int w = Constants::DiagramScene::A4Width  / Constants::DiagramScene::GridSize + 1;
+    const int h = Constants::DiagramScene::A4Height / Constants::DiagramScene::GridSize + 1;
+
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            nodes_[y * w + x].visited = false;
+            nodes_[y * w + x].globalGoal = INFINITY;
+            nodes_[y * w + x].localGoal  = INFINITY;
+            nodes_[y * w + x].parent = nullptr;
+        }
+    }
+
+    auto distance = [](Node* a, Node* b)
+    {
+        return sqrtf((a->pos.x() - b->pos.x()) * (a->pos.x() - b->pos.x()) +
+                     (a->pos.y() - b->pos.y()) * (a->pos.y() - b->pos.y()));
+    };
+
+    auto heuristic = [distance](Node* a, Node* b)
+    {
+        return distance(a, b);
+    };
+
+    Node* nodeCurrent = nodeStart_;
+    nodeStart_->localGoal  = 0.0;
+    nodeStart_->globalGoal = heuristic(nodeStart_, nodeEnd_);
+
+    QList<Node*> notTestedNodes;
+    notTestedNodes.append(nodeStart_);
+
+    while (!notTestedNodes.isEmpty()) {
+        /// It seems that it should work with this, but if it is
+        /// not there, then this algorithm works as I need it
+//        std::sort(notTestedNodes.begin(), notTestedNodes.end(), [](const Node* lhs, const Node* rhs) {return lhs->globalGoal < rhs->globalGoal;});
+
+        while (!notTestedNodes.isEmpty() && notTestedNodes.front()->visited)
+            notTestedNodes.pop_front();
+
+        if (notTestedNodes.isEmpty())
+            break;
+
+        nodeCurrent = notTestedNodes.front();
+        nodeCurrent->visited = true;
+
+        for (auto nodeNeighbour : qAsConst(nodeCurrent->neighbours)) {
+            if (!nodeNeighbour->visited)
+                notTestedNodes.append(nodeNeighbour);
+
+            qreal possiblyLowerGoal = nodeCurrent->localGoal + distance(nodeCurrent, nodeNeighbour);
+
+            if (possiblyLowerGoal < nodeNeighbour->localGoal) {
+                nodeNeighbour->parent = nodeCurrent;
+                nodeNeighbour->localGoal = possiblyLowerGoal;
+                nodeNeighbour->globalGoal = nodeNeighbour->localGoal + heuristic(nodeNeighbour, nodeEnd_);
+            }
+        }
+    }
+
 }

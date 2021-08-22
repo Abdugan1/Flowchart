@@ -4,6 +4,8 @@
 #include <QGraphicsEllipseItem>
 #include <QtCore/qglobal.h>
 
+class ArrowManager;
+
 class ArrowHandleItem : public QGraphicsEllipseItem
 {
 public:
@@ -23,8 +25,14 @@ public:
 
     PositionFlags positionFlag() const;
 
+    void setArrowManager(ArrowManager *newArrowManager);
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+
 private:
     PositionFlags positionFlag_;
+    ArrowManager* arrowManager_;
 };
 
 #endif // ARROWHANDLEITEM_H

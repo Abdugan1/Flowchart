@@ -52,6 +52,8 @@ public:
     const QSizeF &size() const;
     void setSize(const QSizeF &newSize);
 
+    ArrowManager *arrowManager() const;
+
 signals:
     void itemPositionChanged();
     void itemReleased();
@@ -83,8 +85,8 @@ private:
     bool textEditing_ = false;
 
     DiagramTextItem*  textItem_;
-    SizeGrip*     sizeGripItem_;
-    ArrowManager* arrowManagerItem_;
+    SizeGrip*     sizeGrip_;
+    ArrowManager* arrowManager_;
 };
 
 #endif // DIAGRAMITEM_H
