@@ -13,10 +13,11 @@ class ArrowManager : public HandleManager
 public:
     explicit ArrowManager(DiagramItem* diagramItem, QObject *parent = nullptr);
 
-    void emitHandleClicked(const QPointF& mappedToScenePos);
+    void emitHandleClicked(ArrowHandleItem* handleItem);
 
 signals:
-    void handleClicked(const QPointF& mappedToScenePos);
+    void handleClicked(ArrowHandleItem* handleItem,
+                       DiagramItem* item);
 
 public slots:
     void updateHandleItemsPositions();

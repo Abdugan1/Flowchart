@@ -19,9 +19,9 @@ ArrowManager::ArrowManager(DiagramItem *diagramItem, QObject *parent)
     hideHandleItems();
 }
 
-void ArrowManager::emitHandleClicked(const QPointF &mappedToScenePos)
+void ArrowManager::emitHandleClicked(ArrowHandleItem *handleItem)
 {
-    emit handleClicked(mappedToScenePos);
+    emit handleClicked(handleItem, diagramItem());
 }
 
 void ArrowManager::updateHandleItemsPositions()

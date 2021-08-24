@@ -2,6 +2,7 @@
 #include "diagramtextitem.h"
 #include "sizegrip.h"
 #include "arrowmanager.h"
+#include "arrowitem.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -66,6 +67,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 
     } else if (change == ItemPositionHasChanged) {
         emit itemPositionChanged();
+        updateArrows();
 
     } else if (change == ItemSelectedChange
                && textItem_->textInteractionFlags() != Qt::NoTextInteraction
@@ -202,9 +204,29 @@ void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)
     textItem_->setTextCursor(cursor);
 }
 
+const QList<ArrowItem *> &DiagramItem::arrows() const
+{
+    return arrows_;
+}
+
+void DiagramItem::updateArrows()
+{
+    for (auto arrow : qAsConst(arrows_)) {
+        qDebug() << "update works?";
+        arrow->updatePath();
+    }
+}
+
 ArrowManager *DiagramItem::arrowManager() const
 {
     return arrowManager_;
+}
+
+void DiagramItem::addArrow(ArrowItem *arrow)
+{
+    arrows_.append(arrow);
+    qDebug() << "arrow added!";
+    qDebug() << "arrow count:" << arrows_.count();
 }
 
 const QSizeF &DiagramItem::size() const

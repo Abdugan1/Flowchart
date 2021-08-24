@@ -53,7 +53,7 @@ PositionFlags ArrowHandleItem::positionFlag() const
 
 void ArrowHandleItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    arrowManager_->emitHandleClicked(mapToScene(this->pos()));
+    arrowManager_->emitHandleClicked(this);
     QGraphicsEllipseItem::mousePressEvent(event);
 }
 

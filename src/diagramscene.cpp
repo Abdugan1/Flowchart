@@ -3,6 +3,8 @@
 #include "diagramview.h"
 #include "graphicsitemgroup.h"
 #include "arrowmanager.h"
+#include "arrowhandleitem.h"
+#include "arrowitem.h"
 
 #include "node.h"
 #include "constants.h"
@@ -41,7 +43,7 @@ DiagramScene::DiagramScene(QObject *parent)
         for (int x = 0; x < w; ++x) {
             if (y > 0)
                 nodes_[y * w + x].neighbours.push_back(&nodes_[(y - 1) * w + (x + 0)]);
-            if (y < w - 1)
+            if (y < h - 1)
                 nodes_[y * w + x].neighbours.push_back(&nodes_[(y + 1) * w + (x + 0)]);
             if (x > 0)
                 nodes_[y * w + x].neighbours.push_back(&nodes_[(y + 0) * w + (x - 1)]);
@@ -312,40 +314,65 @@ void DiagramScene::clearScene()
     clear();
 }
 
-void DiagramScene::onHandleClicked(const QPointF &mappedToScenePos)
+void DiagramScene::onHandleClicked(ArrowHandleItem *handle, DiagramItem *item)
 {
-    const int w = Constants::DiagramScene::A4Width  / Constants::DiagramScene::GridSize + 1;
+    if (!arrow_) {
+        arrow_ = new ArrowItem;
+        arrow_->setStartItem(handle, item);
+        item->addArrow(arrow_);
 
-    QPoint nodePos = mappedToScenePos.toPoint();
-    nodePos = QPoint(nodePos.x() / Constants::DiagramScene::GridSize,
-                     nodePos.y() / Constants::DiagramScene::GridSize);
-    qDebug() << nodePos;
-
-    if (mode_ == Normal) {
-        mode_ = Line;
-        nodeStart_ = &nodes_[nodePos.y() * w + nodePos.x()];
-        qDebug() << "nodeStart:" << nodeStart_->pos;
     } else {
-        nodeEnd_ = &nodes_[nodePos.y() * w + nodePos.x()];
-        qDebug() << "nodeEnd:" << nodeEnd_->pos;
-        solveAStar();
+        arrow_->setEndItem(handle, item);
+        arrowConnector_.updateArrow(arrow_, arrow_->startPoint(), arrow_->endPoint());
 
-        QList<QLineF> lines;
-        if (nodeEnd_ != nullptr) {
-            Node* p = nodeEnd_;
-            while (p->parent != nullptr) {
-                QLineF line(p->pos.x(), p->pos.y(), p->parent->pos.x(), p->parent->pos.y());
-                lines.append(line);
-                p = p->parent;
-            }
-        }
+        connect(arrow_,           &ArrowItem::updateMyPath,
+                &arrowConnector_, &ArrowConnector::updateArrow);
 
-        for (auto line : lines) {
-            addLine(line);
-        }
+        item->addArrow(arrow_);
 
-        mode_ = Normal;
+        addItem(arrow_);
+
+        arrow_ = nullptr;
     }
+
+//    const int w = Constants::DiagramScene::A4Width  / Constants::DiagramScene::GridSize + 1;
+
+//    QPoint nodePos = handle->scenePos().toPoint();
+//    nodePos = QPoint(nodePos.x() / Constants::DiagramScene::GridSize,
+//                     nodePos.y() / Constants::DiagramScene::GridSize);
+
+//    if (!arrow_) {
+//        arrow_ = new ArrowItem;
+//        nodeStart_ = &nodes_[nodePos.y() * w + nodePos.x()];
+//    } else {
+//        nodeEnd_ = &nodes_[nodePos.y() * w + nodePos.x()];
+//    }
+
+//    if (mode_ == Normal) {
+//        mode_ = Line;
+//        nodeStart_ = &nodes_[nodePos.y() * w + nodePos.x()];
+//        qDebug() << "nodeStart:" << nodeStart_->pos;
+//    } else {
+//        nodeEnd_ = &nodes_[nodePos.y() * w + nodePos.x()];
+//        qDebug() << "nodeEnd:" << nodeEnd_->pos;
+//        solveAStar();
+
+//        QList<QLineF> lines;
+//        if (nodeEnd_ != nullptr) {
+//            Node* p = nodeEnd_;
+//            while (p->parent != nullptr) {
+//                QLineF line(p->pos.x(), p->pos.y(), p->parent->pos.x(), p->parent->pos.y());
+//                lines.append(line);
+//                p = p->parent;
+//            }
+//        }
+
+//        for (auto line : lines) {
+//            addLine(line);
+//        }
+
+//        mode_ = Normal;
+//    }
 }
 
 void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)

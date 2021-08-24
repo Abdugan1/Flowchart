@@ -3,10 +3,13 @@
 
 #include <QGraphicsScene>
 #include "scenebuffer.h"
+#include "arrowconnector.h"
 
 class DiagramItem;
 class GraphicsItemGroup;
 class Node;
+class ArrowHandleItem;
+class ArrowItem;
 
 class DiagramScene : public QGraphicsScene
 {
@@ -45,7 +48,8 @@ public slots:
     void clearScene();
 
 private slots:
-    void onHandleClicked(const QPointF& mappedToScenePos);
+    void onHandleClicked(ArrowHandleItem* handle,
+                         DiagramItem* item);
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
@@ -73,6 +77,9 @@ private:
     QVector<Node> nodes_;
     Node* nodeStart_ = nullptr;
     Node* nodeEnd_   = nullptr;
+
+    ArrowItem* arrow_ = nullptr;
+    ArrowConnector arrowConnector_;
 };
 
 #endif // DIAGRAMSCENE_H

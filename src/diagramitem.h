@@ -6,6 +6,7 @@
 class DiagramTextItem;
 class SizeGrip;
 class ArrowManager;
+class ArrowItem;
 
 class DiagramItem : public QObject, public QGraphicsItem
 {
@@ -54,6 +55,10 @@ public:
 
     ArrowManager *arrowManager() const;
 
+    void addArrow(ArrowItem* arrow);
+    const QList<ArrowItem *> &arrows() const;
+    void updateArrows();
+
 signals:
     void itemPositionChanged();
     void itemReleased();
@@ -87,6 +92,7 @@ private:
     DiagramTextItem*  textItem_;
     SizeGrip*     sizeGrip_;
     ArrowManager* arrowManager_;
+    QList<ArrowItem*> arrows_;
 };
 
 #endif // DIAGRAMITEM_H
