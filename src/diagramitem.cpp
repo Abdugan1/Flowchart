@@ -212,7 +212,6 @@ const QList<ArrowItem *> &DiagramItem::arrows() const
 void DiagramItem::updateArrows()
 {
     for (auto arrow : qAsConst(arrows_)) {
-        qDebug() << "update works?";
         arrow->updatePath();
     }
 }
@@ -225,8 +224,6 @@ ArrowManager *DiagramItem::arrowManager() const
 void DiagramItem::addArrow(ArrowItem *arrow)
 {
     arrows_.append(arrow);
-    qDebug() << "arrow added!";
-    qDebug() << "arrow count:" << arrows_.count();
 }
 
 const QSizeF &DiagramItem::size() const

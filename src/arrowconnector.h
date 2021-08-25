@@ -6,6 +6,9 @@
 
 #include "node.h"
 #include <QLineF>
+#include <QVarLengthArray>
+
+#include "constants.h"
 
 class ArrowItem;
 
@@ -27,7 +30,7 @@ private:
     Node* getNodeFromPos(const QPoint& point);
 
 private:
-    QVector<Node> nodes_;
+    QVarLengthArray<Node, (Constants::DiagramScene::A4Width + 1) * (Constants::DiagramScene::A4Height + 1)> nodes_;
 };
 
 #endif // ARROWCONNECTOR_H

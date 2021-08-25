@@ -4,9 +4,11 @@
 #include "constants.h"
 
 #include <QDebug>
+#include <QElapsedTimer>
 
 ArrowConnector::ArrowConnector(QObject *parent)
     : QObject(parent)
+    , nodes_((Constants::DiagramScene::A4Width + 1) * (Constants::DiagramScene::A4Height + 1))
 {
     initNodes();
 }
@@ -36,6 +38,8 @@ QList<QLineF> ArrowConnector::getConnectionPath(const QPoint &startPoint, const 
         return distance(a, b);
     };
 
+    QElapsedTimer timer;
+    timer.start();
     Node* nodeStart_ = getNodeFromPos(startPoint);
     Node* nodeEnd_   = getNodeFromPos(endPoint);
 
@@ -44,14 +48,15 @@ QList<QLineF> ArrowConnector::getConnectionPath(const QPoint &startPoint, const 
     nodeStart_->globalGoal = heuristic(nodeStart_, nodeEnd_);
 
     QList<Node*> notTestedNodes;
-    notTestedNodes.append(nodeStart_);
+//    notTestedNodes.reserve(w * h);
+    notTestedNodes.push_back(nodeStart_);
 
-    while (!notTestedNodes.isEmpty()) {
+    while (!notTestedNodes.empty() && nodeCurrent != nodeEnd_) {
 
-        while (!notTestedNodes.isEmpty() && notTestedNodes.front()->visited)
+        while (!notTestedNodes.empty() && notTestedNodes.front()->visited)
             notTestedNodes.pop_front();
 
-        if (notTestedNodes.isEmpty())
+        if (notTestedNodes.empty())
             break;
 
         nodeCurrent = notTestedNodes.front();
@@ -59,7 +64,7 @@ QList<QLineF> ArrowConnector::getConnectionPath(const QPoint &startPoint, const 
 
         for (auto nodeNeighbour : qAsConst(nodeCurrent->neighbours)) {
             if (!nodeNeighbour->visited)
-                notTestedNodes.append(nodeNeighbour);
+                notTestedNodes.push_back(nodeNeighbour);
 
             qreal possiblyLowerGoal = nodeCurrent->localGoal + distance(nodeCurrent, nodeNeighbour);
 
@@ -70,6 +75,8 @@ QList<QLineF> ArrowConnector::getConnectionPath(const QPoint &startPoint, const 
             }
         }
     }
+    qDebug() << "Elapsed time:" << timer.elapsed() << "ms";
+
     //
     QList<QLineF> lines;
     if (nodeEnd_ != nullptr) {
@@ -85,16 +92,17 @@ QList<QLineF> ArrowConnector::getConnectionPath(const QPoint &startPoint, const 
 
 void ArrowConnector::updateArrow(ArrowItem *arrow, const QPoint &startPoint, const QPoint &endPoint)
 {
-    qDebug() << "updating!";
     QList<QLineF> lines = getConnectionPath(startPoint, endPoint);
     arrow->setPathShape(lines);
 }
 
 void ArrowConnector::initNodes()
 {
+    QElapsedTimer timer;
+    timer.start();
     const int w = Constants::DiagramScene::A4Width  / Constants::DiagramScene::GridSize + 1;
     const int h = Constants::DiagramScene::A4Height / Constants::DiagramScene::GridSize + 1;
-    nodes_.resize(w * h);
+//    nodes_.resize(w * h); // In QVector
     qreal x = 0.0;
     qreal y = 0.0;
     for (int i = 0; i < h; ++i) {
@@ -122,6 +130,7 @@ void ArrowConnector::initNodes()
                 nodes_[y * w + x].neighbours.push_back(&nodes_[(y + 0) * w + (x + 1)]);
         }
     }
+    qDebug() << "init time:" << timer.elapsed() << "ms";
 }
 
 Node *ArrowConnector::getNodeFromPos(const QPoint &point)

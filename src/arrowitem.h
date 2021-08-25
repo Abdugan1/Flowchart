@@ -15,7 +15,7 @@ class ArrowItem : public QObject, public QGraphicsPathItem
 public:
     ArrowItem(QGraphicsItem *parent = nullptr);
 
-    enum {Type = UserType + 1};
+    enum {Type = UserType + 2};
 
 public:
     int type() const override;

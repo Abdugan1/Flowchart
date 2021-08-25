@@ -65,8 +65,6 @@ private:
     QPointF getPosThatItemCenterAtMousePos(const QPointF& mousePosition,
                                            const QGraphicsItem* item) const;
 
-    void solveAStar();
-
 private:
     bool drawPositionLines_ = true;
 
@@ -74,9 +72,6 @@ private:
     SceneBuffer buffer_;
     Mode mode_;
     QGraphicsLineItem* line_ = nullptr;
-    QVector<Node> nodes_;
-    Node* nodeStart_ = nullptr;
-    Node* nodeEnd_   = nullptr;
 
     ArrowItem* arrow_ = nullptr;
     ArrowConnector arrowConnector_;

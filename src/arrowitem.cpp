@@ -6,6 +6,7 @@
 ArrowItem::ArrowItem(QGraphicsItem *parent)
     : QGraphicsPathItem(parent)
 {
+    setZValue(-1);
 }
 
 int ArrowItem::type() const
@@ -60,6 +61,5 @@ QPoint ArrowItem::endPoint() const
 
 void ArrowItem::updatePath()
 {
-    qDebug() << "here!";
     emit updateMyPath(this, startItem_.handle->scenePos().toPoint(), endItem_.handle->scenePos().toPoint());
 }
