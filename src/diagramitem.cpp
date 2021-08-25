@@ -16,6 +16,7 @@
 #include <QTextCursor>
 #include <QTextDocument>
 #include <QGuiApplication>
+#include <QElapsedTimer>
 
 DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *parent)
     : QGraphicsItem(parent)
@@ -211,9 +212,12 @@ const QList<ArrowItem *> &DiagramItem::arrows() const
 
 void DiagramItem::updateArrows()
 {
+    QElapsedTimer timer;
+    timer.start();
     for (auto arrow : qAsConst(arrows_)) {
-        arrow->updatePath();
+        arrow->updatePathShape();
     }
+    qDebug() << "Elapsed time:" << timer.elapsed() << "ms";
 }
 
 ArrowManager *DiagramItem::arrowManager() const

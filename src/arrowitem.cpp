@@ -2,6 +2,7 @@
 #include "arrowhandleitem.h"
 
 #include <QDebug>
+#include <QPainter>
 
 ArrowItem::ArrowItem(QGraphicsItem *parent)
     : QGraphicsPathItem(parent)
@@ -59,7 +60,16 @@ QPoint ArrowItem::endPoint() const
     return endItem_.handle->scenePos().toPoint();
 }
 
-void ArrowItem::updatePath()
+void ArrowItem::updatePathShape()
 {
-    emit updateMyPath(this, startItem_.handle->scenePos().toPoint(), endItem_.handle->scenePos().toPoint());
+    QList<QLineF> lines = getConnectionPath(startPoint(), endPoint());
+    setPathShape(lines);
+}
+
+QList<QLineF> ArrowItem::getConnectionPath(const QPoint &startPoint, const QPoint &endPoint)
+{
+    QPoint p(startPoint.x(), endPoint.y());
+    QLineF l1(startPoint, p);
+    QLineF l2(p, endPoint);
+    return {l1, l2};
 }

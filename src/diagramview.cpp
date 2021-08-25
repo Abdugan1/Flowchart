@@ -1,5 +1,6 @@
 #include "diagramview.h"
 #include "diagramitem.h"
+#include "arrowitem.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -72,17 +73,18 @@ void DiagramView::wheelEvent(QWheelEvent *event)
 void DiagramView::mousePressEvent(QMouseEvent *event)
 {
     clickedPos_ = event->pos();
-
     if (event->modifiers() == Qt::CTRL) {
             setInteractive(false);
             setDragMode(QGraphicsView::ScrollHandDrag);
 
     } else  {
         QList<QGraphicsItem*> items = scene()->items(mapToScene(event->pos()));
-        if (items.count() <= 0 && event->button() == Qt::LeftButton) {
-            initRubberBand();
-        } else if (event->button() == Qt::RightButton) {
-            contextMenu_->exec(mapToGlobal(event->pos()));
+        if (items.empty()) {
+            if (event->button() == Qt::LeftButton) {
+                initRubberBand();
+            } else if (event->button() == Qt::RightButton) {
+                contextMenu_->exec(mapToGlobal(event->pos()));
+            }
         }
     }
 

@@ -3,15 +3,12 @@
 
 #include <QGraphicsPathItem>
 #include <QtCore/qglobal.h>
-#include <QObject>
 
 class DiagramItem;
 class ArrowHandleItem;
 
-class ArrowItem : public QObject, public QGraphicsPathItem
+class ArrowItem : public QGraphicsPathItem
 {
-    Q_OBJECT
-
 public:
     ArrowItem(QGraphicsItem *parent = nullptr);
 
@@ -31,10 +28,10 @@ public:
     QPoint startPoint() const;
     QPoint endPoint() const;
 
-    void updatePath();
+    void updatePathShape();
 
-signals:
-    void updateMyPath(ArrowItem* arrow, const QPoint& startPoint, const QPoint& endPoint);
+private:
+    QList<QLineF> getConnectionPath(const QPoint& startPoint, const QPoint& endPoint);
 
 private:
     struct Info {

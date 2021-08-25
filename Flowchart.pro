@@ -9,7 +9,6 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    src/arrowconnector.cpp \
     src/arrowhandleitem.cpp \
     src/arrowitem.cpp \
     src/arrowmanager.cpp \
@@ -29,7 +28,6 @@ SOURCES += \
     src/sizehandleitem.cpp
 
 HEADERS += \
-    src/arrowconnector.h \
     src/arrowhandleitem.h \
     src/arrowitem.h \
     src/arrowmanager.h \
@@ -44,7 +42,6 @@ HEADERS += \
     src/internal.h \
     src/itemproperties.h \
     src/mainwindow.h \
-    src/node.h \
     src/scenebuffer.h \
     src/sizegrip.h \
     src/sizehandleitem.h

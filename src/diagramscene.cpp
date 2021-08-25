@@ -6,7 +6,6 @@
 #include "arrowhandleitem.h"
 #include "arrowitem.h"
 
-#include "node.h"
 #include "constants.h"
 #include "internal.h"
 
@@ -17,7 +16,6 @@
 
 DiagramScene::DiagramScene(QObject *parent)
     : QGraphicsScene(parent)
-    , mode_(Normal)
 {
 }
 
@@ -154,7 +152,6 @@ void DiagramScene::destroyGraphicsItemGroup()
 
     for (auto item : qAsConst(groupItems)) {
         item->setSelected(false);
-        item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     }
 
     group_ = nullptr;
@@ -276,11 +273,7 @@ void DiagramScene::onHandleClicked(ArrowHandleItem *handle, DiagramItem *item)
 
     } else {
         arrow_->setEndItem(handle, item);
-        arrowConnector_.updateArrow(arrow_, arrow_->startPoint(), arrow_->endPoint());
-
-        connect(arrow_,           &ArrowItem::updateMyPath,
-                &arrowConnector_, &ArrowConnector::updateArrow);
-
+        arrow_->updatePathShape();
         item->addArrow(arrow_);
 
         addItem(arrow_);
@@ -351,7 +344,6 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
     group_->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 
     for (auto item : diagramItems) {
-        item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
         item->setSelected(true);
         group_->addToGroup(item);
     }

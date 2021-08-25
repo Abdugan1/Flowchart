@@ -3,23 +3,15 @@
 
 #include <QGraphicsScene>
 #include "scenebuffer.h"
-#include "arrowconnector.h"
 
 class DiagramItem;
 class GraphicsItemGroup;
-class Node;
 class ArrowHandleItem;
 class ArrowItem;
 
 class DiagramScene : public QGraphicsScene
 {
     Q_OBJECT
-
-public:
-    enum Mode {
-        Normal,
-        Line,
-    };
 
 public:
     DiagramScene(QObject* parent = nullptr);
@@ -70,11 +62,8 @@ private:
 
     GraphicsItemGroup* group_ = nullptr;
     SceneBuffer buffer_;
-    Mode mode_;
-    QGraphicsLineItem* line_ = nullptr;
 
     ArrowItem* arrow_ = nullptr;
-    ArrowConnector arrowConnector_;
 };
 
 #endif // DIAGRAMSCENE_H
