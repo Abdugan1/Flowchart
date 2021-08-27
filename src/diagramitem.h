@@ -56,8 +56,8 @@ public:
     ArrowManager *arrowManager() const;
 
     void addArrow(ArrowItem* arrow);
-    const QList<ArrowItem *> &arrows() const;
-    void updateArrows();
+    void removeArrow(ArrowItem* arrow);
+    void removeArrows();
 
 signals:
     void itemPositionChanged();
@@ -92,7 +92,6 @@ private:
     DiagramTextItem*  textItem_;
     SizeGrip*     sizeGrip_;
     ArrowManager* arrowManager_;
-    QList<ArrowItem*> arrows_;
 };
 
 #endif // DIAGRAMITEM_H

@@ -3,11 +3,14 @@
 
 #include <QDebug>
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 
 ArrowItem::ArrowItem(QGraphicsItem *parent)
     : QGraphicsPathItem(parent)
 {
     setZValue(-1);
+    setAcceptHoverEvents(true);
+    setFlag(ItemIsSelectable);
 }
 
 int ArrowItem::type() const
@@ -17,14 +20,14 @@ int ArrowItem::type() const
 
 void ArrowItem::setPathShape(const QList<QLineF> &lines)
 {
-    QPolygonF polygon;
-    for (auto line : lines) {
-        QPointF p1 = line.p1();
-        QPointF p2 = line.p2();
-        polygon << p1 << p2;
-    }
+    lines_ = lines;
+    calculateShape();
     QPainterPath pathShape;
-    pathShape.addPolygon(polygon);
+    pathShape.moveTo(lines.first().p1());
+    for (auto line : lines) {
+        pathShape.lineTo(line.p2());
+    }
+
     QGraphicsPathItem::setPath(pathShape);
 }
 
@@ -62,8 +65,56 @@ QPoint ArrowItem::endPoint() const
 
 void ArrowItem::updatePathShape()
 {
-    QList<QLineF> lines = getConnectionPath(startPoint(), endPoint());
+    QList<QLineF> lines;
+
+    using Handle = ArrowHandleItem;
+
+    Handle::PositionFlags sf = startItem_.handle->positionFlag();
+    Handle::PositionFlags ef = endItem_.handle->positionFlag();
+
+    QPoint sp = startPoint();
+    QPoint ep = endPoint();
+
+    if (sf == Handle::Top && ef == Handle::Top && sp.y() < ep.y()) {
+        /// Top
+        lines = getConnectionPath(ep, sp);
+    } else if (sf == Handle::Left && sp.x() > ep.x()) {
+        /// Left
+        lines = getConnectionPath(ep, sp);
+    } else if (ef  == Handle::Right && ep.x() > sp.x()) {
+        /// Right -> not implemented!
+        lines = getConnectionPath(ep, sp);
+    } else if (sf == Handle::Bottom
+               && (ef == Handle::Top || ef == Handle::Bottom || ef == Handle::Left)
+               && sp.y() > ep.y()) {
+        /// Bottom
+        lines = getConnectionPath(ep, sp);
+    } else {
+        lines = getConnectionPath(sp, ep);
+    }
     setPathShape(lines);
+}
+
+void ArrowItem::paint(QPainter *painter,
+                      const QStyleOptionGraphicsItem *option,
+                      QWidget *widget)
+{
+    Q_UNUSED(widget)
+
+    QColor color;
+    if (option->state & QStyle::State_Selected) {
+        color = Qt::green;
+    } else if (option->state & QStyle::State_MouseOver) {
+        color = QColor(52, 201, 36);
+    }
+
+    painter->setPen(QPen(color));
+    painter->drawPath(path());
+}
+
+QPainterPath ArrowItem::shape() const
+{
+    return shape_;
 }
 
 QList<QLineF> ArrowItem::getConnectionPath(const QPoint &startPoint, const QPoint &endPoint)
@@ -72,4 +123,18 @@ QList<QLineF> ArrowItem::getConnectionPath(const QPoint &startPoint, const QPoin
     QLineF l1(startPoint, p);
     QLineF l2(p, endPoint);
     return {l1, l2};
+}
+
+void ArrowItem::calculateShape()
+{
+    shape_.clear();
+    shape_.setFillRule(Qt::WindingFill);
+    for (auto line : qAsConst(lines_)) {
+        QPointF topLeft(qMin(line.p1().x(), line.p2().x()) - 5,
+                        qMin(line.p1().y(), line.p2().y()) - 5);
+        QPointF bottomRight(qMax(line.p1().x(), line.p2().x()) + 5,
+                            qMax(line.p1().y(), line.p2().y()) + 5);
+        QRectF rect(topLeft, bottomRight);
+        shape_.addRect(rect);
+    }
 }

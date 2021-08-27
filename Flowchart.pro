@@ -23,6 +23,7 @@ SOURCES += \
     src/itemproperties.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
+    src/positionline.cpp \
     src/scenebuffer.cpp \
     src/sizegrip.cpp \
     src/sizehandleitem.cpp
@@ -42,6 +43,7 @@ HEADERS += \
     src/internal.h \
     src/itemproperties.h \
     src/mainwindow.h \
+    src/positionline.h \
     src/scenebuffer.h \
     src/sizegrip.h \
     src/sizehandleitem.h

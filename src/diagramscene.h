@@ -26,7 +26,7 @@ public:
     void clearAllSelection();
 
 public slots:
-    void drawPositionLines();
+    void addPositionLines();
     void deleteAllPositionLines();
     void selectAllItems();
     void destroyGraphicsItemGroup();
@@ -47,18 +47,17 @@ protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
 
 private:
-    void deleteAllLines();
-    void drawLevelLine(const QLineF& line);
+    void addLevelLine(const QLineF& line);
     QPoint getItemCenter(const DiagramItem* item) const;
     void createGraphicsItemGroup(QList<DiagramItem*>& diagramItems);
-    void setItemPosWithoutDrawingPositionLines(DiagramItem* item, const QPointF& pos);
+    void setItemPosWithoutAddingPositionLines(DiagramItem* item, const QPointF& pos);
 
     QPointF getMousePosMappedToScene() const;
     QPointF getPosThatItemCenterAtMousePos(const QPointF& mousePosition,
                                            const QGraphicsItem* item) const;
 
 private:
-    bool drawPositionLines_ = true;
+    bool addPositionLines_ = true;
 
     GraphicsItemGroup* group_ = nullptr;
     SceneBuffer buffer_;

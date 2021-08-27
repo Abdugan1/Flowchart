@@ -10,11 +10,11 @@ class ArrowHandleItem;
 class ArrowItem : public QGraphicsPathItem
 {
 public:
-    ArrowItem(QGraphicsItem *parent = nullptr);
-
     enum {Type = UserType + 2};
 
 public:
+    ArrowItem(QGraphicsItem *parent = nullptr);
+
     int type() const override;
 
     void setPathShape(const QList<QLineF>& lines);
@@ -30,8 +30,15 @@ public:
 
     void updatePathShape();
 
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *widget) override;
+
+    QPainterPath shape() const override;
+
 private:
     QList<QLineF> getConnectionPath(const QPoint& startPoint, const QPoint& endPoint);
+    void calculateShape();
 
 private:
     struct Info {
@@ -41,6 +48,8 @@ private:
 
     Info startItem_;
     Info endItem_;
+    QList<QLineF> lines_;
+    QPainterPath shape_;
 };
 
 #endif // ARROWITEM_H

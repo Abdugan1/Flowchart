@@ -5,6 +5,7 @@
 #include "arrowmanager.h"
 #include "arrowhandleitem.h"
 #include "arrowitem.h"
+#include "positionline.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -24,7 +25,7 @@ DiagramItem *DiagramScene::createDiagramItem(int diagramType)
     DiagramItem* diagramItem = new DiagramItem(DiagramItem::DiagramType(diagramType));
 
     connect(diagramItem, &DiagramItem::itemPositionChanged,
-            this,        &DiagramScene::drawPositionLines);
+            this,        &DiagramScene::addPositionLines);
 
     connect(diagramItem, &DiagramItem::itemReleased,
             this,        &DiagramScene::deleteAllPositionLines);
@@ -41,7 +42,7 @@ DiagramItem *DiagramScene::createDiagramItem(const ItemProperties &itemPropertie
 
     diagramItem->resize(itemProperties.size() );
     diagramItem->setText(itemProperties.text());
-    setItemPosWithoutDrawingPositionLines(diagramItem, itemProperties.pos());
+    setItemPosWithoutAddingPositionLines(diagramItem, itemProperties.pos());
 
     return diagramItem;
 }
@@ -74,12 +75,12 @@ void DiagramScene::clearAllSelection()
     }
 }
 
-void DiagramScene::drawPositionLines()
+void DiagramScene::addPositionLines()
 {
-    if (!drawPositionLines_)
+    if (!addPositionLines_)
         return;
 
-    deleteAllLines();
+    deleteAllPositionLines();
 
     // Dont draw green dash line, if several items selected
     if (selectedItems().count() > 1)
@@ -116,21 +117,28 @@ void DiagramScene::drawPositionLines()
     }
 
     if (verticalBegin.y() != senderCenter.y()) {
-        drawLevelLine(QLineF(verticalBegin, verticalEnd));
+        addLevelLine(QLineF(verticalBegin, verticalEnd));
     } else if (verticalEnd.y() != senderCenter.y()) {
-        drawLevelLine(QLineF(verticalEnd, verticalBegin));
+        addLevelLine(QLineF(verticalEnd, verticalBegin));
     }
 
     if (horizontalBegin.x() != senderCenter.x()) {
-        drawLevelLine(QLineF(horizontalBegin, horizontalEnd));
+        addLevelLine(QLineF(horizontalBegin, horizontalEnd));
     } else if (horizontalEnd.x() != senderCenter.x()) {
-        drawLevelLine(QLineF(horizontalEnd, horizontalBegin));
+        addLevelLine(QLineF(horizontalEnd, horizontalBegin));
     }
 }
 
 void DiagramScene::deleteAllPositionLines()
 {
-    deleteAllLines();
+    QList<QGraphicsItem*> items = this->items();
+    for (auto item : qAsConst(items)) {
+        PositionLine* line = qgraphicsitem_cast<PositionLine*>(item);
+        if (line) {
+            removeItem(line);
+            delete line;
+        }
+    }
 }
 
 void DiagramScene::selectAllItems()
@@ -152,6 +160,7 @@ void DiagramScene::destroyGraphicsItemGroup()
 
     for (auto item : qAsConst(groupItems)) {
         item->setSelected(false);
+        item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     }
 
     group_ = nullptr;
@@ -177,14 +186,22 @@ void DiagramScene::deleteItems(const QList<QGraphicsItem *> &items)
     if (items.isEmpty())
         return;
 
-    QGraphicsItem* itemToDelete = items.at(0);
-
+    QGraphicsItem* item= items.at(0);
     // item could be a group, or it could be a single item
-    if (qgraphicsitem_cast<GraphicsItemGroup*>(itemToDelete)) {
-        delete group_;
+    if (qgraphicsitem_cast<GraphicsItemGroup*>(item)) {
+        removeItem(group_);
+        group_->deleteLater();
         group_ = nullptr;
-    } else {
-        delete itemToDelete;
+    } else if (auto arrow  = qgraphicsitem_cast<ArrowItem*>(item)) {
+        arrow->startItem()->removeArrow(arrow);
+        arrow->endItem()->removeArrow(arrow);
+        removeItem(arrow);
+        delete arrow;
+
+    } else if (auto diagramItem = qgraphicsitem_cast<DiagramItem*>(item)) {
+        diagramItem->removeArrows();
+        removeItem(diagramItem);
+        diagramItem->deleteLater();
     }
 }
 
@@ -251,14 +268,15 @@ void DiagramScene::pasteItems(const QPointF &posToPaste)
         QPointF pos = getPosThatItemCenterAtMousePos(posToPaste, item);
 
         addItem(item);
-        setItemPosWithoutDrawingPositionLines(item, pos);
+        setItemPosWithoutAddingPositionLines(item, pos);
     }
 }
 
 void DiagramScene::clearScene()
 {
     if (group_) {
-        delete group_;
+        removeItem(group_);
+        group_->deleteLater();
         group_ = nullptr;
     }
     clear();
@@ -302,26 +320,10 @@ void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
     painter->drawRect(QRectF(0, 0, Constants::DiagramScene::A4Width, Constants::DiagramScene::A4Height));
 }
 
-void DiagramScene::deleteAllLines()
+void DiagramScene::addLevelLine(const QLineF& line)
 {
-    QList<QGraphicsItem*> items = this->items();
-    using LineItem = QGraphicsLineItem;
-    for (auto item : qAsConst(items)) {
-        LineItem* line = qgraphicsitem_cast<LineItem*>(item);
-        if (line)
-            delete line;
-    }
-}
-
-void DiagramScene::drawLevelLine(const QLineF& line)
-{
-    QGraphicsLineItem* lineItem = new QGraphicsLineItem(line);
-    QPen pen;
-    pen.setColor(Qt::green);
-    pen.setStyle(Qt::DashLine);
-    pen.setDashPattern(QVector<qreal>({10, 5}));
-    lineItem->setPen(pen);
-    addItem(lineItem);
+    PositionLine* positionLine = new PositionLine(line);
+    addItem(positionLine);
 }
 
 QPoint DiagramScene::getItemCenter(const DiagramItem *item) const
@@ -344,6 +346,7 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
     group_->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 
     for (auto item : diagramItems) {
+        item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
         item->setSelected(true);
         group_->addToGroup(item);
     }
@@ -354,11 +357,11 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
             this,   &DiagramScene::destroyGraphicsItemGroup);
 }
 
-void DiagramScene::setItemPosWithoutDrawingPositionLines(DiagramItem *item, const QPointF &pos)
+void DiagramScene::setItemPosWithoutAddingPositionLines(DiagramItem *item, const QPointF &pos)
 {
-    drawPositionLines_ = false;
+    addPositionLines_ = false;
     item->setPos(pos);
-    drawPositionLines_ = true;
+    addPositionLines_ = true;
 }
 
 QPointF DiagramScene::getMousePosMappedToScene() const

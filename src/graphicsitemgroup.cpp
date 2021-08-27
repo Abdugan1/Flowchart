@@ -46,7 +46,7 @@ QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant
     if (change == ItemPositionChange) {
         QPointF newPos = value.toPointF();
 
-        newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize / 2);
+        newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize);
 
         QPointF bottomRight = calculateBottomRight(newPos);
         newPos = internal::preventOutsideMove(newPos, bottomRight,

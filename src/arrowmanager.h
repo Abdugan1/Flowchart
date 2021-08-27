@@ -5,6 +5,7 @@
 
 class ArrowHandleItem;
 class DiagramItem;
+class ArrowItem;
 
 class ArrowManager : public HandleManager
 {
@@ -15,12 +16,22 @@ public:
 
     void emitHandleClicked(ArrowHandleItem* handleItem);
 
+    void addArrow(ArrowItem* arrow);
+    void removeArrow(ArrowItem* arrow);
+    void removeArrows();
+    const QList<ArrowItem *> &arrows() const;
+    void updateArrows();
+
 signals:
     void handleClicked(ArrowHandleItem* handleItem,
                        DiagramItem* item);
 
 public slots:
     void updateHandleItemsPositions();
+
+private:
+    QList<ArrowItem*> arrows_;
+
 };
 
 #endif // ARROWMANAGER_H

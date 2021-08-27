@@ -2,7 +2,6 @@
 #include "diagramtextitem.h"
 #include "sizegrip.h"
 #include "arrowmanager.h"
-#include "arrowitem.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -33,11 +32,17 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
 
     sizeGrip_ = new SizeGrip(this);
     connect(sizeGrip_, &SizeGrip::resizeBeenMade,
-            this,          &DiagramItem::updateTextItemPosition);
+            this,      &DiagramItem::updateTextItemPosition);
 
     arrowManager_ = new ArrowManager(this);
-    connect(sizeGrip_,     &SizeGrip::resizeBeenMade,
-            arrowManager_, &ArrowManager::updateHandleItemsPositions);
+    connect(sizeGrip_,      &SizeGrip::resizeBeenMade,
+            arrowManager_,  &ArrowManager::updateHandleItemsPositions);
+
+    connect(sizeGrip_,      &SizeGrip::resizeBeenMade,
+            arrowManager_,  &ArrowManager::updateArrows);
+
+    connect(this,           &DiagramItem::itemPositionChanged,
+            arrowManager_,  &ArrowManager::updateArrows);
 
     setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);
@@ -68,7 +73,6 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 
     } else if (change == ItemPositionHasChanged) {
         emit itemPositionChanged();
-        updateArrows();
 
     } else if (change == ItemSelectedChange
                && textItem_->textInteractionFlags() != Qt::NoTextInteraction
@@ -205,21 +209,6 @@ void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)
     textItem_->setTextCursor(cursor);
 }
 
-const QList<ArrowItem *> &DiagramItem::arrows() const
-{
-    return arrows_;
-}
-
-void DiagramItem::updateArrows()
-{
-    QElapsedTimer timer;
-    timer.start();
-    for (auto arrow : qAsConst(arrows_)) {
-        arrow->updatePathShape();
-    }
-    qDebug() << "Elapsed time:" << timer.elapsed() << "ms";
-}
-
 ArrowManager *DiagramItem::arrowManager() const
 {
     return arrowManager_;
@@ -227,7 +216,17 @@ ArrowManager *DiagramItem::arrowManager() const
 
 void DiagramItem::addArrow(ArrowItem *arrow)
 {
-    arrows_.append(arrow);
+    arrowManager_->addArrow(arrow);
+}
+
+void DiagramItem::removeArrow(ArrowItem *arrow)
+{
+    arrowManager_->removeArrow(arrow);
+}
+
+void DiagramItem::removeArrows()
+{
+    arrowManager_->removeArrows();
 }
 
 const QSizeF &DiagramItem::size() const
