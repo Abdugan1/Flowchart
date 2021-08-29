@@ -46,6 +46,11 @@ void ArrowHandleItem::paint(QPainter *painter,
     }
 }
 
+int ArrowHandleItem::type() const
+{
+    return Type;
+}
+
 PositionFlags ArrowHandleItem::positionFlag() const
 {
     return positionFlag_;

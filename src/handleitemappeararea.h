@@ -4,10 +4,15 @@
 #include <QGraphicsItem>
 #include <QtCore/qglobal.h>
 
+#include "itemtypes.h"
+
 class HandleManager;
 
 class HandleItemAppearArea : public QGraphicsItem
 {
+public:
+    enum {Type = ItemTypes::HandleItemAppearAreaType};
+
 public:
     HandleItemAppearArea(QGraphicsItem* handleItem, HandleManager* handleManager);
 
@@ -15,6 +20,7 @@ public:
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
+    int type() const override;
 
     QGraphicsItem *handleItem() const;
 

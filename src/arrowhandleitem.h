@@ -4,10 +4,15 @@
 #include <QGraphicsEllipseItem>
 #include <QtCore/qglobal.h>
 
+#include "itemtypes.h"
+
 class ArrowManager;
 
 class ArrowHandleItem : public QGraphicsEllipseItem
 {
+public:
+    enum {Type = ItemTypes::ArrowHandleItemType};
+
 public:
     enum PositionFlags {
         Top,
@@ -22,6 +27,8 @@ public:
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
+
+    int type() const override;
 
     PositionFlags positionFlag() const;
 

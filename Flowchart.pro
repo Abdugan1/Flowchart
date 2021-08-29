@@ -42,6 +42,7 @@ HEADERS += \
     src/handlemanager.h \
     src/internal.h \
     src/itemproperties.h \
+    src/itemtypes.h \
     src/mainwindow.h \
     src/positionline.h \
     src/scenebuffer.h \

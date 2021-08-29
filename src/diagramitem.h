@@ -3,6 +3,8 @@
 
 #include <QGraphicsItem>
 
+#include "itemtypes.h"
+
 class DiagramTextItem;
 class SizeGrip;
 class ArrowManager;
@@ -22,7 +24,7 @@ public:
         ForLoop,
     };
 
-    enum {Type = UserType + 1};
+    enum {Type = ItemTypes::DiagramItemType};
 
 public:
     DiagramItem(DiagramType diagramType, QGraphicsItem* parent = nullptr);
@@ -36,6 +38,7 @@ public:
     QRectF boundingRect() const override;
     int type() const override {return Type;}
     QRectF pathBoundingRect() const;
+    QPainterPath shape() const override;
 
     void resize(const QSizeF& size);
     void resize(qreal width, qreal height);
@@ -58,6 +61,7 @@ public:
     void addArrow(ArrowItem* arrow);
     void removeArrow(ArrowItem* arrow);
     void removeArrows();
+    void updateArrows();
 
 signals:
     void itemPositionChanged();
@@ -87,7 +91,9 @@ private:
     QPainterPath path_;
     QSizeF size_;
     DiagramType diagramType_;
+
     bool textEditing_ = false;
+    QPointF clickedPos_;
 
     DiagramTextItem*  textItem_;
     SizeGrip*     sizeGrip_;

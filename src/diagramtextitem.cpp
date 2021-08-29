@@ -35,6 +35,11 @@ void DiagramTextItem::setAlignment(Qt::Alignment alignment)
     setTextCursor(cursor);
 }
 
+int DiagramTextItem::type() const
+{
+    return Type;
+}
+
 void DiagramTextItem::updateGeometry(int, int, int)
 {
     updateGeometry();

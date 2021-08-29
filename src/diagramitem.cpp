@@ -86,13 +86,9 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 
 void DiagramItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (path_.contains(event->pos())) {
-
-        if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
-            QPointF clickPos = mapToItem(textItem_, event->pos());
-            setTextCursorMappedToTextItem(clickPos);
-        }
-
+    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
+        QPointF clickPos = mapToItem(textItem_, event->pos());
+        setTextCursorMappedToTextItem(clickPos);
     }
 
     QGraphicsItem::mousePressEvent(event);
@@ -137,14 +133,9 @@ void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
     sizeGrip_->showHandleItems();
     arrowManager_->showHandleItems();
 
-    if (path_.contains(event->pos())) {
-        if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction
-                && !QGuiApplication::overrideCursor())
-            QGuiApplication::setOverrideCursor(QCursor(Qt::IBeamCursor));
-
-    } else {
-        QGuiApplication::restoreOverrideCursor();
-    }
+    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction
+            && !QGuiApplication::overrideCursor())
+        QGuiApplication::setOverrideCursor(QCursor(Qt::IBeamCursor));
 
     QGraphicsItem::hoverMoveEvent(event);
 }
@@ -229,6 +220,11 @@ void DiagramItem::removeArrows()
     arrowManager_->removeArrows();
 }
 
+void DiagramItem::updateArrows()
+{
+    arrowManager_->updateArrows();
+}
+
 const QSizeF &DiagramItem::size() const
 {
     return size_;
@@ -284,6 +280,11 @@ QRectF DiagramItem::boundingRect() const
 QRectF DiagramItem::pathBoundingRect() const
 {
     return path_.boundingRect();
+}
+
+QPainterPath DiagramItem::shape() const
+{
+    return path_;
 }
 
 void DiagramItem::resize(const QSizeF &size)

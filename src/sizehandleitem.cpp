@@ -46,6 +46,11 @@ void SizeHandleItem::paint(QPainter *painter,
     painter->drawRect(visibleRect_);
 }
 
+int SizeHandleItem::type() const
+{
+    return Type;
+}
+
 void SizeHandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF pos = mapToParent(event->pos());

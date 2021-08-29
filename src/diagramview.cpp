@@ -77,13 +77,13 @@ void DiagramView::mousePressEvent(QMouseEvent *event)
             setInteractive(false);
             setDragMode(QGraphicsView::ScrollHandDrag);
 
+    } else if (event->button() == Qt::RightButton) {
+        contextMenu_->exec(mapToGlobal(event->pos()));
     } else  {
         QList<QGraphicsItem*> items = scene()->items(mapToScene(event->pos()));
         if (items.empty()) {
             if (event->button() == Qt::LeftButton) {
                 initRubberBand();
-            } else if (event->button() == Qt::RightButton) {
-                contextMenu_->exec(mapToGlobal(event->pos()));
             }
         }
     }

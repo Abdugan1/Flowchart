@@ -15,6 +15,9 @@ GraphicsItemGroup::GraphicsItemGroup(const QPointF &pos, QGraphicsItem *parent)
 {
     setPos(pos);
     setCursor(QCursor(Qt::OpenHandCursor));
+    setFlag(QGraphicsItem::ItemIsMovable);
+    setFlag(QGraphicsItem::ItemIsSelectable);
+    setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 }
 
 QRectF GraphicsItemGroup::boundingRect() const
@@ -41,6 +44,17 @@ void GraphicsItemGroup::paint(QPainter *painter,
                              rect.height() - Constants::GraphicsItemGroup::PenWidth));
 }
 
+int GraphicsItemGroup::type() const
+{
+    return Type;
+}
+
+void GraphicsItemGroup::addDiagramItem(DiagramItem *item)
+{
+    diagramItems_.append(item);
+    addToGroup(item);
+}
+
 QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange) {
@@ -54,6 +68,10 @@ QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant
                                                      Constants::DiagramScene::A4Height));
 
         return newPos;
+
+    } else if (change == ItemPositionHasChanged) {
+        for (auto item : qAsConst(diagramItems_))
+            item->updateArrows();
 
     } else if (change == ItemSelectedHasChanged) {
         bool selected = value.toBool();
@@ -77,17 +95,19 @@ void GraphicsItemGroup::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QPointF GraphicsItemGroup::calculateBottomRight(QPointF topLeft) const
 {
-    QList<DiagramItem*> diagramItems =
-            internal::getDiagramItemsFromQGraphics(childItems());
+    QPointF bottomRight = diagramItems_.at(0)->pos() +
+            diagramItems_.at(0)->pathBoundingRect().bottomRight();
 
-    QPointF bottomRight = diagramItems.at(0)->pos() +
-            diagramItems.at(0)->boundingRect().bottomRight();
-
-    for (auto item : qAsConst(diagramItems)) {
-        QPointF pos = item->pos() + item->boundingRect().bottomRight();
+    for (auto item : qAsConst(diagramItems_)) {
+        QPointF pos = item->pos() + item->pathBoundingRect().bottomRight();
         bottomRight.setX(qMax(pos.x(), bottomRight.x()));
         bottomRight.setY(qMax(pos.y(), bottomRight.y()));
     }
 
     return topLeft + bottomRight;
+}
+
+const QList<DiagramItem *> &GraphicsItemGroup::diagramItems() const
+{
+    return diagramItems_;
 }

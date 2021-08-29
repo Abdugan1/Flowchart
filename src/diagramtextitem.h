@@ -3,14 +3,21 @@
 
 #include <QGraphicsTextItem>
 
+#include "itemtypes.h"
+
 class DiagramTextItem : public QGraphicsTextItem
 {
     Q_OBJECT
 
 public:
+    enum {Type = ItemTypes::DiagramTextItemType};
+
+public:
     DiagramTextItem(const QString& text, QGraphicsItem* parent = nullptr);
     DiagramTextItem(QGraphicsItem* parent = nullptr);
     void setAlignment(Qt::Alignment alignment);
+
+    int type() const override;
 
 public slots:
     void updateGeometry(int, int, int);

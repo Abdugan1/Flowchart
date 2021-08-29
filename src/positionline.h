@@ -4,10 +4,12 @@
 #include <QGraphicsLineItem>
 #include <QtCore/qglobal.h>
 
+#include "itemtypes.h"
+
 class PositionLine : public QGraphicsLineItem
 {
 public:
-    enum {Type = UserType + 3};
+    enum {Type = ItemTypes::PositionLineType};
 
 public:
     explicit PositionLine(const QLineF &line, QGraphicsItem *parent = nullptr);

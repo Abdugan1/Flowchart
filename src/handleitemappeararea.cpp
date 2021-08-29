@@ -50,6 +50,11 @@ void HandleItemAppearArea::paint(QPainter *painter,
     Q_UNUSED(widget)
 }
 
+int HandleItemAppearArea::type() const
+{
+    return Type;
+}
+
 void HandleItemAppearArea::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     if (!handleItem_->isVisible()) {

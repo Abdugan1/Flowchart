@@ -4,13 +4,15 @@
 #include <QGraphicsPathItem>
 #include <QtCore/qglobal.h>
 
+#include "itemtypes.h"
+
 class DiagramItem;
 class ArrowHandleItem;
 
 class ArrowItem : public QGraphicsPathItem
 {
 public:
-    enum {Type = UserType + 2};
+    enum {Type = ItemTypes::ArrowItemType};
 
 public:
     ArrowItem(QGraphicsItem *parent = nullptr);

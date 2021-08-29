@@ -153,8 +153,7 @@ void DiagramScene::selectAllItems()
 
 void DiagramScene::destroyGraphicsItemGroup()
 {
-    QList<DiagramItem*> groupItems
-            = internal::getDiagramItemsFromQGraphics(group_->childItems());
+    QList<DiagramItem*> groupItems = group_->diagramItems();
 
     destroyItemGroup(group_);
 
@@ -217,7 +216,7 @@ void DiagramScene::copyItems(const QList<QGraphicsItem *> &items)
 
     buffer_.reset();
 
-    GraphicsItemGroup* group = qgraphicsitem_cast<GraphicsItemGroup*>(items.at(0));
+    GraphicsItemGroup* group = qgraphicsitem_cast<GraphicsItemGroup*>(items.last());
     QList<DiagramItem*> tmp;
 
     if (group) {
@@ -341,14 +340,11 @@ void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
     }
 
     group_ = new GraphicsItemGroup(topLeft);
-    group_->setFlag(QGraphicsItem::ItemIsMovable);
-    group_->setFlag(QGraphicsItem::ItemIsSelectable);
-    group_->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 
     for (auto item : diagramItems) {
         item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
         item->setSelected(true);
-        group_->addToGroup(item);
+        group_->addDiagramItem(item);
     }
     addItem(group_);
     group_->setSelected(true);

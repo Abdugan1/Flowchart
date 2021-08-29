@@ -3,6 +3,8 @@
 
 #include <QGraphicsRectItem>
 
+#include "itemtypes.h"
+
 class SizeGrip;
 class DiagramItem;
 
@@ -21,12 +23,15 @@ public:
         BottomRight = Bottom | Right
     };
 
+    enum {Type = ItemTypes::SizeHandleItemType};
+
 public:
     SizeHandleItem(PositionFlags positionFlags, QGraphicsItem* parent = nullptr);
     PositionFlags positionFlags() const;
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
+    int type() const override;
 
     void setSizeGripItem(SizeGrip *newSizeGripItem);
 
