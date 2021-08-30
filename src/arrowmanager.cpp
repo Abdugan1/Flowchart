@@ -30,7 +30,8 @@ void ArrowManager::emitHandleClicked(ArrowHandleItem *handleItem)
 
 void ArrowManager::addArrow(ArrowItem *arrow)
 {
-    arrows_.append(arrow);
+    if (arrow->startItem() != arrow->endItem())
+        arrows_.append(arrow);
 }
 
 void ArrowManager::removeArrow(ArrowItem *arrow)

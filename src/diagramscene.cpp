@@ -188,6 +188,9 @@ void DiagramScene::deleteItems(const QList<QGraphicsItem *> &items)
     QGraphicsItem* item= items.at(0);
     // item could be a group, or it could be a single item
     if (qgraphicsitem_cast<GraphicsItemGroup*>(item)) {
+        for (auto diagramItem : group_->diagramItems())
+            diagramItem->removeArrows();
+
         removeItem(group_);
         group_->deleteLater();
         group_ = nullptr;

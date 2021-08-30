@@ -44,11 +44,6 @@ void GraphicsItemGroup::paint(QPainter *painter,
                              rect.height() - Constants::GraphicsItemGroup::PenWidth));
 }
 
-int GraphicsItemGroup::type() const
-{
-    return Type;
-}
-
 void GraphicsItemGroup::addDiagramItem(DiagramItem *item)
 {
     diagramItems_.append(item);

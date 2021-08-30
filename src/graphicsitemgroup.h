@@ -3,16 +3,11 @@
 
 #include <QGraphicsItemGroup>
 
-#include "itemtypes.h"
-
 class DiagramItem;
 
 class GraphicsItemGroup : public QObject, public QGraphicsItemGroup
 {
     Q_OBJECT
-
-public:
-    enum {Type = ItemTypes::GraphicsItemGroupType};
 
 public:
     GraphicsItemGroup(const QPointF& pos, QGraphicsItem *parent = nullptr);
@@ -21,8 +16,6 @@ public:
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
-
-    int type() const override;
 
     void addDiagramItem(DiagramItem* item);
     const QList<DiagramItem *> &diagramItems() const;
