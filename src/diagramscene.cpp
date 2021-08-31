@@ -16,7 +16,11 @@
 #include <QFile>
 
 DiagramScene::DiagramScene(QObject *parent)
-    : QGraphicsScene(parent)
+    : QGraphicsScene(-Constants::DiagramScene::InitSize,
+                     -Constants::DiagramScene::InitSize,
+                      Constants::DiagramScene::InitSize * 2,
+                      Constants::DiagramScene::InitSize * 2,
+                     parent)
 {
 }
 
@@ -54,12 +58,15 @@ QList<DiagramItem *> DiagramScene::getDiagramItems(Qt::SortOrder order) const
 
 QImage DiagramScene::toImage()
 {
-    QImage image(sceneRect().size().toSize(), QImage::Format_ARGB32);
-    image.fill(Qt::transparent);
+    QImage image(Constants::DiagramScene::A4Width,
+                 Constants::DiagramScene::A4Height,
+                 QImage::Format_ARGB32);
+    image.fill(Qt::white);
 
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
-    render(&painter);
+    render(&painter, QRectF(), QRectF(0, 0, Constants::DiagramScene::A4Width,
+                                      Constants::DiagramScene::A4Height));
 
     return image;
 }
@@ -82,7 +89,7 @@ void DiagramScene::addPositionLines()
 
     deleteAllPositionLines();
 
-    // Dont draw green dash line, if several items selected
+    // Dont draw position line, if several items selected
     if (selectedItems().count() > 1)
         return;
 
@@ -117,15 +124,15 @@ void DiagramScene::addPositionLines()
     }
 
     if (verticalBegin.y() != senderCenter.y()) {
-        addLevelLine(QLineF(verticalBegin, verticalEnd));
+        addPositionLine(QLineF(verticalBegin, verticalEnd));
     } else if (verticalEnd.y() != senderCenter.y()) {
-        addLevelLine(QLineF(verticalEnd, verticalBegin));
+        addPositionLine(QLineF(verticalEnd, verticalBegin));
     }
 
     if (horizontalBegin.x() != senderCenter.x()) {
-        addLevelLine(QLineF(horizontalBegin, horizontalEnd));
+        addPositionLine(QLineF(horizontalBegin, horizontalEnd));
     } else if (horizontalEnd.x() != senderCenter.x()) {
-        addLevelLine(QLineF(horizontalEnd, horizontalBegin));
+        addPositionLine(QLineF(horizontalEnd, horizontalBegin));
     }
 }
 
@@ -185,7 +192,7 @@ void DiagramScene::deleteItems(const QList<QGraphicsItem *> &items)
     if (items.isEmpty())
         return;
 
-    QGraphicsItem* item= items.at(0);
+    QGraphicsItem* item= items.last();
     // item could be a group, or it could be a single item
     if (qgraphicsitem_cast<GraphicsItemGroup*>(item)) {
         for (auto diagramItem : group_->diagramItems())
@@ -223,7 +230,7 @@ void DiagramScene::copyItems(const QList<QGraphicsItem *> &items)
     QList<DiagramItem*> tmp;
 
     if (group) {
-        tmp = internal::getDiagramItemsFromQGraphics(group_->childItems());
+        tmp = group_->diagramItems();
         buffer_.setGroupCopied(true);
     } else {
         tmp = internal::getDiagramItemsFromQGraphics(items);
@@ -302,27 +309,7 @@ void DiagramScene::onHandleClicked(ArrowHandleItem *handle, DiagramItem *item)
     }
 }
 
-void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
-{
-    QPen pen;
-    painter->setPen(pen);
-
-    int left = int(rect.left() - (int(rect.left()) % Constants::DiagramScene::GridSize));
-    int top  = int(rect.top()  - (int(rect.top())  % Constants::DiagramScene::GridSize));
-
-    QVector<QPointF> points;
-    for (int x = left; x < rect.right(); x += Constants::DiagramScene::GridSize) {
-        for (int y = top; y < rect.bottom(); y += Constants::DiagramScene::GridSize) {
-            points.append(QPointF(x, y));
-        }
-    }
-
-    painter->drawPoints(points.data(), points.size());
-
-    painter->drawRect(QRectF(0, 0, Constants::DiagramScene::A4Width, Constants::DiagramScene::A4Height));
-}
-
-void DiagramScene::addLevelLine(const QLineF& line)
+void DiagramScene::addPositionLine(const QLineF& line)
 {
     PositionLine* positionLine = new PositionLine(line);
     addItem(positionLine);

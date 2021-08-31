@@ -63,7 +63,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
     if (change == ItemPositionChange && scene()) {
         QPointF newPos = value.toPointF();
 
-        newPos = internal::getPointByStep(newPos, Constants::DiagramScene::GridSize);
+        newPos = internal::snapToGrid(newPos, Constants::DiagramScene::GridSize);
 
         newPos = internal::preventOutsideMove(newPos, newPos + QPointF(size_.width(), size_.height()),
                                               QRectF(0, 0, Constants::DiagramScene::A4Width,

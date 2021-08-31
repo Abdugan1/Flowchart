@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QRubberBand>
+#include <QElapsedTimer>
 
 DiagramView::DiagramView(QWidget *parent)
     : QGraphicsView(parent)
@@ -177,6 +178,24 @@ void DiagramView::paintEvent(QPaintEvent *event)
     painter.drawText(pointMouse, currMousePosInfoText);
 
     painter.end();
+}
+
+void DiagramView::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    int left = int(rect.left() - (int(rect.left()) % Constants::DiagramScene::GridSize));
+    int top  = int(rect.top()  - (int(rect.top())  % Constants::DiagramScene::GridSize));
+
+    QVector<QPointF> points;
+    points.reserve(rect.right() * rect.bottom());
+    for (int x = left; x < rect.right(); x += Constants::DiagramScene::GridSize) {
+        for (int y = top; y < rect.bottom(); y += Constants::DiagramScene::GridSize) {
+            points.append(QPointF(x, y));
+        }
+    }
+
+    painter->drawPoints(points.data(), points.size());
+
+    painter->drawRect(QRectF(0, 0, Constants::DiagramScene::A4Width, Constants::DiagramScene::A4Height));
 }
 
 void DiagramView::init()

@@ -43,11 +43,8 @@ private slots:
     void onHandleClicked(ArrowHandleItem* handle,
                          DiagramItem* item);
 
-protected:
-    void drawBackground(QPainter *painter, const QRectF &rect) override;
-
 private:
-    void addLevelLine(const QLineF& line);
+    void addPositionLine(const QLineF& line);
     QPoint getItemCenter(const DiagramItem* item) const;
     void createGraphicsItemGroup(QList<DiagramItem*>& diagramItems);
     void setItemPosWithoutAddingPositionLines(DiagramItem* item, const QPointF& pos);

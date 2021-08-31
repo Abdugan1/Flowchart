@@ -21,6 +21,8 @@ static const qreal SelectedPenWidth = 2.0;
 
 namespace DiagramScene {
 
+static const int InitSize = 3000;
+
 static const int A4Width  = 680;
 static const int A4Height = 975;
 

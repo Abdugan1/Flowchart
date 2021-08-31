@@ -54,7 +54,7 @@ int SizeHandleItem::type() const
 void SizeHandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF pos = mapToParent(event->pos());
-    pos = internal::getPointByStep(pos, Constants::DiagramScene::GridSize);
+    pos = internal::snapToGrid(pos, Constants::DiagramScene::GridSize);
     pos = restrictPosition(pos);
 
     // Workaround

@@ -37,6 +37,8 @@ protected:
 
     void paintEvent(QPaintEvent *event) override;
 
+    void drawBackground(QPainter *painter, const QRectF &rect) override;
+
 private:
     void init();
 

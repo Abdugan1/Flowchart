@@ -12,7 +12,7 @@ class ItemProperties;
 
 namespace internal {
 
-QPointF getPointByStep(QPointF point, int step);
+QPointF snapToGrid(const QPointF& point, int gridSize);
 
 int map(int value, int fromLow, int fromHigh, int toLow, int toHigh);
 

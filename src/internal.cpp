@@ -4,17 +4,11 @@
 
 #include <QDebug>
 #include <QPointF>
-#include <QGraphicsScene>
 
-QPointF internal::getPointByStep(QPointF point, int step)
+QPointF internal::snapToGrid(const QPointF& point, int gridSize)
 {
-    qreal xV = qRound(point.x() / step) * step;
-    qreal yV = qRound(point.y() / step) * step;
-
-    point.setX(xV);
-    point.setY(yV);
-
-    return point;
+    return QPointF(qRound(point.x() / gridSize) * gridSize,
+                   qRound(point.y() / gridSize) * gridSize);
 }
 
 int internal::map(int value, int frowLow, int fromHigh, int toLow, int toHigh)

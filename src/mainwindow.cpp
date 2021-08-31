@@ -14,9 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     createSideMenu();
     createMenus();
 
-    scene_->setSceneRect(QRectF(0, 0,
-                                Constants::DiagramScene::A4Width,
-                                Constants::DiagramScene::A4Height));
+    view_->centerOn(0, 0);
 
     connect(view_,  &DiagramView::rubberBandSelectingFinished,
             scene_, &DiagramScene::selectAndMakeGroup);
@@ -202,11 +200,11 @@ void MainWindow::createMenus()
     fileMenu_->addAction(openDiagramAction_);
     fileMenu_->addAction(exportToPngAction_);
 
-    itemMenu_ = menuBar()->addMenu(tr("&Item"));
-    itemMenu_->addAction(deleteAction_);
-    itemMenu_->addAction(selectAllAction_);
-    itemMenu_->addAction(copyAction_);
-    itemMenu_->addAction(pasteAction_);
+    editMenu_ = menuBar()->addMenu(tr("&Edit"));
+    editMenu_->addAction(deleteAction_);
+    editMenu_->addAction(selectAllAction_);
+    editMenu_->addAction(copyAction_);
+    editMenu_->addAction(pasteAction_);
 
     helpMenu_ = menuBar()->addMenu(tr("&Help"));
     helpMenu_->addAction(aboutQtAction_);

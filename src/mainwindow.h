@@ -59,8 +59,8 @@ private:
 
     QAction* exportToPngAction_;
 
-    QMenu* itemMenu_;
     QMenu* fileMenu_;
+    QMenu* editMenu_;
     QMenu* helpMenu_;
 };
 
