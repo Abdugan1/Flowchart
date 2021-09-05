@@ -163,6 +163,7 @@ void SizeGrip::resizeDiagramItem()
     qreal dx = rect_.x() - pathRect.x();
     qreal dy = rect_.y() - pathRect.y();
 
+    diagramItem->prepareGeomChange();
     diagramItem->moveBy(dx, dy);
     diagramItem->setPath(newPath);
     diagramItem->setSize(QSizeF(rect_.width(), rect_.height()));

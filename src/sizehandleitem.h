@@ -47,7 +47,7 @@ private:
     QRectF visibleRect_;
 
     PositionFlags positionFlags_;
-    SizeGrip* sizeGripItem_;
+    SizeGrip* sizeGripItem_ = nullptr;
 };
 
 #endif // SIZEHANDLEITEM_H

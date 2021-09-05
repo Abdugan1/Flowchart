@@ -39,7 +39,7 @@ protected:
 
 private:
     PositionFlags positionFlag_;
-    ArrowManager* arrowManager_;
+    ArrowManager* arrowManager_ = nullptr;
 };
 
 #endif // ARROWHANDLEITEM_H

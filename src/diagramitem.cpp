@@ -298,6 +298,11 @@ QPainterPath DiagramItem::shape() const
     return path_;
 }
 
+void DiagramItem::prepareGeomChange()
+{
+    prepareGeometryChange();
+}
+
 void DiagramItem::resize(const QSizeF &size)
 {
     sizeGrip_->setRect(QRectF(0, 0, size.width(), size.height()));

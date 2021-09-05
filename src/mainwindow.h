@@ -40,28 +40,28 @@ private:
                                       const QPixmap& pixmap);
 
 private:
-    DiagramScene* scene_;
-    DiagramView*  view_;
+    DiagramScene* scene_ = nullptr;
+    DiagramView*  view_  = nullptr;
 
-    QButtonGroup* buttonGroup_;
-    QToolButton*  saveJsonButton_;
-    QToolButton*  loadFromJsonButton_;
-    QScrollArea*  sideMenu_;
+    QButtonGroup* buttonGroup_        = nullptr;
+    QToolButton*  saveJsonButton_     = nullptr;
+    QToolButton*  loadFromJsonButton_ = nullptr;
+    QScrollArea*  sideMenu_           = nullptr;
 
-    QAction* deleteAction_;
-    QAction* selectAllAction_;
-    QAction* copyAction_;
-    QAction* pasteAction_;
-    QAction* aboutQtAction_;
+    QAction* deleteAction_    = nullptr;
+    QAction* selectAllAction_ = nullptr;
+    QAction* copyAction_      = nullptr;
+    QAction* pasteAction_     = nullptr;
+    QAction* aboutQtAction_   = nullptr;
 
-    QAction* saveAsJsonAction_;
-    QAction* openDiagramAction_;
+    QAction* saveAsJsonAction_  = nullptr;
+    QAction* openDiagramAction_ = nullptr;
 
-    QAction* exportToPngAction_;
+    QAction* exportToPngAction_ = nullptr;
 
-    QMenu* fileMenu_;
-    QMenu* editMenu_;
-    QMenu* helpMenu_;
+    QMenu* fileMenu_ = nullptr;
+    QMenu* editMenu_ = nullptr;
+    QMenu* helpMenu_ = nullptr;
 };
 
 #endif // MAINWINDOW_H

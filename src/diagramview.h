@@ -63,8 +63,8 @@ private:
     QRubberBand* rubberBand_ = nullptr;
     QMenu* contextMenu_;
 
-    InfoLabel* diagramItemCountLabel_;
-    InfoLabel* mousePosLabel_;
+    InfoLabel* diagramItemCountLabel_ = nullptr;
+    InfoLabel* mousePosLabel_ = nullptr;
 };
 
 #endif // DIAGRAMVIEW_H

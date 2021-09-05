@@ -209,7 +209,7 @@ void DiagramScene::deleteItems(const QList<QGraphicsItem *> &items)
         return;
 
     QGraphicsItem* item= items.last();
-    // item could be a group, or it could be a single item
+
     if (qgraphicsitem_cast<GraphicsItemGroup*>(item)) {
         for (auto diagramItem : group_->diagramItems())
             removeDiagramItem(diagramItem);
@@ -224,10 +224,7 @@ void DiagramScene::deleteItems(const QList<QGraphicsItem *> &items)
         delete arrow;
 
     } else if (auto diagramItem = qgraphicsitem_cast<DiagramItem*>(item)) {
-        qDebug() << "Count:" << diagramItems_.count();
         removeDiagramItem(diagramItem);
-        qDebug() << "Count:" << diagramItems_.count();
-        qDebug() << "----------------";
     }
 }
 
@@ -306,6 +303,7 @@ void DiagramScene::clearScene()
         group_ = nullptr;
     }
     clear();
+    diagramItems_.clear();
 }
 
 void DiagramScene::onHandleClicked(ArrowHandleItem *handle, DiagramItem *item)

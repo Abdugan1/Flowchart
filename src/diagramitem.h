@@ -40,6 +40,8 @@ public:
     QRectF pathBoundingRect() const;
     QPainterPath shape() const override;
 
+    void prepareGeomChange();
+
     void resize(const QSizeF& size);
     void resize(qreal width, qreal height);
 
@@ -97,8 +99,8 @@ private:
     QPointF clickedPos_;
 
     DiagramTextItem*  textItem_;
-    SizeGrip*     sizeGrip_;
-    ArrowManager* arrowManager_;
+    SizeGrip*     sizeGrip_ = nullptr;
+    ArrowManager* arrowManager_ = nullptr;
 };
 
 #endif // DIAGRAMITEM_H

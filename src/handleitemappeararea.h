@@ -29,8 +29,8 @@ protected:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
 private:
-    HandleManager* sizeGripItem_;
-    QGraphicsItem* handleItem_;
+    HandleManager* sizeGripItem_ = nullptr;
+    QGraphicsItem* handleItem_ = nullptr;
     QRectF appearArea_;
 };
 

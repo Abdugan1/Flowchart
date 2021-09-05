@@ -44,8 +44,8 @@ private:
 
 private:
     struct Info {
-        DiagramItem* item;
-        ArrowHandleItem* handle;
+        DiagramItem* item = nullptr;
+        ArrowHandleItem* handle = nullptr;
     };
 
     Info startItem_;

@@ -89,6 +89,8 @@ const QList<ArrowItem *> &ArrowManager::arrows() const
 
 void ArrowManager::updateArrows()
 {
-    for (auto arrow : qAsConst(arrows_))
-        arrow->updatePathShape();
+    for (auto arrow : qAsConst(arrows_)) {
+        if (arrow->startItem() && arrow->endItem())
+            arrow->updatePathShape();
+    }
 }
