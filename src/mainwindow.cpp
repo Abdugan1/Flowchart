@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
             this,  &MainWindow::loadFromSaveFile);
 
     connect(scene_, &DiagramScene::diagramItemAddedOrRemoved,
-            view_,  &DiagramView::updateDiagramCountInfoTextArea);
+            view_,  &DiagramView::updateDiagramItemCountInfoText);
 
     connect(view_,  &DiagramView::copyActionTriggered,
             scene_, &DiagramScene::copyItems);

@@ -24,7 +24,7 @@ DiagramView::DiagramView(DiagramScene *scene, QWidget *parent)
     init();
 }
 
-void DiagramView::updateDiagramCountInfoTextArea()
+void DiagramView::updateDiagramItemCountInfoText()
 {
     if (scene_->diagramItems().count() != lastDiagramCount_) {
         lastDiagramCount_ = scene_->diagramItems().count();
