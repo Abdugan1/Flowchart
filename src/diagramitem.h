@@ -85,7 +85,8 @@ protected:
 
 private:
     void enableTextEditing();
-    void setTextCursorMappedToTextItem(const QPointF& clickPos);
+    void setTextCursor(int position);
+    int getTextCursorPosition(const QPointF& clickedPos);
 
 private:
     QPainterPath path_;

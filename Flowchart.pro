@@ -19,6 +19,7 @@ SOURCES += \
     src/graphicsitemgroup.cpp \
     src/handleitemappeararea.cpp \
     src/handlemanager.cpp \
+    src/infolabel.cpp \
     src/internal.cpp \
     src/itemproperties.cpp \
     src/main.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     src/graphicsitemgroup.h \
     src/handleitemappeararea.h \
     src/handlemanager.h \
+    src/infolabel.h \
     src/internal.h \
     src/itemproperties.h \
     src/itemtypes.h \

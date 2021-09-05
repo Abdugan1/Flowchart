@@ -37,6 +37,11 @@ QMenu::item:selected {
     color: #FFFFFF;
 }
 
+QMenu::item:disabled {
+    color: grey;
+    background-color: #151a1e;
+}
+
 QToolButton#sideMenuButton {
     background-color: white;
     min-width: 250px;

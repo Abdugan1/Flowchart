@@ -3,6 +3,9 @@
 
 #include <QGraphicsView>
 
+class InfoLabel;
+class DiagramScene;
+
 class QMenu;
 class QRubberBand;
 
@@ -11,8 +14,7 @@ class DiagramView : public QGraphicsView
     Q_OBJECT
 
 public:
-    DiagramView(QWidget* parent = nullptr);
-    DiagramView(QGraphicsScene* scene, QWidget* parent = nullptr);
+    DiagramView(DiagramScene* scene, QWidget* parent = nullptr);
 
 signals:
     void rubberBandSelectingFinished(const QRectF& rubberBandRect);
@@ -22,8 +24,7 @@ signals:
     void deleteActionTriggered(const QList<QGraphicsItem*>& items);
 
 public slots:
-    void updateDiagramCountInfoTextArea();
-    void updateCurrentMousePosInfoTextArea();
+    void updateDiagramItemCountInfoText();
 
 protected:
     void wheelEvent(QWheelEvent *event)         override;
@@ -34,8 +35,6 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dragMoveEvent(QDragMoveEvent  *event)  override;
     void dropEvent(QDropEvent *event) override;
-
-    void paintEvent(QPaintEvent *event) override;
 
     void drawBackground(QPainter *painter, const QRectF &rect) override;
 
@@ -53,6 +52,8 @@ private:
                                        const QPointF& toScenePoint);
 
 private:
+    DiagramScene* scene_;
+
     int lastDiagramCount_ = 0;
 
     QPointF clickedPos_;
@@ -61,6 +62,9 @@ private:
 
     QRubberBand* rubberBand_ = nullptr;
     QMenu* contextMenu_;
+
+    InfoLabel* diagramItemCountLabel_;
+    InfoLabel* mousePosLabel_;
 };
 
 #endif // DIAGRAMVIEW_H

@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(view_, &DiagramView::saveFileDropped,
             this,  &MainWindow::loadFromSaveFile);
 
-    connect(scene_, &DiagramScene::changed,
+    connect(scene_, &DiagramScene::diagramItemAddedOrRemoved,
             view_,  &DiagramView::updateDiagramCountInfoTextArea);
 
     connect(view_,  &DiagramView::copyActionTriggered,
@@ -59,7 +59,7 @@ void MainWindow::buttonGroupClicked(QAbstractButton* button)
 
     DiagramItem* diagramItem = scene_->createDiagramItem(diagramType);
 
-    scene_->addItem(diagramItem);
+    scene_->addDiagramItem(diagramItem);
 }
 
 void MainWindow::onSaveAsJson()
@@ -123,7 +123,7 @@ void MainWindow::loadFromSaveFile(const QString &fileName)
 
     scene_->clearScene();
     for (const auto& itemProperties : qAsConst(itemsProperties)) {
-        scene_->addItem(scene_->createDiagramItem(itemProperties));
+        scene_->addDiagramItem(scene_->createDiagramItem(itemProperties));
     }
     file.close();
 }

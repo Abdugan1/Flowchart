@@ -51,6 +51,22 @@ DiagramItem *DiagramScene::createDiagramItem(const ItemProperties &itemPropertie
     return diagramItem;
 }
 
+void DiagramScene::addDiagramItem(DiagramItem *diagramItem)
+{
+    diagramItems_.append(diagramItem);
+    addItem(diagramItem);
+    emit diagramItemAddedOrRemoved();
+}
+
+void DiagramScene::removeDiagramItem(DiagramItem *diagramItem)
+{
+    diagramItems_.removeAll(diagramItem);
+    diagramItem->removeArrows();
+    removeItem(diagramItem);
+    diagramItem->deleteLater();
+    emit diagramItemAddedOrRemoved();
+}
+
 QList<DiagramItem *> DiagramScene::getDiagramItems(Qt::SortOrder order) const
 {
     return internal::getDiagramItemsFromQGraphics(items(order));
@@ -196,7 +212,7 @@ void DiagramScene::deleteItems(const QList<QGraphicsItem *> &items)
     // item could be a group, or it could be a single item
     if (qgraphicsitem_cast<GraphicsItemGroup*>(item)) {
         for (auto diagramItem : group_->diagramItems())
-            diagramItem->removeArrows();
+            removeDiagramItem(diagramItem);
 
         removeItem(group_);
         group_->deleteLater();
@@ -208,9 +224,10 @@ void DiagramScene::deleteItems(const QList<QGraphicsItem *> &items)
         delete arrow;
 
     } else if (auto diagramItem = qgraphicsitem_cast<DiagramItem*>(item)) {
-        diagramItem->removeArrows();
-        removeItem(diagramItem);
-        diagramItem->deleteLater();
+        qDebug() << "Count:" << diagramItems_.count();
+        removeDiagramItem(diagramItem);
+        qDebug() << "Count:" << diagramItems_.count();
+        qDebug() << "----------------";
     }
 }
 
@@ -260,7 +277,7 @@ void DiagramScene::pasteItems(const QPointF &posToPaste)
             item->setPos(properies.pos());
 
             items.append(item);
-            addItem(item);
+            addDiagramItem(item);
         }
 
         if (group_)
@@ -276,7 +293,7 @@ void DiagramScene::pasteItems(const QPointF &posToPaste)
 
         QPointF pos = getPosThatItemCenterAtMousePos(posToPaste, item);
 
-        addItem(item);
+        addDiagramItem(item);
         setItemPosWithoutAddingPositionLines(item, pos);
     }
 }
@@ -363,4 +380,9 @@ QPointF DiagramScene::getPosThatItemCenterAtMousePos(const QPointF &mousePositio
     QRectF itemRect = item->boundingRect();
     return QPointF(mousePosition.x() - (itemRect.left() + itemRect.width()  / 2),
                    mousePosition.y() - (itemRect.top()  + itemRect.height() / 2));
+}
+
+const QList<DiagramItem *> &DiagramScene::diagramItems() const
+{
+    return diagramItems_;
 }

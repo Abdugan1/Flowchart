@@ -86,9 +86,10 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 
 void DiagramItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    clickedPos_ = event->pos();
     if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
-        QPointF clickPos = mapToItem(textItem_, event->pos());
-        setTextCursorMappedToTextItem(clickPos);
+        int position = getTextCursorPosition(clickedPos_);
+        setTextCursor(position);
     }
 
     QGraphicsItem::mousePressEvent(event);
@@ -96,16 +97,20 @@ void DiagramItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void DiagramItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (textEditing_)
-        return;
+    if (textEditing_) {
+        QTextCursor cursor = textItem_->textCursor();
+        int position = getTextCursorPosition(event->pos());
+        cursor.setPosition(position, QTextCursor::KeepAnchor);
+        textItem_->setTextCursor(cursor);
+    } else {
+        sizeGrip_->hideHandleItems();
+        arrowManager_->hideHandleItems();
 
-    sizeGrip_->hideHandleItems();
-    arrowManager_->hideHandleItems();
+        if (!QGuiApplication::overrideCursor())
+            QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
 
-    if (!QGuiApplication::overrideCursor())
-        QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
-
-    QGraphicsItem::mouseMoveEvent(event);
+        QGraphicsItem::mouseMoveEvent(event);
+    }
 }
 
 void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -166,8 +171,18 @@ void DiagramItem::enableTextEditing()
     textItem_->setTextInteraction(true);
 }
 
-void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)
+void DiagramItem::setTextCursor(int position)
 {
+    QTextCursor cursor = textItem_->textCursor();
+    cursor.setPosition(position);
+    textItem_->setFocus(Qt::MouseFocusReason);
+    textItem_->setSelected(true);
+    textItem_->setTextCursor(cursor);
+}
+
+int DiagramItem::getTextCursorPosition(const QPointF &clickedPos)
+{
+    QPointF clickPos = mapToItem(textItem_, clickedPos);
     QSizeF textItemSize = textItem_->boundingRect().size();
     QFontMetrics fontMetrics(textItem_->font());
     QString text = textItem_->document()->toPlainText();
@@ -193,11 +208,7 @@ void DiagramItem::setTextCursorMappedToTextItem(const QPointF &clickPos)
     if (l != 0)
         position += internal::map(x, strBeginPos, strWidth + strBeginPos, 0, l);
 
-    QTextCursor cursor = textItem_->textCursor();
-    cursor.setPosition(position);
-    textItem_->setFocus(Qt::MouseFocusReason);
-    textItem_->setSelected(true);
-    textItem_->setTextCursor(cursor);
+    return position;
 }
 
 ArrowManager *DiagramItem::arrowManager() const
@@ -273,8 +284,8 @@ QRectF DiagramItem::boundingRect() const
 {
     return QRectF(-Constants::DiagramItem::SelectedPenWidth / 2,
                   -Constants::DiagramItem::SelectedPenWidth / 2,
-                   size_.width()  + Constants::DiagramItem::SelectedPenWidth,
-                   size_.height() + Constants::DiagramItem::SelectedPenWidth);
+                  size_.width()  + Constants::DiagramItem::SelectedPenWidth,
+                  size_.height() + Constants::DiagramItem::SelectedPenWidth);
 }
 
 QRectF DiagramItem::pathBoundingRect() const

@@ -19,11 +19,18 @@ public:
     DiagramItem* createDiagramItem(int diagramType);
     DiagramItem* createDiagramItem(const ItemProperties& itemProperties);
 
-    QList<DiagramItem*> getDiagramItems(Qt::SortOrder order = Qt::DescendingOrder) const;
+    void addDiagramItem(DiagramItem* diagramItem);
+    void removeDiagramItem(DiagramItem* diagramItem);
 
     QImage toImage();
 
     void clearAllSelection();
+
+    QList<DiagramItem *> getDiagramItems(Qt::SortOrder order) const;
+    const QList<DiagramItem *> &diagramItems() const;
+
+signals:
+    void diagramItemAddedOrRemoved();
 
 public slots:
     void addPositionLines();
@@ -56,6 +63,7 @@ private:
 private:
     bool addPositionLines_ = true;
 
+    QList<DiagramItem*> diagramItems_;
     GraphicsItemGroup* group_ = nullptr;
     SceneBuffer buffer_;
 

@@ -1,6 +1,7 @@
 #include "diagramview.h"
 #include "diagramitem.h"
-#include "arrowitem.h"
+#include "infolabel.h"
+#include "diagramscene.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -14,43 +15,22 @@
 #include <QMenu>
 #include <QRubberBand>
 #include <QElapsedTimer>
+#include <QGridLayout>
 
-DiagramView::DiagramView(QWidget *parent)
-    : QGraphicsView(parent)
-{
-    init();
-}
-
-DiagramView::DiagramView(QGraphicsScene *scene, QWidget *parent)
+DiagramView::DiagramView(DiagramScene *scene, QWidget *parent)
     : QGraphicsView(scene, parent)
+    , scene_(scene)
 {
     init();
 }
 
 void DiagramView::updateDiagramCountInfoTextArea()
 {
-    if (internal::getDiagramItemsFromQGraphics(
-                items()).count() == lastDiagramCount_) {
-        update();
+    if (scene_->diagramItems().count() != lastDiagramCount_) {
+        lastDiagramCount_ = scene_->diagramItems().count();
+        diagramItemCountLabel_->setText(Constants::DiagramView::DiagramCountInfoText.arg(lastDiagramCount_));
 
-    } else {
-        QRectF viewportRect = viewport()->rect();
-        const QString text = Constants::DiagramView::DiagramCountInfoText.arg("XXXXXX");
-        QFontMetrics fm(font());
-        update(viewportRect.width()  - fm.horizontalAdvance(text),
-               viewportRect.height() - fm.height() * 2,
-               fm.horizontalAdvance(text), fm.height());
     }
-}
-
-void DiagramView::updateCurrentMousePosInfoTextArea()
-{
-    QRectF viewportRect = viewport()->rect();
-    const QString text = Constants::DiagramView::CurrentMousePosInfoText.arg("XXXX","XXXX");
-    QFontMetrics fm(font());
-    update(viewportRect.width()  - fm.horizontalAdvance(text),
-           viewportRect.height() - fm.height(),
-           fm.horizontalAdvance(text), fm.height());
 }
 
 void DiagramView::wheelEvent(QWheelEvent *event)
@@ -66,6 +46,7 @@ void DiagramView::wheelEvent(QWheelEvent *event)
             zoomIn = false;
         }
         zoomIn ? scale(1.1, 1.1) : scale(1 / 1.1, 1 / 1.1);
+        qDebug() << transform();
     } else {
         QGraphicsView::wheelEvent(event);
     }
@@ -96,7 +77,8 @@ void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
     movedPos_ = event->pos();
 
-    updateCurrentMousePosInfoTextArea();
+    QPoint currMousePos = mapToScene(movedPos_.toPoint()).toPoint();
+    mousePosLabel_->setText(Constants::DiagramView::CurrentMousePosInfoText.arg(currMousePos.x()).arg(currMousePos.y()));
 
     if (rubberBandActive_)
         updateRubberBand();
@@ -151,35 +133,6 @@ void DiagramView::dropEvent(QDropEvent *event)
     }
 }
 
-void DiagramView::paintEvent(QPaintEvent *event)
-{
-    QGraphicsView::paintEvent(event);
-    QRectF viewportRect = viewport()->rect();
-    QFontMetrics fm(font());
-
-    // Setup current mouse position info text
-    QPoint currMousePos = mapToScene(mapFromGlobal(QCursor::pos())).toPoint();
-    QString currMousePosInfoText =
-            Constants::DiagramView::CurrentMousePosInfoText.arg(currMousePos.x()).arg(currMousePos.y());
-    QPointF pointMouse(viewportRect.width()  - fm.horizontalAdvance(currMousePosInfoText),
-                       viewportRect.height() - fm.descent());
-
-    // Setup current diagram items count info text
-    lastDiagramCount_ = internal::getDiagramItemsFromQGraphics(items()).count();
-    QString diagramCountInfoText = Constants::DiagramView::DiagramCountInfoText.arg(lastDiagramCount_);
-    QPointF pointDiagram(viewportRect.width()  - fm.horizontalAdvance(diagramCountInfoText),
-                         viewportRect.height() - fm.height());
-
-    QPainter painter;
-    painter.begin(viewport());
-
-    painter.setFont(font());
-    painter.drawText(pointDiagram, diagramCountInfoText);
-    painter.drawText(pointMouse, currMousePosInfoText);
-
-    painter.end();
-}
-
 void DiagramView::drawBackground(QPainter *painter, const QRectF &rect)
 {
     int left = int(rect.left() - (int(rect.left()) % Constants::DiagramScene::GridSize));
@@ -212,6 +165,33 @@ void DiagramView::init()
     setAcceptDrops(true);
 
     setFont(QFont(":/fonts/Montserrat-Regular.ttf", 12));
+
+    diagramItemCountLabel_ = new InfoLabel(Constants::DiagramView::DiagramCountInfoText);
+    diagramItemCountLabel_->setFont(font());
+    diagramItemCountLabel_->setAlignment(Qt::AlignRight);
+    diagramItemCountLabel_->setText(Constants::DiagramView::DiagramCountInfoText.arg("0"));
+
+    mousePosLabel_ = new InfoLabel(Constants::DiagramView::CurrentMousePosInfoText.arg("-1").arg("-1"));
+    mousePosLabel_->setFont(font());
+    mousePosLabel_->setAlignment(Qt::AlignRight);
+
+    QVBoxLayout* vLayout = new QVBoxLayout;
+    vLayout->addWidget(diagramItemCountLabel_);
+    vLayout->addWidget(mousePosLabel_);
+    vLayout->setContentsMargins(0, 0, 0, 0);
+    vLayout->setSpacing(0);
+
+    QSpacerItem* hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    QSpacerItem* vSpacer = new QSpacerItem(40, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+    QGridLayout* gLayout = new QGridLayout;
+    gLayout->addItem(hSpacer, 0, 0);
+    gLayout->addItem(vSpacer, 0, 1);
+    gLayout->addLayout(vLayout, 1, 1);
+
+    gLayout->setContentsMargins(0, 0, 0, 0);
+
+    setLayout(gLayout);
 }
 
 void DiagramView::initContextMenu()
