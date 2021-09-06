@@ -3,9 +3,9 @@
 
 #include <QGraphicsItem>
 
-HandleManager::HandleManager(DiagramItem* diagramItem, QObject *parent)
+HandleManager::HandleManager(QGraphicsItem* handlingItem, QObject *parent)
     : QObject(parent)
-    , diagramItem_(diagramItem)
+    , handlingItem_(handlingItem)
 {
 }
 
@@ -30,12 +30,12 @@ void HandleManager::addHandleItemAppearArea(HandleItemAppearArea *handle)
     appearAreaItems_.append(handle);
 }
 
+QGraphicsItem *HandleManager::handlingItem() const
+{
+    return handlingItem_;
+}
+
 const QList<HandleItemAppearArea *> &HandleManager::appearAreaItems() const
 {
     return appearAreaItems_;
-}
-
-DiagramItem *HandleManager::diagramItem() const
-{
-    return diagramItem_;
 }

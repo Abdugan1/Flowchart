@@ -6,7 +6,7 @@
 #include "itemtypes.h"
 
 class DiagramTextItem;
-class SizeGrip;
+class SizeGripDiagramItem;
 class ArrowManager;
 class ArrowItem;
 
@@ -99,7 +99,7 @@ private:
     QPointF clickedPos_;
 
     DiagramTextItem*  textItem_;
-    SizeGrip*     sizeGrip_ = nullptr;
+    SizeGripDiagramItem*     sizeGrip_ = nullptr;
     ArrowManager* arrowManager_ = nullptr;
 };
 

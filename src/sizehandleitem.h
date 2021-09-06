@@ -33,7 +33,7 @@ public:
                QWidget *widget) override;
     int type() const override;
 
-    void setSizeGripItem(SizeGrip *newSizeGripItem);
+    void setSizeGrip(SizeGrip *newSizeGripItem);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)    override;

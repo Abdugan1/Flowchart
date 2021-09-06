@@ -11,6 +11,7 @@
 
 ArrowManager::ArrowManager(DiagramItem *diagramItem, QObject *parent)
     : HandleManager(diagramItem, parent)
+    , diagramItem_(diagramItem)
 {
     using HIAA = HandleItemAppearArea;
 
@@ -25,7 +26,7 @@ ArrowManager::ArrowManager(DiagramItem *diagramItem, QObject *parent)
 
 void ArrowManager::emitHandleClicked(ArrowHandleItem *handleItem)
 {
-    emit handleClicked(handleItem, diagramItem());
+    emit handleClicked(handleItem, diagramItem_);
 }
 
 void ArrowManager::addArrow(ArrowItem *arrow)
@@ -41,7 +42,7 @@ void ArrowManager::removeArrow(ArrowItem *arrow)
 
 void ArrowManager::removeArrows()
 {
-    QGraphicsScene* scene = diagramItem()->scene();
+    QGraphicsScene* scene = diagramItem_->scene();
     const auto arrowsCopy = arrows_;
     for (auto arrow : arrowsCopy) {
         arrow->startItem()->removeArrow(arrow);
@@ -53,9 +54,7 @@ void ArrowManager::removeArrows()
 
 void ArrowManager::updateHandleItemsPositions()
 {
-    DiagramItem* diagramItem = HandleManager::diagramItem();
-
-    QRectF rect = diagramItem->pathBoundingRect();
+    QRectF rect = diagramItem_->pathBoundingRect();
 
     for (auto appearArea : qAsConst(HandleManager::appearAreaItems())) {
         auto arrowHandle = qgraphicsitem_cast<ArrowHandleItem*>(appearArea->handleItem());

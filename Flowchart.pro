@@ -27,6 +27,7 @@ SOURCES += \
     src/positionline.cpp \
     src/scenebuffer.cpp \
     src/sizegrip.cpp \
+    src/sizegripdiagramitem.cpp \
     src/sizehandleitem.cpp
 
 HEADERS += \
@@ -49,6 +50,7 @@ HEADERS += \
     src/positionline.h \
     src/scenebuffer.h \
     src/sizegrip.h \
+    src/sizegripdiagramitem.h \
     src/sizehandleitem.h
 
 FORMS +=

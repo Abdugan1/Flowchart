@@ -2,7 +2,7 @@
 #include "diagramitem.h"
 
 #include "handlemanager.h"
-#include "sizegrip.h"
+#include "sizegripdiagramitem.h"
 #include "sizehandleitem.h"
 #include "arrowmanager.h"
 #include "arrowhandleitem.h"
@@ -13,14 +13,14 @@
 #include <QDebug>
 
 HandleItemAppearArea::HandleItemAppearArea(QGraphicsItem *handleItem, HandleManager *handleManager)
-    : QGraphicsItem(handleManager->diagramItem())
+    : QGraphicsItem(handleManager->handlingItem())
 {
     sizeGripItem_ = handleManager;
     handleItem_   = handleItem;
     handleItem_->setParentItem(this);
 
     if (auto sizeHandle = qgraphicsitem_cast<SizeHandleItem*>(handleItem))
-        sizeHandle->setSizeGripItem(qobject_cast<SizeGrip*>(handleManager));
+        sizeHandle->setSizeGrip(qobject_cast<SizeGrip*>(handleManager));
     else if (auto arrowHandle = qgraphicsitem_cast<ArrowHandleItem*>(handleItem))
         arrowHandle->setArrowManager(qobject_cast<ArrowManager*>(handleManager));
 

@@ -1,20 +1,16 @@
 #ifndef SIZEGRIP_H
 #define SIZEGRIP_H
 
+#include <QtCore/qglobal.h>
+
 #include "handlemanager.h"
-
-#include <QRectF>
-
-class DiagramItem;
-class SizeHandleItem;
-class HandleItemAppearArea;
 
 class SizeGrip : public HandleManager
 {
     Q_OBJECT
 
 public:
-    SizeGrip(DiagramItem* diagramItem, QObject* parent = nullptr);
+    SizeGrip(QGraphicsItem* item, const QRectF& resizeRect, QObject* parent = nullptr);
 
     void setTopLeft(const QPointF& pos);
     void setTop(qreal y);
@@ -25,20 +21,23 @@ public:
     void setBottomLeft(const QPointF& pos);
     void setLeft(qreal x);
 
-    void setRect(const QRectF& rect);
-
-    DiagramItem *diagramItem() const;
+    void resize(const QRectF& rect);
 
 signals:
     void resizeBeenMade();
 
+protected:
+    const QRectF &resizeRect() const;
+    void setResizeRect(const QRectF &newRect);
+
+    virtual void resizeLogic() = 0;
+
 private:
     void doResize();
-    void resizeDiagramItem();
     void updateHandleItemsPositions();
 
 private:
-    QRectF rect_;
+    QRectF resizeRect_;
 };
 
 #endif // SIZEGRIP_H

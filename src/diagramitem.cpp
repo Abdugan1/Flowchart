@@ -1,6 +1,6 @@
 #include "diagramitem.h"
 #include "diagramtextitem.h"
-#include "sizegrip.h"
+#include "sizegripdiagramitem.h"
 #include "arrowmanager.h"
 
 #include "constants.h"
@@ -30,15 +30,15 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     textItem_->setAlignment(Qt::AlignCenter);
     textItem_->updatePosition();
 
-    sizeGrip_ = new SizeGrip(this);
-    connect(sizeGrip_, &SizeGrip::resizeBeenMade,
+    sizeGrip_ = new SizeGripDiagramItem(this);
+    connect(sizeGrip_, &SizeGripDiagramItem::resizeBeenMade,
             this,      &DiagramItem::updateTextItemPosition);
 
     arrowManager_ = new ArrowManager(this);
-    connect(sizeGrip_,      &SizeGrip::resizeBeenMade,
+    connect(sizeGrip_,      &SizeGripDiagramItem::resizeBeenMade,
             arrowManager_,  &ArrowManager::updateHandleItemsPositions);
 
-    connect(sizeGrip_,      &SizeGrip::resizeBeenMade,
+    connect(sizeGrip_,      &SizeGripDiagramItem::resizeBeenMade,
             arrowManager_,  &ArrowManager::updateArrows);
 
     connect(this,           &DiagramItem::itemPositionChanged,
@@ -305,7 +305,7 @@ void DiagramItem::prepareGeomChange()
 
 void DiagramItem::resize(const QSizeF &size)
 {
-    sizeGrip_->setRect(QRectF(0, 0, size.width(), size.height()));
+    sizeGrip_->resize(QRectF(0, 0, size.width(), size.height()));
 }
 
 void DiagramItem::resize(qreal width, qreal height)

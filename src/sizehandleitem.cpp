@@ -1,5 +1,5 @@
 #include "sizehandleitem.h"
-#include "sizegrip.h"
+#include "sizegripdiagramitem.h"
 #include "diagramitem.h"
 #include "handleitemappeararea.h"
 
@@ -145,7 +145,7 @@ void SizeHandleItem::setCursorByFlag(PositionFlags positionFlags)
     setCursor(cursor);
 }
 
-void SizeHandleItem::setSizeGripItem(SizeGrip *newSizeGripItem)
+void SizeHandleItem::setSizeGrip(SizeGrip *newSizeGripItem)
 {
     sizeGripItem_ = newSizeGripItem;
 }

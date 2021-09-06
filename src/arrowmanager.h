@@ -31,6 +31,7 @@ public slots:
 
 private:
     QList<ArrowItem*> arrows_;
+    DiagramItem* diagramItem_;
 
 };
 
