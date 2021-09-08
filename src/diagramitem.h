@@ -6,9 +6,11 @@
 #include "itemtypes.h"
 
 class DiagramTextItem;
+class SizeGrip;
 class SizeGripDiagramItem;
 class ArrowManager;
 class ArrowItem;
+class DiagramScene;
 
 class DiagramItem : public QObject, public QGraphicsItem
 {
@@ -65,6 +67,8 @@ public:
     void removeArrows();
     void updateArrows();
 
+    SizeGrip *sizeGrip() const;
+
 signals:
     void itemPositionChanged();
     void itemReleased();
@@ -95,12 +99,14 @@ private:
     QSizeF size_;
     DiagramType diagramType_;
 
+    DiagramScene* scene_ = nullptr;
+
     bool textEditing_ = false;
     QPointF clickedPos_;
 
-    DiagramTextItem*  textItem_;
-    SizeGripDiagramItem*     sizeGrip_ = nullptr;
-    ArrowManager* arrowManager_ = nullptr;
+    DiagramTextItem*     textItem_     = nullptr;
+    SizeGripDiagramItem* sizeGrip_     = nullptr;
+    ArrowManager*        arrowManager_ = nullptr;
 };
 
 #endif // DIAGRAMITEM_H

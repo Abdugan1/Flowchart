@@ -4,6 +4,7 @@
 #include <QGraphicsItemGroup>
 
 class DiagramItem;
+class DiagramScene;
 
 class GraphicsItemGroup : public QObject, public QGraphicsItemGroup
 {
@@ -34,6 +35,7 @@ private:
 
 private:
     QList<DiagramItem*> diagramItems_;
+    DiagramScene* scene_ = nullptr;
 };
 
 #endif // GRAPHICSITEMGROUP_H

@@ -2,6 +2,7 @@
 #include "diagramtextitem.h"
 #include "sizegripdiagramitem.h"
 #include "arrowmanager.h"
+#include "diagramscene.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -66,8 +67,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
         newPos = internal::snapToGrid(newPos, Constants::DiagramScene::GridSize);
 
         newPos = internal::preventOutsideMove(newPos, newPos + QPointF(size_.width(), size_.height()),
-                                              QRectF(0, 0, Constants::DiagramScene::A4Width,
-                                                     Constants::DiagramScene::A4Height));
+                                              scene_->boundary());
 
         return newPos;
 
@@ -80,6 +80,10 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
 
         textEditing_ = false;
         textItem_->setTextInteraction(false);
+
+    } else if (change == ItemSceneHasChanged) {
+        if (scene())
+            scene_ = qobject_cast<DiagramScene*>(scene());
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -209,6 +213,11 @@ int DiagramItem::getTextCursorPosition(const QPointF &clickedPos)
         position += internal::map(x, strBeginPos, strWidth + strBeginPos, 0, l);
 
     return position;
+}
+
+SizeGrip *DiagramItem::sizeGrip() const
+{
+    return sizeGrip_;
 }
 
 ArrowManager *DiagramItem::arrowManager() const

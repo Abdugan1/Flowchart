@@ -16,6 +16,9 @@ class SizeGripDiagramItem : public SizeGrip
 public:
     SizeGripDiagramItem(DiagramItem* diagramItem, QObject* parent = nullptr);
 
+public slots:
+    void updateHandlesBoundary();
+
 protected:
     void resizeLogic() override;
 

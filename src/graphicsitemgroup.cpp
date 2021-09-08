@@ -1,5 +1,6 @@
 #include "graphicsitemgroup.h"
 #include "diagramitem.h"
+#include "diagramscene.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -58,9 +59,7 @@ QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant
         newPos = internal::snapToGrid(newPos, Constants::DiagramScene::GridSize);
 
         QPointF bottomRight = calculateBottomRight(newPos);
-        newPos = internal::preventOutsideMove(newPos, bottomRight,
-                                              QRectF(0, 0,Constants::DiagramScene::A4Width,
-                                                     Constants::DiagramScene::A4Height));
+        newPos = internal::preventOutsideMove(newPos, bottomRight, scene_->boundary());
 
         return newPos;
 
@@ -72,7 +71,12 @@ QVariant GraphicsItemGroup::itemChange(GraphicsItemChange change, const QVariant
         bool selected = value.toBool();
         if (!selected)
             emit lostSelection();
+    } else if (change == ItemSceneHasChanged) {
+        if (scene())
+            scene_ = qobject_cast<DiagramScene*>(scene());
     }
+
+
     return QGraphicsItemGroup::itemChange(change, value);
 }
 

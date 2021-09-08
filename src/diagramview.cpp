@@ -147,8 +147,6 @@ void DiagramView::drawBackground(QPainter *painter, const QRectF &rect)
     }
 
     painter->drawPoints(points.data(), points.size());
-
-    painter->drawRect(QRectF(0, 0, Constants::DiagramScene::A4Width, Constants::DiagramScene::A4Height));
 }
 
 void DiagramView::init()

@@ -61,8 +61,7 @@ void SizeHandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QPointF fromParentToScene = mapToScene(mapFromItem(QGraphicsItem::parentItem(), pos));
     pos =  mapToItem(QGraphicsItem::parentItem()->parentItem(),
                      mapFromScene(internal::preventOutsideMove(fromParentToScene, fromParentToScene,
-                                                               QRectF(0, 0, Constants::DiagramScene::A4Width,
-                                                                      Constants::DiagramScene::A4Height))));
+                                                               sizeGripItem_->maxGripArea())));
 
     if (mapToScene(pos) != mapToScene(QGraphicsItem::pos()))
         changeParentBoundingRect(pos);

@@ -10,7 +10,7 @@ class SizeGrip : public HandleManager
     Q_OBJECT
 
 public:
-    SizeGrip(QGraphicsItem* item, const QRectF& resizeRect, QObject* parent = nullptr);
+    SizeGrip(QGraphicsItem* item, const QRectF& resizeRect, const QSizeF& minGripSize, QObject* parent = nullptr);
 
     void setTopLeft(const QPointF& pos);
     void setTop(qreal y);
@@ -22,6 +22,12 @@ public:
     void setLeft(qreal x);
 
     void resize(const QRectF& rect);
+
+    const QSizeF &minGripSize() const;
+    void setMinGripSize(const QSizeF &newMinGripSize);
+
+    const QRectF &maxGripArea() const;
+    void setMaxGripArea(const QRectF &newMaxGripArea);
 
 signals:
     void resizeBeenMade();
@@ -38,6 +44,9 @@ private:
 
 private:
     QRectF resizeRect_;
+
+    QSizeF minGripSize_;
+    QRectF maxGripArea_;
 };
 
 #endif // SIZEGRIP_H

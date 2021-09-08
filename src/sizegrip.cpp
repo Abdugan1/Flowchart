@@ -10,9 +10,10 @@
 
 using PositionFlags = SizeHandleItem::PositionFlags;
 
-SizeGrip::SizeGrip(QGraphicsItem *item, const QRectF &resizeRect, QObject *parent)
+SizeGrip::SizeGrip(QGraphicsItem *item, const QRectF &resizeRect, const QSizeF &minGripSize, QObject *parent)
     : HandleManager(item, parent)
     , resizeRect_(resizeRect)
+    , minGripSize_(minGripSize)
 {
     using HIAA = HandleItemAppearArea;
 
@@ -33,7 +34,7 @@ void SizeGrip::setTop(qreal y)
 {
     QRectF oldRect = resizeRect_;
     resizeRect_.setTop(y);
-    if (resizeRect_.height() < Constants::DiagramItem::MinHeight) {
+    if (resizeRect_.height() < minGripSize_.height()) {
         resizeRect_ = oldRect;
         return;
     }
@@ -44,7 +45,7 @@ void SizeGrip::setRight(qreal x)
 {
     QRectF oldRect = resizeRect_;
     resizeRect_.setRight(x);
-    if (resizeRect_.width() < Constants::DiagramItem::MinWidth) {
+    if (resizeRect_.width() < minGripSize_.width()) {
         resizeRect_ = oldRect;
         return;
     }
@@ -55,7 +56,7 @@ void SizeGrip::setBottom(qreal y)
 {
     QRectF oldRect = resizeRect_;
     resizeRect_.setBottom(y);
-    if (resizeRect_.height() < Constants::DiagramItem::MinHeight) {
+    if (resizeRect_.height() < minGripSize_.height()) {
         resizeRect_ = oldRect;
         return;
     }
@@ -66,7 +67,7 @@ void SizeGrip::setLeft(qreal v)
 {
     QRectF oldRect = resizeRect_;
     resizeRect_.setLeft(v);
-    if (resizeRect_.width() < Constants::DiagramItem::MinWidth) {
+    if (resizeRect_.width() < minGripSize_.width()) {
         resizeRect_ = oldRect;
         return;
     }
@@ -78,10 +79,10 @@ void SizeGrip::setTopLeft(const QPointF &pos)
     QRectF oldRect = resizeRect_;
     resizeRect_.setTopLeft(pos);
 
-    if (resizeRect_.width() < Constants::DiagramItem::MinWidth)
+    if (resizeRect_.width() < minGripSize_.width())
         resizeRect_.setLeft(oldRect.left());
 
-    if (resizeRect_.height() < Constants::DiagramItem::MinHeight)
+    if (resizeRect_.height() < minGripSize_.height())
         resizeRect_.setTop(oldRect.top());
 
     if (resizeRect_ != oldRect)
@@ -93,10 +94,10 @@ void SizeGrip::setTopRight(const QPointF &pos)
     QRectF oldRect = resizeRect_;
     resizeRect_.setTopRight(pos);
 
-    if (resizeRect_.width() < Constants::DiagramItem::MinWidth)
+    if (resizeRect_.width() < minGripSize_.width())
         resizeRect_.setRight(oldRect.right());
 
-    if (resizeRect_.height() < Constants::DiagramItem::MinHeight)
+    if (resizeRect_.height() < minGripSize_.height())
         resizeRect_.setTop(oldRect.top());
 
     if (resizeRect_ != oldRect)
@@ -108,10 +109,10 @@ void SizeGrip::setBottomRight(const QPointF &pos)
     QRectF oldRect = resizeRect_;
     resizeRect_.setBottomRight(pos);
 
-    if (resizeRect_.width() < Constants::DiagramItem::MinWidth)
+    if (resizeRect_.width() < minGripSize_.width())
         resizeRect_.setRight(oldRect.right());
 
-    if (resizeRect_.height() < Constants::DiagramItem::MinHeight)
+    if (resizeRect_.height() < minGripSize_.height())
         resizeRect_.setBottom(oldRect.bottom());
 
     if (resizeRect_ != oldRect)
@@ -123,10 +124,10 @@ void SizeGrip::setBottomLeft(const QPointF &pos)
     QRectF oldRect = resizeRect_;
     resizeRect_.setBottomLeft(pos);
 
-    if (resizeRect_.width() < Constants::DiagramItem::MinWidth)
+    if (resizeRect_.width() < minGripSize_.width())
         resizeRect_.setLeft(oldRect.left());
 
-    if (resizeRect_.height() < Constants::DiagramItem::MinHeight)
+    if (resizeRect_.height() < minGripSize_.height())
         resizeRect_.setBottom(oldRect.bottom());
 
     if (resizeRect_ != oldRect)
@@ -185,6 +186,26 @@ void SizeGrip::updateHandleItemsPositions()
         }
 
     }
+}
+
+const QSizeF &SizeGrip::minGripSize() const
+{
+    return minGripSize_;
+}
+
+void SizeGrip::setMinGripSize(const QSizeF &newMinGripSize)
+{
+    minGripSize_ = newMinGripSize;
+}
+
+const QRectF &SizeGrip::maxGripArea() const
+{
+    return maxGripArea_;
+}
+
+void SizeGrip::setMaxGripArea(const QRectF &newMaxGripArea)
+{
+    maxGripArea_ = newMaxGripArea;
 }
 
 const QRectF &SizeGrip::resizeRect() const

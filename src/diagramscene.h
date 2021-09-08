@@ -8,6 +8,7 @@ class DiagramItem;
 class GraphicsItemGroup;
 class ArrowHandleItem;
 class ArrowItem;
+class SceneBoundary;
 
 class DiagramScene : public QGraphicsScene
 {
@@ -28,6 +29,8 @@ public:
 
     QList<DiagramItem *> getDiagramItems(Qt::SortOrder order) const;
     const QList<DiagramItem *> &diagramItems() const;
+
+    QRectF boundary() const;
 
 signals:
     void diagramItemAddedOrRemoved();
@@ -50,6 +53,8 @@ private slots:
     void onHandleClicked(ArrowHandleItem* handle,
                          DiagramItem* item);
 
+    void updateMaxGripAreaOfDiagramItems();
+
 private:
     void addPositionLine(const QLineF& line);
     QPoint getItemCenter(const DiagramItem* item) const;
@@ -65,7 +70,9 @@ private:
 
     QList<DiagramItem*> diagramItems_;
     GraphicsItemGroup* group_ = nullptr;
+
     SceneBuffer buffer_;
+    SceneBoundary* sceneBoundary_ = nullptr;
 
     ArrowItem* arrow_ = nullptr;
 };

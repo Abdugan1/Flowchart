@@ -25,9 +25,11 @@ SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
     src/positionline.cpp \
+    src/sceneboundary.cpp \
     src/scenebuffer.cpp \
     src/sizegrip.cpp \
     src/sizegripdiagramitem.cpp \
+    src/sizegripsceneboundary.cpp \
     src/sizehandleitem.cpp
 
 HEADERS += \
@@ -48,9 +50,11 @@ HEADERS += \
     src/itemtypes.h \
     src/mainwindow.h \
     src/positionline.h \
+    src/sceneboundary.h \
     src/scenebuffer.h \
     src/sizegrip.h \
     src/sizegripdiagramitem.h \
+    src/sizegripsceneboundary.h \
     src/sizehandleitem.h
 
 FORMS +=

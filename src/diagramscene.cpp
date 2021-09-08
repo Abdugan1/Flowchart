@@ -6,6 +6,8 @@
 #include "arrowhandleitem.h"
 #include "arrowitem.h"
 #include "positionline.h"
+#include "sceneboundary.h"
+#include "sizegrip.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -21,12 +23,19 @@ DiagramScene::DiagramScene(QObject *parent)
                       Constants::DiagramScene::InitSize * 2,
                       Constants::DiagramScene::InitSize * 2,
                      parent)
+    , sceneBoundary_(new SceneBoundary(this, 0, 0, Constants::DiagramScene::A4Width,
+                                       Constants::DiagramScene::A4Height))
 {
+    addItem(sceneBoundary_);
+
+    connect(sceneBoundary_->sizeGrip(), &SizeGrip::resizeBeenMade,
+            this,                       &DiagramScene::updateMaxGripAreaOfDiagramItems);
 }
 
 DiagramItem *DiagramScene::createDiagramItem(int diagramType)
 {
     DiagramItem* diagramItem = new DiagramItem(DiagramItem::DiagramType(diagramType));
+    diagramItem->sizeGrip()->setMaxGripArea(sceneBoundary_->rect());
 
     connect(diagramItem, &DiagramItem::itemPositionChanged,
             this,        &DiagramScene::addPositionLines);
@@ -324,6 +333,13 @@ void DiagramScene::onHandleClicked(ArrowHandleItem *handle, DiagramItem *item)
     }
 }
 
+void DiagramScene::updateMaxGripAreaOfDiagramItems()
+{
+    for (auto diagramItem : qAsConst(diagramItems_)) {
+        diagramItem->sizeGrip()->setMaxGripArea(sceneBoundary_->rect());
+    }
+}
+
 void DiagramScene::addPositionLine(const QLineF& line)
 {
     PositionLine* positionLine = new PositionLine(line);
@@ -383,4 +399,9 @@ QPointF DiagramScene::getPosThatItemCenterAtMousePos(const QPointF &mousePositio
 const QList<DiagramItem *> &DiagramScene::diagramItems() const
 {
     return diagramItems_;
+}
+
+QRectF DiagramScene::boundary() const
+{
+    return sceneBoundary_->rect();
 }

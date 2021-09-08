@@ -11,9 +11,21 @@
 using PositionFlags = SizeHandleItem::PositionFlags;
 
 SizeGripDiagramItem::SizeGripDiagramItem(DiagramItem *diagramItem, QObject *parent)
-    : SizeGrip(diagramItem, diagramItem->pathBoundingRect(), parent)
+    : SizeGrip(diagramItem,
+               diagramItem->pathBoundingRect(),
+               QSizeF(Constants::DiagramItem::MinWidth,
+                      Constants::DiagramItem::MinHeight),
+               parent)
     , diagramItem_(diagramItem)
 {
+}
+
+void SizeGripDiagramItem::updateHandlesBoundary()
+{
+    for (auto appearArea : qAsConst(HandleManager::appearAreaItems())) {
+        auto handle = qgraphicsitem_cast<SizeHandleItem*>(appearArea->handleItem());
+
+    }
 }
 
 void SizeGripDiagramItem::resizeLogic()
