@@ -78,6 +78,12 @@ static const qreal PenWidth = 1.0;
 
 }
 
+namespace SceneBoundary {
+
+static const int ConfirmShowDelay = 200;
+
+}
+
 }
 
 #endif // CONSTANTS_H

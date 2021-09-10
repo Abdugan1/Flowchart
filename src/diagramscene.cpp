@@ -8,6 +8,7 @@
 #include "positionline.h"
 #include "sceneboundary.h"
 #include "sizegrip.h"
+#include "confirmdialog.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -27,6 +28,7 @@ DiagramScene::DiagramScene(QObject *parent)
                                        Constants::DiagramScene::A4Height))
 {
     addItem(sceneBoundary_);
+    sceneBoundary_->hide();
 
     connect(sceneBoundary_->sizeGrip(), &SizeGrip::resizeBeenMade,
             this,                       &DiagramScene::updateMaxGripAreaOfDiagramItems);
@@ -121,7 +123,7 @@ void DiagramScene::addPositionLines()
     DiagramItem* senderItem   = static_cast<DiagramItem*>(sender());
     QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items());
 
-    QPoint senderCenter  = getItemCenter(senderItem);
+    QPoint senderCenter  = internal::getItemCenterPosInScene(senderItem).toPoint();
     QPoint verticalBegin = senderCenter;
     QPoint verticalEnd   = senderCenter;
 
@@ -133,7 +135,7 @@ void DiagramScene::addPositionLines()
         if (item == senderItem)
             itemCenter = senderCenter;
         else
-            itemCenter = getItemCenter(item);
+            itemCenter = internal::getItemCenterPosInScene(item).toPoint();
 
         // Check "x" dimension
         if (itemCenter.x() == senderCenter.x()) {
@@ -290,14 +292,14 @@ void DiagramScene::pasteItems(const QPointF &posToPaste)
             destroyGraphicsItemGroup();
         createGraphicsItemGroup(items);
 
-        QPointF pos = getPosThatItemCenterAtMousePos(posToPaste, group_);
+        QPointF pos = internal::getPosThatItemCenterAtMousePos(posToPaste, group_);
         group_->setPos(pos);
 
     } else {
         ItemProperties properies = buffer_.copiedItemsProperties().at(0);
         DiagramItem* item = createDiagramItem(properies);
 
-        QPointF pos = getPosThatItemCenterAtMousePos(posToPaste, item);
+        QPointF pos = internal::getPosThatItemCenterAtMousePos(posToPaste, item);
 
         addDiagramItem(item);
         setItemPosWithoutAddingPositionLines(item, pos);
@@ -313,6 +315,11 @@ void DiagramScene::clearScene()
     }
     clear();
     diagramItems_.clear();
+}
+
+void DiagramScene::editSceneBoundary()
+{
+    sceneBoundary_->show();
 }
 
 void DiagramScene::onHandleClicked(ArrowHandleItem *handle, DiagramItem *item)
@@ -340,18 +347,20 @@ void DiagramScene::updateMaxGripAreaOfDiagramItems()
     }
 }
 
+void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    if (!sceneBoundary_->isVisible()) {
+        painter->drawRect(sceneBoundary_->rect());
+    }
+}
+
 void DiagramScene::addPositionLine(const QLineF& line)
 {
     PositionLine* positionLine = new PositionLine(line);
     addItem(positionLine);
 }
 
-QPoint DiagramScene::getItemCenter(const DiagramItem *item) const
-{
-    return (item->pos().toPoint() + item->pathBoundingRect().center().toPoint());
-}
-
-void DiagramScene::createGraphicsItemGroup(QList<DiagramItem *>& diagramItems)
+void DiagramScene::createGraphicsItemGroup(const QList<DiagramItem *> &diagramItems)
 {
     QPointF topLeft = diagramItems.at(0)->pos();
     for (auto item : diagramItems) {
@@ -386,14 +395,6 @@ QPointF DiagramScene::getMousePosMappedToScene() const
     QGraphicsView* view = views().at(0);
     QPoint origin = view->mapFromGlobal(QCursor::pos());
     return view->mapToScene(origin);
-}
-
-QPointF DiagramScene::getPosThatItemCenterAtMousePos(const QPointF &mousePosition,
-                                                     const QGraphicsItem *item) const
-{
-    QRectF itemRect = item->boundingRect();
-    return QPointF(mousePosition.x() - (itemRect.left() + itemRect.width()  / 2),
-                   mousePosition.y() - (itemRect.top()  + itemRect.height() / 2));
 }
 
 const QList<DiagramItem *> &DiagramScene::diagramItems() const

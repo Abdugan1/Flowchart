@@ -1,13 +1,10 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H
 
-#include <QtGlobal>
+#include <QtCore>
 
-class QPointF;
-class QRectF;
 class DiagramItem;
 class QGraphicsItem;
-class QGraphicsScene;
 class ItemProperties;
 
 namespace internal {
@@ -21,6 +18,11 @@ QList<DiagramItem*> getDiagramItemsFromQGraphics(const QList<QGraphicsItem*> ite
 QPointF preventOutsideMove(QPointF newPosTopLeft, QPointF newPosBottomRight, const QRectF& rect);
 
 QList<ItemProperties> getDiagramItemsProperties(const QList<DiagramItem*>& diagramItems);
+
+QPointF getItemCenterPosInScene(const DiagramItem* item);
+
+QPointF getPosThatItemCenterAtMousePos(const QPointF& mousePosition,
+                                       const QGraphicsItem* item);
 
 }
 

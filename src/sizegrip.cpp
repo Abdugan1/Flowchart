@@ -142,6 +142,7 @@ void SizeGrip::resize(const QRectF &rect)
 
 void SizeGrip::doResize()
 {
+    emit getReadyToResize();
     resizeLogic();
     emit resizeBeenMade();
     updateHandleItemsPositions();

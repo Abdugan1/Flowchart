@@ -30,6 +30,7 @@ public:
     void setMaxGripArea(const QRectF &newMaxGripArea);
 
 signals:
+    void getReadyToResize();
     void resizeBeenMade();
 
 protected:

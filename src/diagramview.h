@@ -47,10 +47,6 @@ private:
     void updateRubberBand();
     void finishRubberBand();
 
-    bool isRubberBandFinishedSelecting(const QRect& rubberBandRect,
-                                       const QPointF& fromScenePoint,
-                                       const QPointF& toScenePoint);
-
 private:
     DiagramScene* scene_;
 

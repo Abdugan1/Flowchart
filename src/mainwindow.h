@@ -48,11 +48,12 @@ private:
     QToolButton*  loadFromJsonButton_ = nullptr;
     QScrollArea*  sideMenu_           = nullptr;
 
-    QAction* deleteAction_    = nullptr;
-    QAction* selectAllAction_ = nullptr;
-    QAction* copyAction_      = nullptr;
-    QAction* pasteAction_     = nullptr;
-    QAction* aboutQtAction_   = nullptr;
+    QAction* deleteAction_            = nullptr;
+    QAction* selectAllAction_         = nullptr;
+    QAction* copyAction_              = nullptr;
+    QAction* pasteAction_             = nullptr;
+    QAction* editSceneBoundaryAction_ = nullptr;
+    QAction* aboutQtAction_           = nullptr;
 
     QAction* saveAsJsonAction_  = nullptr;
     QAction* openDiagramAction_ = nullptr;
@@ -61,6 +62,7 @@ private:
 
     QMenu* fileMenu_ = nullptr;
     QMenu* editMenu_ = nullptr;
+    QMenu* viewMenu_ = nullptr;
     QMenu* helpMenu_ = nullptr;
 };
 

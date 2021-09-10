@@ -21,6 +21,8 @@ static const int HandleItemAppearAreaType = UserType + 7;
 
 static const int PositionLineType = UserType + 8;
 
+static const int SceneBoundaryType = UserType + 9;
+
 }
 
 #endif // ITEMTYPES_H

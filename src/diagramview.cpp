@@ -2,6 +2,8 @@
 #include "diagramitem.h"
 #include "infolabel.h"
 #include "diagramscene.h"
+#include "sceneboundary.h"
+#include "graphicsitemgroup.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -63,7 +65,7 @@ void DiagramView::mousePressEvent(QMouseEvent *event)
         contextMenu_->exec(mapToGlobal(event->pos()));
     } else  {
         QList<QGraphicsItem*> items = scene()->items(mapToScene(event->pos()));
-        if (items.empty()) {
+        if (items.empty()/* || (qgraphicsitem_cast<SceneBoundary*>(items.first()))*/) {
             if (event->button() == Qt::LeftButton) {
                 initRubberBand();
             }
@@ -135,6 +137,8 @@ void DiagramView::dropEvent(QDropEvent *event)
 
 void DiagramView::drawBackground(QPainter *painter, const QRectF &rect)
 {
+    QGraphicsView::drawBackground(painter, rect);
+
     int left = int(rect.left() - (int(rect.left()) % Constants::DiagramScene::GridSize));
     int top  = int(rect.top()  - (int(rect.top())  % Constants::DiagramScene::GridSize));
 

@@ -48,6 +48,7 @@ public slots:
     void pasteItemsToMousePos();
     void pasteItems(const QPointF& posToPaste);
     void clearScene();
+    void editSceneBoundary();
 
 private slots:
     void onHandleClicked(ArrowHandleItem* handle,
@@ -55,15 +56,15 @@ private slots:
 
     void updateMaxGripAreaOfDiagramItems();
 
+protected:
+    void drawBackground(QPainter *painter, const QRectF &rect) override;
+
 private:
     void addPositionLine(const QLineF& line);
-    QPoint getItemCenter(const DiagramItem* item) const;
-    void createGraphicsItemGroup(QList<DiagramItem*>& diagramItems);
+    void createGraphicsItemGroup(const QList<DiagramItem*>& diagramItems);
     void setItemPosWithoutAddingPositionLines(DiagramItem* item, const QPointF& pos);
 
     QPointF getMousePosMappedToScene() const;
-    QPointF getPosThatItemCenterAtMousePos(const QPointF& mousePosition,
-                                           const QGraphicsItem* item) const;
 
 private:
     bool addPositionLines_ = true;

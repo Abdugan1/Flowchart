@@ -56,3 +56,15 @@ QList<ItemProperties> internal::getDiagramItemsProperties(const QList<DiagramIte
     }
     return itemsProperties;
 }
+
+QPointF internal::getItemCenterPosInScene(const DiagramItem *item)
+{
+    return (item->pos() + item->pathBoundingRect().center());
+}
+
+QPointF internal::getPosThatItemCenterAtMousePos(const QPointF &mousePosition, const QGraphicsItem *item)
+{
+    QRectF itemRect = item->shape().boundingRect();
+    return QPointF(mousePosition.x() - (itemRect.left() + itemRect.width()  / 2),
+                   mousePosition.y() - (itemRect.top()  + itemRect.height() / 2));
+}

@@ -42,8 +42,6 @@ public:
     QRectF pathBoundingRect() const;
     QPainterPath shape() const override;
 
-    void prepareGeomChange();
-
     void resize(const QSizeF& size);
     void resize(qreal width, qreal height);
 
@@ -75,6 +73,9 @@ signals:
 
 public slots:
     void updateTextItemPosition();
+
+private slots:
+    void prepareGeomChange();
 
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;

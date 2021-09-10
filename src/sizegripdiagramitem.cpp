@@ -20,14 +20,6 @@ SizeGripDiagramItem::SizeGripDiagramItem(DiagramItem *diagramItem, QObject *pare
 {
 }
 
-void SizeGripDiagramItem::updateHandlesBoundary()
-{
-    for (auto appearArea : qAsConst(HandleManager::appearAreaItems())) {
-        auto handle = qgraphicsitem_cast<SizeHandleItem*>(appearArea->handleItem());
-
-    }
-}
-
 void SizeGripDiagramItem::resizeLogic()
 {
     diagramItem_->setFlag(QGraphicsItem::ItemSendsGeometryChanges, false);
@@ -45,7 +37,6 @@ void SizeGripDiagramItem::resizeLogic()
     qreal dx = resizeRect.x() - pathRect.x();
     qreal dy = resizeRect.y() - pathRect.y();
 
-    diagramItem_->prepareGeomChange();
     diagramItem_->moveBy(dx, dy);
     diagramItem_->setPath(newPath);
     diagramItem_->setSize(QSizeF(resizeRect.width(), resizeRect.height()));

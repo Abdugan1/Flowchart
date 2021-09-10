@@ -12,6 +12,7 @@ SOURCES += \
     src/arrowhandleitem.cpp \
     src/arrowitem.cpp \
     src/arrowmanager.cpp \
+    src/confirmdialog.cpp \
     src/diagramitem.cpp \
     src/diagramscene.cpp \
     src/diagramtextitem.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     src/arrowhandleitem.h \
     src/arrowitem.h \
     src/arrowmanager.h \
+    src/confirmdialog.h \
     src/constants.h \
     src/diagramitem.h \
     src/diagramscene.h \

@@ -32,10 +32,16 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     textItem_->updatePosition();
 
     sizeGrip_ = new SizeGripDiagramItem(this);
+
+    connect(sizeGrip_, &SizeGripDiagramItem::getReadyToResize,
+            this,      &DiagramItem::prepareGeomChange);
+
     connect(sizeGrip_, &SizeGripDiagramItem::resizeBeenMade,
             this,      &DiagramItem::updateTextItemPosition);
 
+
     arrowManager_ = new ArrowManager(this);
+
     connect(sizeGrip_,      &SizeGripDiagramItem::resizeBeenMade,
             arrowManager_,  &ArrowManager::updateHandleItemsPositions);
 
@@ -44,6 +50,7 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
 
     connect(this,           &DiagramItem::itemPositionChanged,
             arrowManager_,  &ArrowManager::updateArrows);
+
 
     setFlag(QGraphicsItem::ItemIsMovable,            true);
     setFlag(QGraphicsItem::ItemIsSelectable,         true);
