@@ -80,7 +80,7 @@ static const qreal PenWidth = 1.0;
 
 namespace SceneBoundary {
 
-static const int ConfirmShowDelay = 200;
+static const int ConfirmDialogShowDelay = 200;
 
 }
 

@@ -31,7 +31,7 @@ DiagramScene::DiagramScene(QObject *parent)
     sceneBoundary_->hide();
 
     connect(sceneBoundary_->sizeGrip(), &SizeGrip::resizeBeenMade,
-            this,                       &DiagramScene::updateMaxGripAreaOfDiagramItems);
+            this,                       &DiagramScene::onSceneBoundaryChanged);
 }
 
 DiagramItem *DiagramScene::createDiagramItem(int diagramType)
@@ -313,7 +313,10 @@ void DiagramScene::clearScene()
         group_->deleteLater();
         group_ = nullptr;
     }
-    clear();
+    const auto copy = diagramItems_;
+    for (auto diagramItem : copy) {
+        removeDiagramItem(diagramItem);
+    }
     diagramItems_.clear();
 }
 
@@ -340,10 +343,18 @@ void DiagramScene::onHandleClicked(ArrowHandleItem *handle, DiagramItem *item)
     }
 }
 
-void DiagramScene::updateMaxGripAreaOfDiagramItems()
+void DiagramScene::onSceneBoundaryChanged()
 {
     for (auto diagramItem : qAsConst(diagramItems_)) {
         diagramItem->sizeGrip()->setMaxGripArea(sceneBoundary_->rect());
+
+        // Keep all diagramItems inside boundary
+        QPointF itemPos = diagramItem->pos();
+        QPointF pos = internal::preventOutsideMove(itemPos, itemPos + diagramItem->shape().boundingRect().bottomRight(),
+                                                   sceneBoundary_->rect());
+        if (pos != itemPos) {
+            setItemPosWithoutAddingPositionLines(diagramItem, pos);
+        }
     }
 }
 

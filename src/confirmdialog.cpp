@@ -6,15 +6,15 @@
 ConfirmDialog::ConfirmDialog(QWidget *parent)
     : QDialog(parent)
 {
-    const int s = 15;
-
     confirmButton_ = new QToolButton;
-    confirmButton_->setIcon(QPixmap(":/images/check_mark.jpg"));
-    confirmButton_->setIconSize(QSize(s, s));
+    confirmButton_->setObjectName("confirmDialogButton");
+    confirmButton_->setIcon(QPixmap(":/images/check_mark.png"));
+    confirmButton_->setToolTip(tr("Confirm"));
 
     cancelButton_ = new QToolButton;
-    cancelButton_->setIcon(QPixmap(":/images/cancel_mark.jpg"));
-    cancelButton_->setIconSize(QSize(s, s));
+    cancelButton_->setObjectName("confirmDialogButton");
+    cancelButton_->setIcon(QPixmap(":/images/cancel_mark.png"));
+    cancelButton_->setToolTip(tr("Cancel"));
 
     connect(confirmButton_, &QToolButton::clicked, this, [this]() {
         hide();
@@ -34,6 +34,6 @@ ConfirmDialog::ConfirmDialog(QWidget *parent)
 
 
     setLayout(layout);
-    setWindowFlags(Qt::FramelessWindowHint
-                   | Qt::WindowStaysOnTopHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+    setAttribute(Qt::WA_AlwaysShowToolTips);
 }

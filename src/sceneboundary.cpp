@@ -59,7 +59,7 @@ void SceneBoundary::init()
     connect(sizeGrip_, &SizeGripSceneBoundary::resizeBeenMade, this, [this]() {
         if (this->isVisible()) {
             confirmDialog_->hide();
-            confirmDialogShowTimer_->start(Constants::SceneBoundary::ConfirmShowDelay);
+            confirmDialogShowTimer_->start(Constants::SceneBoundary::ConfirmDialogShowDelay);
         }
     });
 }

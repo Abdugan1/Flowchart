@@ -57,6 +57,16 @@ QToolButton#sideMenuButton:hover {
     color: white;
 }
 
+QToolButton#confirmDialogButton {
+    background-color: #f5f5f5;
+    border-width: 1px;
+    icon-size: 12px 12px;
+}
+
+QToolButton#confirmDialogButton:hover {
+    background-color: white;
+}
+
 /*-----QScrollBar-----*/
 
 QScrollBar:vertical

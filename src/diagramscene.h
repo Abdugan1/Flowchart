@@ -54,7 +54,7 @@ private slots:
     void onHandleClicked(ArrowHandleItem* handle,
                          DiagramItem* item);
 
-    void updateMaxGripAreaOfDiagramItems();
+    void onSceneBoundaryChanged();
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;

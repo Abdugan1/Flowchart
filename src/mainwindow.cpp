@@ -189,7 +189,7 @@ void MainWindow::createActions()
     exportToPngAction_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
     connect(exportToPngAction_, &QAction::triggered, this, &MainWindow::exportToPng);
 
-    editSceneBoundaryAction_ = new QAction(tr("Edit Scene &Boundary"), this);
+    editSceneBoundaryAction_ = new QAction(tr("Edit &Boundary"), this);
     editSceneBoundaryAction_->setShortcut(tr("Ctrl+R"));
     connect(editSceneBoundaryAction_, &QAction::triggered, scene_, &DiagramScene::editSceneBoundary);
 

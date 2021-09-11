@@ -4,7 +4,7 @@
         <file>images/app_icon.ico</file>
         <file>images/app_icon.png</file>
         <file>fonts/Montserrat-Regular.ttf</file>
-        <file>images/cancel_mark.jpg</file>
-        <file>images/check_mark.jpg</file>
+        <file>images/cancel_mark.png</file>
+        <file>images/check_mark.png</file>
     </qresource>
 </RCC>
