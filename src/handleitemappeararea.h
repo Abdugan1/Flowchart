@@ -4,9 +4,11 @@
 #include <QGraphicsItem>
 #include <QtCore/qglobal.h>
 
+#include "handleitem.h"
 #include "itemtypes.h"
 
 class HandleManager;
+class HandleItem;
 
 class HandleItemAppearArea : public QGraphicsItem
 {
@@ -14,7 +16,7 @@ public:
     enum {Type = ItemTypes::HandleItemAppearAreaType};
 
 public:
-    HandleItemAppearArea(QGraphicsItem* handleItem, HandleManager* handleManager);
+    explicit HandleItemAppearArea(HandleItem* handleItem, HandleManager* handleManager);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter,
@@ -22,7 +24,7 @@ public:
                QWidget *widget) override;
     int type() const override;
 
-    QGraphicsItem *handleItem() const;
+    HandleItem *handleItem() const;
 
 protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
@@ -30,7 +32,7 @@ protected:
 
 private:
     HandleManager* sizeGripItem_ = nullptr;
-    QGraphicsItem* handleItem_ = nullptr;
+    HandleItem* handleItem_ = nullptr;
     QRectF appearArea_;
 };
 

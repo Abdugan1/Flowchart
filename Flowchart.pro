@@ -18,6 +18,7 @@ SOURCES += \
     src/diagramtextitem.cpp \
     src/diagramview.cpp \
     src/graphicsitemgroup.cpp \
+    src/handleitem.cpp \
     src/handleitemappeararea.cpp \
     src/handlemanager.cpp \
     src/infolabel.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     src/diagramtextitem.h \
     src/diagramview.h \
     src/graphicsitemgroup.h \
+    src/handleitem.h \
     src/handleitemappeararea.h \
     src/handlemanager.h \
     src/infolabel.h \

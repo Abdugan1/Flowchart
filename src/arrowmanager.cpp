@@ -15,10 +15,10 @@ ArrowManager::ArrowManager(DiagramItem *diagramItem, QObject *parent)
 {
     using HIAA = HandleItemAppearArea;
 
-    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(ArrowHandleItem::Top,    diagramItem), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(ArrowHandleItem::Left,   diagramItem), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(ArrowHandleItem::Right,  diagramItem), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(ArrowHandleItem::Bottom, diagramItem), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(Top   ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(Left  ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(Right ), this));
+    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(Bottom), this));
 
     updateHandleItemsPositions();
     hideHandleItems();
@@ -57,22 +57,22 @@ void ArrowManager::updateHandleItemsPositions()
     QRectF rect = diagramItem_->pathBoundingRect();
 
     for (auto appearArea : qAsConst(HandleManager::appearAreaItems())) {
-        auto arrowHandle = qgraphicsitem_cast<ArrowHandleItem*>(appearArea->handleItem());
+        auto arrowHandle = appearArea->handleItem();
 
-        switch (arrowHandle->positionFlag()) {
-        case ArrowHandleItem::Top:
+        switch (arrowHandle->positionFlags()) {
+        case Top:
             appearArea->setPos(rect.left() + rect.width() / 2,
                          rect.top() - Constants::ArrowManagerItem::Margin);
             break;
-        case ArrowHandleItem::Left:
+        case Left:
             appearArea->setPos(rect.left() - Constants::ArrowManagerItem::Margin,
                          rect.top() + rect.height() / 2);
             break;
-        case ArrowHandleItem::Right:
+        case Right:
             appearArea->setPos(rect.right() + Constants::ArrowManagerItem::Margin,
                          rect.top() + rect.height() / 2);
             break;
-        case ArrowHandleItem::Bottom:
+        case Bottom:
             appearArea->setPos(rect.left() + rect.width() / 2,
                          rect.bottom() + Constants::ArrowManagerItem::Margin);
             break;

@@ -12,19 +12,15 @@
 #include <QPainter>
 #include <QDebug>
 
-HandleItemAppearArea::HandleItemAppearArea(QGraphicsItem *handleItem, HandleManager *handleManager)
+HandleItemAppearArea::HandleItemAppearArea(HandleItem *handleItem, HandleManager *handleManager)
     : QGraphicsItem(handleManager->handlingItem())
 {
     sizeGripItem_ = handleManager;
-    handleItem_   = handleItem;
-    handleItem_->setParentItem(this);
 
-    if (auto sizeHandle = qgraphicsitem_cast<SizeHandleItem*>(handleItem))
-        sizeHandle->setSizeGrip(qobject_cast<SizeGrip*>(handleManager));
-    else if (auto arrowHandle = qgraphicsitem_cast<ArrowHandleItem*>(handleItem))
-        arrowHandle->setArrowManager(qobject_cast<ArrowManager*>(handleManager));
+    handleItem->setParentItem(this);
+    handleItem->setHandleManager(handleManager);
 
-
+    handleItem_ = handleItem;
 
     setAcceptHoverEvents(true);
 
@@ -69,7 +65,7 @@ void HandleItemAppearArea::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
-QGraphicsItem *HandleItemAppearArea::handleItem() const
+HandleItem *HandleItemAppearArea::handleItem() const
 {
     return handleItem_;
 }

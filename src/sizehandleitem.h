@@ -1,39 +1,28 @@
 #ifndef SIZEHANDLEITEM_H
 #define SIZEHANDLEITEM_H
 
-#include <QGraphicsRectItem>
-
+#include "handleitem.h"
 #include "itemtypes.h"
 
 class SizeGrip;
 class DiagramItem;
 
-class SizeHandleItem : public QGraphicsRectItem
+class SizeHandleItem : public HandleItem
 {
 public:
-    enum PositionFlags
-    {
-        Top         = 0x1,
-        Bottom      = 0x2,
-        Left        = 0x4,
-        TopLeft     = Top | Left,
-        BottomLeft  = Bottom | Left,
-        Right       = 0x8,
-        TopRight    = Top | Right,
-        BottomRight = Bottom | Right
-    };
-
     enum {Type = ItemTypes::SizeHandleItemType};
 
 public:
     SizeHandleItem(PositionFlags positionFlags, QGraphicsItem* parent = nullptr);
-    PositionFlags positionFlags() const;
+
+    void setHandleManager(HandleManager *newHandleManager) override;
+
+    QRectF boundingRect() const override;
+
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
     int type() const override;
-
-    void setSizeGrip(SizeGrip *newSizeGripItem);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event)    override;
@@ -44,9 +33,9 @@ private:
     void setCursorByFlag(PositionFlags positionFlags);
 
 private:
+    QRectF boundingRect_;
     QRectF visibleRect_;
 
-    PositionFlags positionFlags_;
     SizeGrip* sizeGripItem_ = nullptr;
 };
 

@@ -11,27 +11,31 @@
 #include <QCursor>
 #include <QPainter>
 
-using PositionFlags = SizeHandleItem::PositionFlags;
-
 SizeHandleItem::SizeHandleItem(PositionFlags positionFlags, QGraphicsItem *parent)
-    : QGraphicsRectItem(-Constants::SizeHandleItem::OverralWidth  / 2,
-                        -Constants::SizeHandleItem::OverralHeight / 2,
-                         Constants::SizeHandleItem::OverralWidth,
-                         Constants::SizeHandleItem::OverralHeight,
-                         parent)
+    : HandleItem(positionFlags, parent)
+    , boundingRect_(-Constants::SizeHandleItem::OverralWidth  / 2,
+                    -Constants::SizeHandleItem::OverralHeight / 2,
+                     Constants::SizeHandleItem::OverralWidth,
+                     Constants::SizeHandleItem::OverralHeight)
+
     , visibleRect_(-Constants::SizeHandleItem::VisibleWidth  / 2,
                    -Constants::SizeHandleItem::VisibleHeight / 2,
                     Constants::SizeHandleItem::VisibleWidth,
                     Constants::SizeHandleItem::VisibleHeight)
-    , positionFlags_(positionFlags)
 {
     setFlag(ItemIsMovable);
     setCursorByFlag(positionFlags);
 }
 
-PositionFlags SizeHandleItem::positionFlags() const
+void SizeHandleItem::setHandleManager(HandleManager *newHandleManager)
 {
-    return positionFlags_;
+    HandleItem::setHandleManager(newHandleManager);
+    sizeGripItem_ = qobject_cast<SizeGrip*>(newHandleManager);
+}
+
+QRectF SizeHandleItem::boundingRect() const
+{
+    return boundingRect_;
 }
 
 void SizeHandleItem::paint(QPainter *painter,
@@ -71,10 +75,11 @@ QPointF SizeHandleItem::restrictPosition(const QPointF& newPos)
 {
     QPointF retVal = pos();
 
-    if (positionFlags_ & Top || positionFlags_ & Bottom)
+    auto positionFlags = HandleItem::positionFlags();
+    if (positionFlags & Top || positionFlags & Bottom)
         retVal.setY(newPos.y());
 
-    if (positionFlags_ & Left || positionFlags_ & Right)
+    if (positionFlags & Left || positionFlags & Right)
         retVal.setX(newPos.x());
 
     return retVal;
@@ -82,7 +87,7 @@ QPointF SizeHandleItem::restrictPosition(const QPointF& newPos)
 
 void SizeHandleItem::changeParentBoundingRect(const QPointF &pos)
 {
-    switch (positionFlags_)
+    switch (HandleItem::positionFlags())
     {
     case TopLeft:
         sizeGripItem_->setTopLeft(pos);
@@ -142,9 +147,4 @@ void SizeHandleItem::setCursorByFlag(PositionFlags positionFlags)
         break;
     }
     setCursor(cursor);
-}
-
-void SizeHandleItem::setSizeGrip(SizeGrip *newSizeGripItem)
-{
-    sizeGripItem_ = newSizeGripItem;
 }

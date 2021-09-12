@@ -67,25 +67,23 @@ void ArrowItem::updatePathShape()
 {
     QList<QLineF> lines;
 
-    using Handle = ArrowHandleItem;
-
-    Handle::PositionFlags sf = startItem_.handle->positionFlag();
-    Handle::PositionFlags ef = endItem_.handle->positionFlag();
+    PositionFlags sf = startItem_.handle->positionFlags();
+    PositionFlags ef = endItem_.handle->positionFlags();
 
     QPoint sp = startPoint();
     QPoint ep = endPoint();
 
-    if (sf == Handle::Top && ef == Handle::Top && sp.y() < ep.y()) {
+    if (sf == Top && ef == Top && sp.y() < ep.y()) {
         /// Top
         lines = getConnectionPath(ep, sp);
-    } else if (sf == Handle::Left && sp.x() > ep.x()) {
+    } else if (sf == Left && sp.x() > ep.x()) {
         /// Left
         lines = getConnectionPath(ep, sp);
-    } else if (ef  == Handle::Right && ep.x() > sp.x()) {
+    } else if (ef  == Right && ep.x() > sp.x()) {
         /// Right -> not implemented!
         lines = getConnectionPath(ep, sp);
-    } else if (sf == Handle::Bottom
-               && (ef == Handle::Top || ef == Handle::Bottom || ef == Handle::Left)
+    } else if (sf == Bottom
+               && (ef == Top || ef == Bottom || ef == Left)
                && sp.y() > ep.y()) {
         /// Bottom
         lines = getConnectionPath(ep, sp);

@@ -9,18 +9,26 @@
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 
-using PositionFlags = ArrowHandleItem::PositionFlags;
-
 ArrowHandleItem::ArrowHandleItem(PositionFlags positionFlag, QGraphicsItem *parent)
-    : QGraphicsEllipseItem(-Constants::ArrowHandleItem::OverralWidth  / 2,
-                           -Constants::ArrowHandleItem::OverralHeight / 2,
-                            Constants::ArrowHandleItem::OverralWidth,
-                            Constants::ArrowHandleItem::OverralHeight,
-                            parent)
-    , positionFlag_(positionFlag)
+    : HandleItem(positionFlag, parent)
+    , boundingRect_(-Constants::ArrowHandleItem::OverralWidth  / 2,
+                    -Constants::ArrowHandleItem::OverralHeight / 2,
+                     Constants::ArrowHandleItem::OverralWidth,
+                     Constants::ArrowHandleItem::OverralHeight)
 {
     setCursor(QCursor(Qt::PointingHandCursor));
     setAcceptHoverEvents(true);
+}
+
+void ArrowHandleItem::setHandleManager(HandleManager *newHandleManager)
+{
+    HandleItem::setHandleManager(newHandleManager);
+    arrowManager_ = qobject_cast<ArrowManager*>(newHandleManager);
+}
+
+QRectF ArrowHandleItem::boundingRect() const
+{
+    return boundingRect_;
 }
 
 void ArrowHandleItem::paint(QPainter *painter,
@@ -51,18 +59,8 @@ int ArrowHandleItem::type() const
     return Type;
 }
 
-PositionFlags ArrowHandleItem::positionFlag() const
-{
-    return positionFlag_;
-}
-
 void ArrowHandleItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     arrowManager_->emitHandleClicked(this);
-    QGraphicsEllipseItem::mousePressEvent(event);
-}
-
-void ArrowHandleItem::setArrowManager(ArrowManager *newArrowManager)
-{
-    arrowManager_ = newArrowManager;
+    HandleItem::mousePressEvent(event);
 }

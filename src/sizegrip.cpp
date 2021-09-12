@@ -8,8 +8,6 @@
 
 #include <QDebug>
 
-using PositionFlags = SizeHandleItem::PositionFlags;
-
 SizeGrip::SizeGrip(QGraphicsItem *item, const QRectF &resizeRect, const QSizeF &minGripSize, QObject *parent)
     : HandleManager(item, parent)
     , resizeRect_(resizeRect)

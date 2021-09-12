@@ -1,28 +1,24 @@
 #ifndef ARROWHANDLEITEM_H
 #define ARROWHANDLEITEM_H
 
-#include <QGraphicsEllipseItem>
 #include <QtCore/qglobal.h>
 
+#include "handleitem.h"
 #include "itemtypes.h"
 
 class ArrowManager;
 
-class ArrowHandleItem : public QGraphicsEllipseItem
+class ArrowHandleItem : public HandleItem
 {
 public:
     enum {Type = ItemTypes::ArrowHandleItemType};
 
 public:
-    enum PositionFlags {
-        Top,
-        Left,
-        Right,
-        Bottom
-    };
-
-public:
     ArrowHandleItem(PositionFlags positionFlag, QGraphicsItem* parent = nullptr);
+
+    void setHandleManager(HandleManager *newHandleManager) override;
+
+    QRectF boundingRect() const override;
 
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
@@ -30,15 +26,11 @@ public:
 
     int type() const override;
 
-    PositionFlags positionFlag() const;
-
-    void setArrowManager(ArrowManager *newArrowManager);
-
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
-    PositionFlags positionFlag_;
+    QRectF boundingRect_;
     ArrowManager* arrowManager_ = nullptr;
 };
 

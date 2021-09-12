@@ -8,8 +8,6 @@
 
 #include <QDebug>
 
-using PositionFlags = SizeHandleItem::PositionFlags;
-
 SizeGripDiagramItem::SizeGripDiagramItem(DiagramItem *diagramItem, QObject *parent)
     : SizeGrip(diagramItem,
                diagramItem->pathBoundingRect(),
