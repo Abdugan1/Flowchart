@@ -1,7 +1,7 @@
 #ifndef SCENEBOUNDARY_H
 #define SCENEBOUNDARY_H
 
-#include <QGraphicsRectItem>
+#include <QGraphicsItem>
 #include <QObject>
 
 #include "itemtypes.h"
@@ -11,7 +11,7 @@ class SizeGrip;
 class SizeGripSceneBoundary;
 class ConfirmDialog;
 
-class SceneBoundary : public QObject, public QGraphicsRectItem
+class SceneBoundary : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
@@ -30,16 +30,35 @@ public:
 
     int type() const override;
 
-public slots:
-    void onChangeRequested();
+    const QRectF &rect() const;
+    void setRect(const QRectF &newRect);
+
+    QRectF boundingRect() const override;
+
+    QPainterPath shape() const override;
+
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *widget) override;
 
 private slots:
     void showComfirmDialogOnMousePosition();
 
 private:
     void init();
+    void calculateAllGraphicsData();
 
 private:
+    QRectF boundingRect_;
+
+    QRectF rect_;
+
+    QRectF oldRect_;
+
+    QLineF lines_[4];
+
+    QPainterPath shape_;
+
     DiagramScene* scene_ = nullptr;
 
     SizeGripSceneBoundary* sizeGrip_ = nullptr;
@@ -47,8 +66,6 @@ private:
     ConfirmDialog* confirmDialog_ = nullptr;
 
     QTimer* confirmDialogShowTimer_ = nullptr;
-
-    QRectF oldRect_;
 };
 
 #endif // SCENEBOUNDARY_H

@@ -29,8 +29,9 @@ SizeHandleItem::SizeHandleItem(PositionFlags positionFlags, QGraphicsItem *paren
 
 void SizeHandleItem::setHandleManager(HandleManager *newHandleManager)
 {
-    HandleItem::setHandleManager(newHandleManager);
     sizeGripItem_ = qobject_cast<SizeGrip*>(newHandleManager);
+    Q_ASSERT(sizeGripItem_);
+    HandleItem::setHandleManager(sizeGripItem_);
 }
 
 QRectF SizeHandleItem::boundingRect() const
@@ -57,6 +58,8 @@ int SizeHandleItem::type() const
 
 void SizeHandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    Q_ASSERT(sizeGripItem_);
+
     QPointF pos = mapToParent(event->pos());
     pos = internal::snapToGrid(pos, Constants::DiagramScene::GridSize);
     pos = restrictPosition(pos);
@@ -87,6 +90,7 @@ QPointF SizeHandleItem::restrictPosition(const QPointF& newPos)
 
 void SizeHandleItem::changeParentBoundingRect(const QPointF &pos)
 {
+    Q_ASSERT(sizeGripItem_);
     switch (HandleItem::positionFlags())
     {
     case TopLeft:

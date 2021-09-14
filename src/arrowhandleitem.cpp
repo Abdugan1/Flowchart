@@ -22,8 +22,8 @@ ArrowHandleItem::ArrowHandleItem(PositionFlags positionFlag, QGraphicsItem *pare
 
 void ArrowHandleItem::setHandleManager(HandleManager *newHandleManager)
 {
-    HandleItem::setHandleManager(newHandleManager);
     arrowManager_ = qobject_cast<ArrowManager*>(newHandleManager);
+    HandleItem::setHandleManager(newHandleManager);
 }
 
 QRectF ArrowHandleItem::boundingRect() const
@@ -61,6 +61,7 @@ int ArrowHandleItem::type() const
 
 void ArrowHandleItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    Q_ASSERT(arrowManager_);
     arrowManager_->emitHandleClicked(this);
     HandleItem::mousePressEvent(event);
 }

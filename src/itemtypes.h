@@ -23,6 +23,8 @@ static const int PositionLineType = UserType + 8;
 
 static const int SceneBoundaryType = UserType + 9;
 
+static const int HandleItemType = UserType + 10;
+
 }
 
 #endif // ITEMTYPES_H

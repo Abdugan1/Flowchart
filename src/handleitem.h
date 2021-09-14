@@ -3,6 +3,8 @@
 
 #include <QGraphicsItem>
 
+#include "itemtypes.h"
+
 class HandleManager;
 
 enum PositionFlags
@@ -20,7 +22,8 @@ enum PositionFlags
 class HandleItem : public QGraphicsItem
 {
 public:
-//    enum {Type} !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    enum {Type = ItemTypes::HandleItemType};
+
 public:
     explicit HandleItem(PositionFlags positionFlags, QGraphicsItem* parent = nullptr);
 
@@ -29,6 +32,8 @@ public:
 
     HandleManager *handleManager() const;
     virtual void setHandleManager(HandleManager *newHandleManager);
+
+    int type() const override;
 
 private:
     PositionFlags positionFlags_;

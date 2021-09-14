@@ -25,3 +25,8 @@ void HandleItem::setHandleManager(HandleManager *newHandleManager)
 {
     handleManager_ = newHandleManager;
 }
+
+int HandleItem::type() const
+{
+    return Type;
+}

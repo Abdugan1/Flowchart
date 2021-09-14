@@ -360,6 +360,7 @@ void DiagramScene::onSceneBoundaryChanged()
 
 void DiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
+    Q_UNUSED(rect)
     if (!sceneBoundary_->isVisible()) {
         painter->drawRect(sceneBoundary_->rect());
     }

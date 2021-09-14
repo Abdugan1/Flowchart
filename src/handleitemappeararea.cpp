@@ -20,6 +20,16 @@ HandleItemAppearArea::HandleItemAppearArea(HandleItem *handleItem, HandleManager
     handleItem->setParentItem(this);
     handleItem->setHandleManager(handleManager);
 
+#ifndef QT_NO_QDEBUG
+    if (qgraphicsitem_cast<SizeHandleItem*>(handleItem)) {
+        Q_ASSERT_X(qobject_cast<SizeGrip*>(handleItem->handleManager()),
+                   "setHandleManager", "SizeGrip was not installed");
+    } else {
+        Q_ASSERT_X(qobject_cast<ArrowManager*>(handleItem->handleManager()),
+                   "setHandleManager", "ArrowManager was not installed");
+    }
+#endif
+
     handleItem_ = handleItem;
 
     setAcceptHoverEvents(true);
