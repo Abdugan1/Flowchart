@@ -134,6 +134,7 @@ void ArrowItem::updatePathShape()
     }
 
     setPathShape(lines);
+    updateArrowHead(endFinish, ef);
 }
 
 void ArrowItem::paint(QPainter *painter,
@@ -151,6 +152,13 @@ void ArrowItem::paint(QPainter *painter,
 
     painter->setPen(QPen(color));
     painter->drawPath(path());
+
+    painter->setBrush(QBrush(color));
+    painter->drawPolygon(arrowHead_);
+
+//    painter->setBrush(Qt::NoBrush);
+//    painter->setPen(Qt::blue);
+//    painter->drawPath(shape());
 }
 
 QPainterPath ArrowItem::shape() const
@@ -177,6 +185,38 @@ void ArrowItem::calculateShape()
                             qMax(line.p1().y(), line.p2().y()) + 5);
         QRectF rect(topLeft, bottomRight);
         shape_.addRect(rect);
+    }
+}
+
+void ArrowItem::updateArrowHead(const QPointF &endPoint, PositionFlags pf)
+{
+    const qreal w = 5.0;
+    const qreal h = 7.0;
+    arrowHead_.clear();
+
+    switch (pf) {
+    case Top:
+        arrowHead_ << QPointF(endPoint.x() - w / 2, endPoint.y() - h)
+                   << QPointF(endPoint.x() + w / 2, endPoint.y() - h)
+                   << endPoint;
+        break;
+    case Left:
+        arrowHead_ << QPointF(endPoint.x() - h, endPoint.y() + w / 2)
+                   << QPointF(endPoint.x() - h, endPoint.y() - w / 2)
+                   << endPoint;
+        break;
+    case Right:
+        arrowHead_ << QPointF(endPoint.x() + h, endPoint.y() - w / 2)
+                   << QPointF(endPoint.x() + h, endPoint.y() + w / 2)
+                   << endPoint;
+        break;
+    case Bottom:
+        arrowHead_ << QPointF(endPoint.x() + w / 2, endPoint.y() + h)
+                   << QPointF(endPoint.x() - w / 2, endPoint.y() + h)
+                   << endPoint;
+        break;
+
+    default: break;
     }
 }
 

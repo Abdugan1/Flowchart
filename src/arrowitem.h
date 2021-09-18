@@ -42,6 +42,7 @@ public:
 private:
     QList<QLineF> getConnectionPath(const QPoint& startPoint, const QPoint& endPoint);
     void calculateShape();
+    void updateArrowHead(const QPointF& endPoint, PositionFlags pf);
 
 private:
     struct Info {
@@ -53,6 +54,7 @@ private:
     Info endItem_;
     QList<QLineF> lines_;
     QPainterPath shape_;
+    QPolygonF arrowHead_;
 };
 
 QPointF getFinishConnectPoint(DiagramItem* diagramItem, PositionFlags handlePosFlag);

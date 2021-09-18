@@ -100,7 +100,10 @@ QImage DiagramScene::toImage()
 
 void DiagramScene::clearAllSelection()
 {
-    QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items());
+    QElapsedTimer timer;
+    timer.start();
+    QList<DiagramItem*> items = diagramItems();
+    qDebug() << "Elapsed time:" << timer.elapsed() << "ms";
     if (!items.isEmpty()) {
         if (group_)
             destroyGraphicsItemGroup();
@@ -121,7 +124,10 @@ void DiagramScene::addPositionLines()
         return;
 
     DiagramItem* senderItem   = static_cast<DiagramItem*>(sender());
-    QList<DiagramItem*> items = internal::getDiagramItemsFromQGraphics(this->items());
+    QElapsedTimer timer;
+    timer.start();
+    QList<DiagramItem*> items = diagramItems();
+    qDebug() << "Elapsed time:" << timer.elapsed() << "ms";
 
     QPoint senderCenter  = internal::getItemCenterPosInScene(senderItem).toPoint();
     QPoint verticalBegin = senderCenter;
