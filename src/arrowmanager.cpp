@@ -62,19 +62,22 @@ void ArrowManager::updateHandleItemsPositions()
         switch (arrowHandle->positionFlags()) {
         case Top:
             appearArea->setPos(rect.left() + rect.width() / 2,
-                         rect.top() - Constants::ArrowManagerItem::Margin);
+                         rect.top() - Constants::ArrowManager::Margin);
             break;
         case Left:
-            appearArea->setPos(rect.left() - Constants::ArrowManagerItem::Margin,
+            appearArea->setPos(rect.left() - Constants::ArrowManager::Margin,
                          rect.top() + rect.height() / 2);
             break;
         case Right:
-            appearArea->setPos(rect.right() + Constants::ArrowManagerItem::Margin,
+            appearArea->setPos(rect.right() + Constants::ArrowManager::Margin,
                          rect.top() + rect.height() / 2);
             break;
         case Bottom:
             appearArea->setPos(rect.left() + rect.width() / 2,
-                         rect.bottom() + Constants::ArrowManagerItem::Margin);
+                         rect.bottom() + Constants::ArrowManager::Margin);
+            break;
+
+        default:
             break;
         }
 
@@ -93,3 +96,8 @@ void ArrowManager::updateArrows()
             arrow->updatePathShape();
     }
 }
+
+
+
+
+

@@ -4,6 +4,7 @@
 #include <QGraphicsPathItem>
 #include <QtCore/qglobal.h>
 
+#include "handleitem.h"
 #include "itemtypes.h"
 
 class DiagramItem;
@@ -53,5 +54,7 @@ private:
     QList<QLineF> lines_;
     QPainterPath shape_;
 };
+
+QPointF getFinishConnectPoint(DiagramItem* diagramItem, PositionFlags handlePosFlag);
 
 #endif // ARROWITEM_H

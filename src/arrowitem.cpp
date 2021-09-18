@@ -1,5 +1,8 @@
 #include "arrowitem.h"
 #include "arrowhandleitem.h"
+#include "diagramitem.h"
+
+#include "constants.h"
 
 #include <QDebug>
 #include <QPainter>
@@ -73,23 +76,63 @@ void ArrowItem::updatePathShape()
     QPoint sp = startPoint();
     QPoint ep = endPoint();
 
+    QPointF startFinish = getFinishConnectPoint(startItem(), sf);
+    QPointF endFinish   = getFinishConnectPoint(endItem(),   ef);
+
+    QLineF connectionLineBegin;
+    QLineF connectionLineEnd;
+
     if (sf == Top && ef == Top && sp.y() < ep.y()) {
         /// Top
         lines = getConnectionPath(ep, sp);
+
+        // Done
+        connectionLineBegin.setPoints(endFinish, lines.first().p1());
+        connectionLineEnd.setPoints(lines.last().p2(), startFinish);
+
     } else if (sf == Left && sp.x() > ep.x()) {
         /// Left
         lines = getConnectionPath(ep, sp);
-    } else if (ef  == Right && ep.x() > sp.x()) {
+
+        // Done
+        connectionLineBegin.setPoints(endFinish, lines.first().p1());
+        connectionLineEnd.setPoints(lines.last().p2(), startFinish);
+
+    } else if ((sf == Right || ef  == Right) && ep.x() > sp.x()) {
         /// Right -> not implemented!
         lines = getConnectionPath(ep, sp);
+
+        connectionLineBegin.setPoints(endFinish, lines.first().p1());
+        connectionLineEnd.setPoints(lines.last().p2(), startFinish);
+
     } else if (sf == Bottom
                && (ef == Top || ef == Bottom || ef == Left)
                && sp.y() > ep.y()) {
         /// Bottom
         lines = getConnectionPath(ep, sp);
+
+        // Done
+        connectionLineBegin.setPoints(endFinish, lines.first().p1());
+        connectionLineEnd.setPoints(lines.last().p2(), startFinish);
+
     } else {
+        /// Default
         lines = getConnectionPath(sp, ep);
+
+        connectionLineBegin.setPoints(startFinish, lines.first().p1());
+        connectionLineEnd.setPoints(lines.last().p2(), endFinish);
     }
+
+    lines.prepend(connectionLineBegin);
+    lines.append(connectionLineEnd);
+
+    if (connectionLineBegin.length() > Constants::ArrowManager::Margin) {
+        qDebug() << "ALLERT! begin connection is long!" << connectionLineBegin.length() << "!!!!!!!!!!!!!!!!!";
+        qDebug() << connectionLineBegin;
+    } else if (connectionLineEnd.length() > Constants::ArrowManager::Margin) {
+        qDebug() << "ALLERT! end connection is long!" << connectionLineEnd.length() << "!!!!!!!!!!!!!!!!!";
+    }
+
     setPathShape(lines);
 }
 
@@ -135,4 +178,34 @@ void ArrowItem::calculateShape()
         QRectF rect(topLeft, bottomRight);
         shape_.addRect(rect);
     }
+}
+
+QPointF getFinishConnectPoint(DiagramItem *diagramItem, PositionFlags handlePosFlag)
+{
+    QPointF finishPoint;
+    const QRectF rect = diagramItem->shape().boundingRect();
+
+    switch (handlePosFlag) {
+    case Top:
+        finishPoint = QPointF(diagramItem->scenePos().x() + rect.width() / 2,
+                              diagramItem->scenePos().y());
+        break;
+    case Left:
+        finishPoint = QPointF(diagramItem->scenePos().x(),
+                              diagramItem->scenePos().y() + rect.height() / 2);
+        break;
+    case Right:
+        finishPoint = QPointF(diagramItem->scenePos().x() + rect.right(),
+                              diagramItem->scenePos().y() + rect.height() / 2);
+        break;
+    case Bottom:
+        finishPoint = QPointF(diagramItem->scenePos().x() + rect.width() / 2,
+                              diagramItem->scenePos().y() + rect.bottom());
+        break;
+
+    default:
+        break;
+    }
+
+    return finishPoint;
 }
