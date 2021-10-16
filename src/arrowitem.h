@@ -31,7 +31,7 @@ public:
     QPoint startPoint() const;
     QPoint endPoint() const;
 
-    void updatePathShape();
+    void updateConnectionPath();
 
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
@@ -40,9 +40,25 @@ public:
     QPainterPath shape() const override;
 
 private:
-    QList<QLineF> getConnectionPath(const QPoint& startPoint, const QPoint& endPoint);
     void calculateShape();
+
     void updateArrowHead(const QPointF& endPoint, PositionFlags pf);
+
+    static QList<QLineF> getMainConnectionLines(const QPoint& startPoint, const QPoint& endPoint);
+
+    static QList<QLineF> getDefaultConnection(const QPoint& startPos, const QPoint& endPos,
+                                              const QPointF& startFinish, const QPointF& endFinish);
+
+    static QList<QLineF> getReverseConnection(const QPoint& startPos, const QPoint& endPos,
+                                              const QPointF& startFinish, const QPointF& endFinish);
+
+    static QList<QLineF> getConnectionLines(const QPoint& startPos, const QPoint& endPos,
+                                            const QPointF& startFinish, const QPointF& endFinish);
+
+    static void setFinishConnections(QList<QLineF>& lines, const QPointF& startFinish, const QPointF& endFinish);
+
+    static bool isCaseOfReverseConnection(PositionFlags startHandleFlag, PositionFlags endHandleFlag,
+                                          const QPointF& startPos, const QPointF& endPos);
 
 private:
     struct Info {

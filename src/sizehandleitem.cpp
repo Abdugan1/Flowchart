@@ -11,8 +11,8 @@
 #include <QCursor>
 #include <QPainter>
 
-SizeHandleItem::SizeHandleItem(PositionFlags positionFlags, QGraphicsItem *parent)
-    : HandleItem(positionFlags, parent)
+SizeHandleItem::SizeHandleItem(PositionFlags positionFlags, SizeGrip *sizeGrip)
+    : HandleItem(positionFlags, sizeGrip)
     , boundingRect_(-Constants::SizeHandleItem::OverralWidth  / 2,
                     -Constants::SizeHandleItem::OverralHeight / 2,
                      Constants::SizeHandleItem::OverralWidth,
@@ -22,16 +22,25 @@ SizeHandleItem::SizeHandleItem(PositionFlags positionFlags, QGraphicsItem *paren
                    -Constants::SizeHandleItem::VisibleHeight / 2,
                     Constants::SizeHandleItem::VisibleWidth,
                     Constants::SizeHandleItem::VisibleHeight)
+    , sizeGrip_(sizeGrip)
 {
+    Q_ASSERT(sizeGrip_);
     setFlag(ItemIsMovable);
     setCursorByFlag(positionFlags);
+
+    QRectF r = boundingRect_;
+    const int Margin = 10;
+    HandleItem::setAppearArea({r.x() - Margin,
+                               r.y()  - Margin,
+                               r.width()  + 2 * Margin,
+                               r.height() + 2 * Margin});
 }
 
 void SizeHandleItem::setHandleManager(HandleManager *newHandleManager)
 {
-    sizeGripItem_ = qobject_cast<SizeGrip*>(newHandleManager);
-    Q_ASSERT(sizeGripItem_);
-    HandleItem::setHandleManager(sizeGripItem_);
+    sizeGrip_ = qobject_cast<SizeGrip*>(newHandleManager);
+    Q_ASSERT(sizeGrip_);
+    HandleItem::setHandleManager(sizeGrip_);
 }
 
 QRectF SizeHandleItem::boundingRect() const
@@ -58,7 +67,7 @@ int SizeHandleItem::type() const
 
 void SizeHandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    Q_ASSERT(sizeGripItem_);
+    Q_ASSERT(sizeGrip_);
 
     QPointF pos = mapToParent(event->pos());
     pos = internal::snapToGrid(pos, Constants::DiagramScene::GridSize);
@@ -68,7 +77,7 @@ void SizeHandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QPointF fromParentToScene = mapToScene(mapFromItem(QGraphicsItem::parentItem(), pos));
     pos =  mapToItem(QGraphicsItem::parentItem()->parentItem(),
                      mapFromScene(internal::preventOutsideMove(fromParentToScene, fromParentToScene,
-                                                               sizeGripItem_->maxGripArea())));
+                                                               sizeGrip_->maxGripArea())));
 
     if (mapToScene(pos) != mapToScene(QGraphicsItem::pos()))
         changeParentBoundingRect(pos);
@@ -90,32 +99,32 @@ QPointF SizeHandleItem::restrictPosition(const QPointF& newPos)
 
 void SizeHandleItem::changeParentBoundingRect(const QPointF &pos)
 {
-    Q_ASSERT(sizeGripItem_);
+    Q_ASSERT(sizeGrip_);
     switch (HandleItem::positionFlags())
     {
     case TopLeft:
-        sizeGripItem_->setTopLeft(pos);
+        sizeGrip_->setTopLeft(pos);
         break;
     case Top:
-        sizeGripItem_->setTop(pos.y());
+        sizeGrip_->setTop(pos.y());
         break;
     case TopRight:
-        sizeGripItem_->setTopRight(pos);
+        sizeGrip_->setTopRight(pos);
         break;
     case Right:
-        sizeGripItem_->setRight(pos.x());
+        sizeGrip_->setRight(pos.x());
         break;
     case BottomRight:
-        sizeGripItem_->setBottomRight(pos);
+        sizeGrip_->setBottomRight(pos);
         break;
     case Bottom:
-        sizeGripItem_->setBottom(pos.y());
+        sizeGrip_->setBottom(pos.y());
         break;
     case BottomLeft:
-        sizeGripItem_->setBottomLeft(pos);
+        sizeGrip_->setBottomLeft(pos);
         break;
     case Left:
-        sizeGripItem_->setLeft(pos.x());
+        sizeGrip_->setLeft(pos.x());
         break;
     }
 }

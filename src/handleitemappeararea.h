@@ -26,12 +26,15 @@ public:
 
     HandleItem *handleItem() const;
 
+    const QRectF &appearArea() const;
+    void setAppearArea(const QRectF &newAppearArea);
+
 protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
 private:
-    HandleManager* sizeGripItem_ = nullptr;
+    HandleManager* handleManager_ = nullptr;
     HandleItem* handleItem_ = nullptr;
     QRectF appearArea_;
 };

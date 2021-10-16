@@ -13,7 +13,7 @@ public:
     enum {Type = ItemTypes::SizeHandleItemType};
 
 public:
-    SizeHandleItem(PositionFlags positionFlags, QGraphicsItem* parent = nullptr);
+    explicit SizeHandleItem(PositionFlags positionFlags, SizeGrip* sizeGrip);
 
     void setHandleManager(HandleManager *newHandleManager) override;
 
@@ -36,7 +36,7 @@ private:
     QRectF boundingRect_;
     QRectF visibleRect_;
 
-    SizeGrip* sizeGripItem_ = nullptr;
+    SizeGrip* sizeGrip_ = nullptr;
 };
 
 #endif // SIZEHANDLEITEM_H

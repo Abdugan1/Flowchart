@@ -9,15 +9,24 @@
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 
-ArrowHandleItem::ArrowHandleItem(PositionFlags positionFlag, QGraphicsItem *parent)
-    : HandleItem(positionFlag, parent)
+ArrowHandleItem::ArrowHandleItem(PositionFlags positionFlag, ArrowManager *arrowManager)
+    : HandleItem(positionFlag, arrowManager)
     , boundingRect_(-Constants::ArrowHandleItem::OverralWidth  / 2,
                     -Constants::ArrowHandleItem::OverralHeight / 2,
                      Constants::ArrowHandleItem::OverralWidth,
                      Constants::ArrowHandleItem::OverralHeight)
+    , arrowManager_(arrowManager)
 {
+    Q_ASSERT(arrowManager_);
     setCursor(QCursor(Qt::PointingHandCursor));
     setAcceptHoverEvents(true);
+
+    QRectF r = boundingRect_;
+    const int Margin = 10;
+    HandleItem::setAppearArea({r.x() - Margin,
+                               r.y()  - Margin,
+                               r.width()  + 2 * Margin,
+                               r.height() + 2 * Margin});
 }
 
 void ArrowHandleItem::setHandleManager(HandleManager *newHandleManager)

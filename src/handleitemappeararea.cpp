@@ -14,32 +14,10 @@
 
 HandleItemAppearArea::HandleItemAppearArea(HandleItem *handleItem, HandleManager *handleManager)
     : QGraphicsItem(handleManager->handlingItem())
+    , handleManager_(handleManager)
+    , handleItem_(handleItem)
 {
-    sizeGripItem_ = handleManager;
-
-    handleItem->setParentItem(this);
-    handleItem->setHandleManager(handleManager);
-
-#ifndef QT_NO_QDEBUG
-    if (qgraphicsitem_cast<SizeHandleItem*>(handleItem)) {
-        Q_ASSERT_X(qobject_cast<SizeGrip*>(handleItem->handleManager()),
-                   "setHandleManager", "SizeGrip was not installed");
-    } else {
-        Q_ASSERT_X(qobject_cast<ArrowManager*>(handleItem->handleManager()),
-                   "setHandleManager", "ArrowManager was not installed");
-    }
-#endif
-
-    handleItem_ = handleItem;
-
     setAcceptHoverEvents(true);
-
-    appearArea_ = handleItem_->boundingRect();
-
-    appearArea_.setX(appearArea_.x() - Constants::HandleItemAppearArea::Margin);
-    appearArea_.setY(appearArea_.y() - Constants::HandleItemAppearArea::Margin);
-    appearArea_.setWidth(appearArea_.width()   + Constants::HandleItemAppearArea::Margin);
-    appearArea_.setHeight(appearArea_.height() + Constants::HandleItemAppearArea::Margin);
 }
 
 QRectF HandleItemAppearArea::boundingRect() const
@@ -64,15 +42,26 @@ int HandleItemAppearArea::type() const
 void HandleItemAppearArea::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     if (!handleItem_->isVisible()) {
-        sizeGripItem_->showHandleItems();
+        handleManager_->showHandleItems();
     }
     QGraphicsItem::hoverMoveEvent(event);
 }
 
 void HandleItemAppearArea::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    sizeGripItem_->hideHandleItems();
+    handleManager_->hideHandleItems();
     QGraphicsItem::hoverLeaveEvent(event);
+}
+
+const QRectF &HandleItemAppearArea::appearArea() const
+{
+    return appearArea_;
+}
+
+void HandleItemAppearArea::setAppearArea(const QRectF &newAppearArea)
+{
+    prepareGeometryChange();
+    appearArea_ = newAppearArea;
 }
 
 HandleItem *HandleItemAppearArea::handleItem() const

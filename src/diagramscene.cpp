@@ -340,7 +340,7 @@ void DiagramScene::onHandleClicked(ArrowHandleItem *handle, DiagramItem *item)
 
     } else {
         arrow_->setEndItem(handle, item);
-        arrow_->updatePathShape();
+        arrow_->updateConnectionPath();
         item->addArrow(arrow_);
 
         addItem(arrow_);

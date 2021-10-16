@@ -11,31 +11,27 @@ HandleManager::HandleManager(QGraphicsItem* handlingItem, QObject *parent)
 
 void HandleManager::hideHandleItems()
 {
-    for (auto appearArea : qAsConst(appearAreaItems_)) {
-        auto handle = appearArea->handleItem();
+    for (auto handle : qAsConst(handleItems_))
         handle->hide();
-    }
 }
 
 void HandleManager::showHandleItems()
 {
-    for (auto appearArea : qAsConst(appearAreaItems_)) {
-        auto handle = appearArea->handleItem();
+    for (auto handle : qAsConst(handleItems_))
         handle->show();
-    }
 }
 
-void HandleManager::addHandleItemAppearArea(HandleItemAppearArea *handle)
+void HandleManager::addHandleItem(HandleItem *handle)
 {
-    appearAreaItems_.append(handle);
+    handleItems_.append(handle);
+}
+
+const QList<HandleItem *> &HandleManager::handleItems() const
+{
+    return handleItems_;
 }
 
 QGraphicsItem *HandleManager::handlingItem() const
 {
     return handlingItem_;
-}
-
-const QList<HandleItemAppearArea *> &HandleManager::appearAreaItems() const
-{
-    return appearAreaItems_;
 }

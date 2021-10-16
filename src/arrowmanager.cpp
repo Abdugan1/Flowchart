@@ -13,12 +13,10 @@ ArrowManager::ArrowManager(DiagramItem *diagramItem, QObject *parent)
     : HandleManager(diagramItem, parent)
     , diagramItem_(diagramItem)
 {
-    using HIAA = HandleItemAppearArea;
-
-    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(Top   ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(Left  ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(Right ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new ArrowHandleItem(Bottom), this));
+    HandleManager::addHandleItem(new ArrowHandleItem(Top   , this));
+    HandleManager::addHandleItem(new ArrowHandleItem(Left  , this));
+    HandleManager::addHandleItem(new ArrowHandleItem(Right , this));
+    HandleManager::addHandleItem(new ArrowHandleItem(Bottom, this));
 
     updateHandleItemsPositions();
     hideHandleItems();
@@ -56,25 +54,24 @@ void ArrowManager::updateHandleItemsPositions()
 {
     QRectF rect = diagramItem_->pathBoundingRect();
 
-    for (auto appearArea : qAsConst(HandleManager::appearAreaItems())) {
-        auto arrowHandle = appearArea->handleItem();
+    for (auto arrowHandle : qAsConst(HandleManager::handleItems())) {
 
         switch (arrowHandle->positionFlags()) {
         case Top:
-            appearArea->setPos(rect.left() + rect.width() / 2,
-                         rect.top() - Constants::ArrowManager::Margin);
+            arrowHandle->setPos(rect.left() + rect.width() / 2,
+                         rect.top() - Constants::ArrowManager::MarginFromDiagramItemShape);
             break;
         case Left:
-            appearArea->setPos(rect.left() - Constants::ArrowManager::Margin,
+            arrowHandle->setPos(rect.left() - Constants::ArrowManager::MarginFromDiagramItemShape,
                          rect.top() + rect.height() / 2);
             break;
         case Right:
-            appearArea->setPos(rect.right() + Constants::ArrowManager::Margin,
+            arrowHandle->setPos(rect.right() + Constants::ArrowManager::MarginFromDiagramItemShape,
                          rect.top() + rect.height() / 2);
             break;
         case Bottom:
-            appearArea->setPos(rect.left() + rect.width() / 2,
-                         rect.bottom() + Constants::ArrowManager::Margin);
+            arrowHandle->setPos(rect.left() + rect.width() / 2,
+                         rect.bottom() + Constants::ArrowManager::MarginFromDiagramItemShape);
             break;
 
         default:
@@ -93,7 +90,7 @@ void ArrowManager::updateArrows()
 {
     for (auto arrow : qAsConst(arrows_)) {
         if (arrow->startItem() && arrow->endItem())
-            arrow->updatePathShape();
+            arrow->updateConnectionPath();
     }
 }
 

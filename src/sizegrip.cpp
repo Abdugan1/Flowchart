@@ -13,16 +13,14 @@ SizeGrip::SizeGrip(QGraphicsItem *item, const QRectF &resizeRect, const QSizeF &
     , resizeRect_(resizeRect)
     , minGripSize_(minGripSize)
 {
-    using HIAA = HandleItemAppearArea;
-
-    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::TopLeft    ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::Top        ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::TopRight   ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::Left       ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::Right      ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::BottomLeft ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::Bottom     ), this));
-    HandleManager::addHandleItemAppearArea(new HIAA(new SizeHandleItem(PositionFlags::BottomRight), this));
+    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::TopLeft    , this));
+    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::Top        , this));
+    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::TopRight   , this));
+    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::Left       , this));
+    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::Right      , this));
+    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::BottomLeft , this));
+    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::Bottom     , this));
+    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::BottomRight, this));
 
     updateHandleItemsPositions();
     hideHandleItems();
@@ -148,38 +146,36 @@ void SizeGrip::doResize()
 
 void SizeGrip::updateHandleItemsPositions()
 {
-    for (auto appearArea : qAsConst(HandleManager::appearAreaItems())) {
-
-        auto sizeHandle = qgraphicsitem_cast<SizeHandleItem*>(appearArea->handleItem());
+    for (auto sizeHandle : qAsConst(HandleManager::handleItems())) {
 
         switch (sizeHandle->positionFlags())
         {
         case PositionFlags::TopLeft:
-            appearArea->setPos(resizeRect_.topLeft());
+            sizeHandle->setPos(resizeRect_.topLeft());
             break;
         case PositionFlags::Top:
-            appearArea->setPos(resizeRect_.left() + resizeRect_.width() / 2,
+            sizeHandle->setPos(resizeRect_.left() + resizeRect_.width() / 2,
                          resizeRect_.top());
             break;
         case PositionFlags::TopRight:
-            appearArea->setPos(resizeRect_.topRight());
+            sizeHandle->setPos(resizeRect_.topRight());
             break;
         case PositionFlags::Right:
-            appearArea->setPos(resizeRect_.right(),
+            sizeHandle->setPos(resizeRect_.right(),
                          resizeRect_.top() + resizeRect_.height() / 2);
             break;
         case PositionFlags::BottomRight:
-            appearArea->setPos(resizeRect_.bottomRight());
+            sizeHandle->setPos(resizeRect_.bottomRight());
             break;
         case PositionFlags::Bottom:
-            appearArea->setPos(resizeRect_.left() + resizeRect_.width() / 2,
+            sizeHandle->setPos(resizeRect_.left() + resizeRect_.width() / 2,
                          resizeRect_.bottom());
             break;
         case PositionFlags::BottomLeft:
-            appearArea->setPos(resizeRect_.bottomLeft());
+            sizeHandle->setPos(resizeRect_.bottomLeft());
             break;
         case PositionFlags::Left:
-            appearArea->setPos(resizeRect_.left(),
+            sizeHandle->setPos(resizeRect_.left(),
                          resizeRect_.top() + resizeRect_.height() / 2);
             break;
         }

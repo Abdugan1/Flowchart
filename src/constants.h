@@ -67,7 +67,7 @@ static const qreal OuterStrokePenWidth = 1.0;
 
 namespace ArrowManager {
 
-static const qreal Margin = 20.0;
+static const qreal MarginFromDiagramItemShape = 20.0;
 
 }
 

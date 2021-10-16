@@ -14,7 +14,7 @@ public:
     enum {Type = ItemTypes::ArrowHandleItemType};
 
 public:
-    ArrowHandleItem(PositionFlags positionFlag, QGraphicsItem* parent = nullptr);
+    explicit ArrowHandleItem(PositionFlags positionFlag, ArrowManager* arrowManager);
 
     void setHandleManager(HandleManager *newHandleManager) override;
 

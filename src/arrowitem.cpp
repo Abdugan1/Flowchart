@@ -66,75 +66,26 @@ QPoint ArrowItem::endPoint() const
     return endItem_.handle->scenePos().toPoint();
 }
 
-void ArrowItem::updatePathShape()
+void ArrowItem::updateConnectionPath()
 {
-    QList<QLineF> lines;
+    PositionFlags startHandleFlag = startItem_.handle->positionFlags();
+    PositionFlags endHandleFlag   = endItem_.handle->positionFlags();
 
-    PositionFlags sf = startItem_.handle->positionFlags();
-    PositionFlags ef = endItem_.handle->positionFlags();
+    QPoint startPos = startPoint();
+    QPoint endPos   = endPoint();
 
-    QPoint sp = startPoint();
-    QPoint ep = endPoint();
+    QPointF startFinish = getFinishConnectPoint(startItem(), startHandleFlag);
+    QPointF endFinish   = getFinishConnectPoint(endItem(),   endHandleFlag);
 
-    QPointF startFinish = getFinishConnectPoint(startItem(), sf);
-    QPointF endFinish   = getFinishConnectPoint(endItem(),   ef);
-
-    QLineF connectionLineBegin;
-    QLineF connectionLineEnd;
-
-    if (sf == Top && ef == Top && sp.y() < ep.y()) {
-        /// Top
-        lines = getConnectionPath(ep, sp);
-
-        // Done
-        connectionLineBegin.setPoints(endFinish, lines.first().p1());
-        connectionLineEnd.setPoints(lines.last().p2(), startFinish);
-
-    } else if (sf == Left && sp.x() > ep.x()) {
-        /// Left
-        lines = getConnectionPath(ep, sp);
-
-        // Done
-        connectionLineBegin.setPoints(endFinish, lines.first().p1());
-        connectionLineEnd.setPoints(lines.last().p2(), startFinish);
-
-    } else if ((sf == Right || ef  == Right) && ep.x() > sp.x()) {
-        /// Right -> not implemented!
-        lines = getConnectionPath(ep, sp);
-
-        connectionLineBegin.setPoints(endFinish, lines.first().p1());
-        connectionLineEnd.setPoints(lines.last().p2(), startFinish);
-
-    } else if (sf == Bottom
-               && (ef == Top || ef == Bottom || ef == Left)
-               && sp.y() > ep.y()) {
-        /// Bottom
-        lines = getConnectionPath(ep, sp);
-
-        // Done
-        connectionLineBegin.setPoints(endFinish, lines.first().p1());
-        connectionLineEnd.setPoints(lines.last().p2(), startFinish);
-
+    QList<QLineF> connectionLines;
+    if (isCaseOfReverseConnection(startHandleFlag, endHandleFlag, startPos, endPos)) {
+        connectionLines = getReverseConnection(startPos, endPos, startFinish, endFinish);
     } else {
-        /// Default
-        lines = getConnectionPath(sp, ep);
-
-        connectionLineBegin.setPoints(startFinish, lines.first().p1());
-        connectionLineEnd.setPoints(lines.last().p2(), endFinish);
+        connectionLines = getDefaultConnection(startPos, endPos, startFinish, endFinish);
     }
 
-    lines.prepend(connectionLineBegin);
-    lines.append(connectionLineEnd);
-
-    if (connectionLineBegin.length() > Constants::ArrowManager::Margin) {
-        qDebug() << "ALLERT! begin connection is long!" << connectionLineBegin.length() << "!!!!!!!!!!!!!!!!!";
-        qDebug() << connectionLineBegin;
-    } else if (connectionLineEnd.length() > Constants::ArrowManager::Margin) {
-        qDebug() << "ALLERT! end connection is long!" << connectionLineEnd.length() << "!!!!!!!!!!!!!!!!!";
-    }
-
-    setPathShape(lines);
-    updateArrowHead(endFinish, ef);
+    setPathShape(connectionLines);
+    updateArrowHead(endFinish, endHandleFlag);
 }
 
 void ArrowItem::paint(QPainter *painter,
@@ -155,23 +106,11 @@ void ArrowItem::paint(QPainter *painter,
 
     painter->setBrush(QBrush(color));
     painter->drawPolygon(arrowHead_);
-
-//    painter->setBrush(Qt::NoBrush);
-//    painter->setPen(Qt::blue);
-//    painter->drawPath(shape());
 }
 
 QPainterPath ArrowItem::shape() const
 {
     return shape_;
-}
-
-QList<QLineF> ArrowItem::getConnectionPath(const QPoint &startPoint, const QPoint &endPoint)
-{
-    QPoint p(startPoint.x(), endPoint.y());
-    QLineF l1(startPoint, p);
-    QLineF l2(p, endPoint);
-    return {l1, l2};
 }
 
 void ArrowItem::calculateShape()
@@ -218,6 +157,75 @@ void ArrowItem::updateArrowHead(const QPointF &endPoint, PositionFlags pf)
 
     default: break;
     }
+}
+
+QList<QLineF> ArrowItem::getMainConnectionLines(const QPoint &startPoint, const QPoint &endPoint)
+{
+    QPoint p(startPoint.x(), endPoint.y());
+    QLineF l1(startPoint, p);
+    QLineF l2(p, endPoint);
+    return {l1, l2};
+}
+
+QList<QLineF> ArrowItem::getDefaultConnection(const QPoint& startPos, const QPoint& endPos,
+                                              const QPointF& startFinish, const QPointF& endFinish)
+{
+    return getConnectionLines(startPos, endPos, startFinish, endFinish);
+}
+
+QList<QLineF> ArrowItem::getReverseConnection(const QPoint &startPos, const QPoint &endPos,
+                                  const QPointF &startFinish, const QPointF &endFinish)
+{
+    return getConnectionLines(endPos, startPos, endFinish, startFinish);
+}
+
+QList<QLineF> ArrowItem::getConnectionLines(const QPoint &startPos, const QPoint &endPos,
+                                            const QPointF &startFinish, const QPointF &endFinish)
+{
+    QList<QLineF> connectionLines = getMainConnectionLines(startPos, endPos);
+    setFinishConnections(connectionLines, startFinish, endFinish);
+    return connectionLines;
+}
+
+void ArrowItem::setFinishConnections(QList<QLineF> &lines, const QPointF &startFinish, const QPointF &endFinish)
+{
+    QLineF connectionLineBegin(startFinish, lines.first().p1());
+    QLineF connectionLineEnd(lines.last().p2(), endFinish);
+
+    if (connectionLineBegin.length() > Constants::ArrowManager::MarginFromDiagramItemShape) {
+        qDebug() << "ALLERT! begin connection is long!" << connectionLineBegin.length() << "!!!!!!!!!!!!!!!!!";
+        qDebug() << connectionLineBegin;
+    } else if (connectionLineEnd.length() > Constants::ArrowManager::MarginFromDiagramItemShape) {
+        qDebug() << "ALLERT! end connection is long!" << connectionLineEnd.length() << "!!!!!!!!!!!!!!!!!";
+    }
+
+    lines.prepend(connectionLineBegin);
+    lines.append(connectionLineEnd);
+}
+
+bool ArrowItem::isCaseOfReverseConnection(PositionFlags startHandleFlag, PositionFlags endHandleFlag,
+                                          const QPointF &startPos, const QPointF &endPos)
+{
+    if (startHandleFlag == Top && endHandleFlag == Top && startPos.y() < endPos.y()) {
+        /// Top
+        return true;
+
+    } else if (startHandleFlag == Left && startPos.x() > endPos.x()) {
+        /// Left
+        return true;
+
+    } else if ((startHandleFlag == Right || endHandleFlag  == Right) && endPos.x() > startPos.x()) {
+        /// Right -> not implemented!
+        return true;
+
+    } else if (startHandleFlag == Bottom
+               && (endHandleFlag == Top || endHandleFlag == Bottom || endHandleFlag == Left)
+               && startPos.y() > endPos.y()) {
+        /// Bottom
+        return true;
+
+    }
+    return false;
 }
 
 QPointF getFinishConnectPoint(DiagramItem *diagramItem, PositionFlags handlePosFlag)

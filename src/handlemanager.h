@@ -4,7 +4,7 @@
 #include <QtCore/QObject>
 #include <QtCore/qglobal.h>
 
-#include "handleitemappeararea.h"
+#include "handleitem.h"
 
 class QGraphicsItem;
 
@@ -18,15 +18,15 @@ public:
     void hideHandleItems();
     void showHandleItems();
 
-    const QList<HandleItemAppearArea *> &appearAreaItems() const;
-
     QGraphicsItem *handlingItem() const;
 
+    const QList<HandleItem *> &handleItems() const;
+
 protected:
-    void addHandleItemAppearArea(HandleItemAppearArea* handle);
+    void addHandleItem(HandleItem* handle);
 
 private:
-    QList<HandleItemAppearArea*> appearAreaItems_;
+    QList<HandleItem*> handleItems_;
     QGraphicsItem* handlingItem_;
 };
 
