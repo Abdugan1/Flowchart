@@ -1,5 +1,5 @@
-#ifndef SIZEHANDLEITEM_H
-#define SIZEHANDLEITEM_H
+#ifndef RESIZEHANDLE_H
+#define RESIZEHANDLE_H
 
 #include "handleitem.h"
 #include "itemtypes.h"
@@ -7,13 +7,13 @@
 class SizeGrip;
 class DiagramItem;
 
-class SizeHandleItem : public HandleItem
+class ResizeHandle : public HandleItem
 {
 public:
     enum {Type = ItemTypes::SizeHandleItemType};
 
 public:
-    explicit SizeHandleItem(PositionFlags positionFlags, SizeGrip* sizeGrip);
+    explicit ResizeHandle(PositionFlags positionFlags, SizeGrip* sizeGrip);
 
     void setHandleManager(HandleManager *newHandleManager) override;
 
@@ -39,4 +39,4 @@ private:
     SizeGrip* sizeGrip_ = nullptr;
 };
 
-#endif // SIZEHANDLEITEM_H
+#endif // RESIZEHANDLE_H

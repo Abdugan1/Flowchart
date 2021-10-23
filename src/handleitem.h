@@ -34,18 +34,19 @@ public:
     HandleManager *handleManager() const;
     virtual void setHandleManager(HandleManager *newHandleManager);
 
-    const QRectF &appearArea() const;
-    void setAppearArea(const QRectF &newAppearArea);
-
     int type() const override;
 
+    bool shouldDraw() const;
+    void setShouldDraw(bool newShouldDraw);
+
 protected:
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
 private:
     PositionFlags positionFlags_;
     HandleManager* handleManager_ = nullptr;
-    HandleItemAppearArea* appearArea_ = nullptr;
+    bool shouldDraw_ = true;
 };
 
 #endif // HANDLEITEM_H

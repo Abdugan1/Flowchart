@@ -20,13 +20,6 @@ ArrowHandleItem::ArrowHandleItem(PositionFlags positionFlag, ArrowManager *arrow
     Q_ASSERT(arrowManager_);
     setCursor(QCursor(Qt::PointingHandCursor));
     setAcceptHoverEvents(true);
-
-    QRectF r = boundingRect_;
-    const int Margin = 10;
-    HandleItem::setAppearArea({r.x() - Margin,
-                               r.y()  - Margin,
-                               r.width()  + 2 * Margin,
-                               r.height() + 2 * Margin});
 }
 
 void ArrowHandleItem::setHandleManager(HandleManager *newHandleManager)
@@ -46,20 +39,12 @@ void ArrowHandleItem::paint(QPainter *painter,
 {
     Q_UNUSED(widget)
 
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(QBrush(Qt::darkGray));
-    painter->drawEllipse(-Constants::ArrowHandleItem::InnerCircleDiameter / 2,
-                         -Constants::ArrowHandleItem::InnerCircleDiameter / 2,
-                          Constants::ArrowHandleItem::InnerCircleDiameter,
-                          Constants::ArrowHandleItem::InnerCircleDiameter);
+    if (shouldDraw()) {
 
-    if (option->state & QStyle::State_MouseOver) {
-        painter->setPen(QPen(Qt::green, Constants::ArrowHandleItem::OuterStrokePenWidth));
-        painter->setBrush(Qt::NoBrush);
-        painter->drawEllipse(-Constants::ArrowHandleItem::OuterStrokeDiameter / 2,
-                             -Constants::ArrowHandleItem::OuterStrokeDiameter / 2,
-                              Constants::ArrowHandleItem::OuterStrokeDiameter,
-                              Constants::ArrowHandleItem::OuterStrokeDiameter);
+        drawMainCircle(painter);
+
+        if (option->state & QStyle::State_MouseOver)
+            drawOuterCircle(painter);
     }
 }
 
@@ -73,4 +58,28 @@ void ArrowHandleItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     Q_ASSERT(arrowManager_);
     arrowManager_->emitHandleClicked(this);
     HandleItem::mousePressEvent(event);
+}
+
+void ArrowHandleItem::drawMainCircle(QPainter *painter)
+{
+    painter->save();
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QBrush(Qt::darkGray));
+    painter->drawEllipse(-Constants::ArrowHandleItem::InnerCircleDiameter / 2,
+                         -Constants::ArrowHandleItem::InnerCircleDiameter / 2,
+                          Constants::ArrowHandleItem::InnerCircleDiameter,
+                          Constants::ArrowHandleItem::InnerCircleDiameter);
+    painter->restore();
+}
+
+void ArrowHandleItem::drawOuterCircle(QPainter *painter)
+{
+    painter->save();
+    painter->setPen(QPen(Qt::green, Constants::ArrowHandleItem::OuterStrokePenWidth));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawEllipse(-Constants::ArrowHandleItem::OuterStrokeDiameter / 2,
+                         -Constants::ArrowHandleItem::OuterStrokeDiameter / 2,
+                          Constants::ArrowHandleItem::OuterStrokeDiameter,
+                          Constants::ArrowHandleItem::OuterStrokeDiameter);
+    painter->restore();
 }

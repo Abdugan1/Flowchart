@@ -6,7 +6,7 @@
 #include <QRectF>
 
 class DiagramItem;
-class SizeHandleItem;
+class ResizeHandle;
 class HandleItemAppearArea;
 
 class SizeGripDiagramItem : public SizeGrip

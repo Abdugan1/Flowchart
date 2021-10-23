@@ -1,16 +1,14 @@
 #include "handleitem.h"
-#include "handleitemappeararea.h"
+#include "handlemanager.h"
 
 #include <QDebug>
 
 HandleItem::HandleItem(PositionFlags positionFlags, HandleManager *handleManager)
-    : QGraphicsItem(new HandleItemAppearArea(this, handleManager))
+    : QGraphicsItem(handleManager->handlingItem())
     , positionFlags_(positionFlags)
     , handleManager_(handleManager)
 {
-    appearArea_ = qgraphicsitem_cast<HandleItemAppearArea*>(parentItem());
-    Q_ASSERT(appearArea_);
-    setFlag(ItemSendsGeometryChanges);
+    setAcceptHoverEvents(true);
 }
 
 PositionFlags HandleItem::positionFlags() const
@@ -33,28 +31,30 @@ void HandleItem::setHandleManager(HandleManager *newHandleManager)
     handleManager_ = newHandleManager;
 }
 
-const QRectF &HandleItem::appearArea() const
-{
-    return appearArea_->appearArea();
-}
-
-void HandleItem::setAppearArea(const QRectF &newAppearArea)
-{
-    appearArea_->setAppearArea(newAppearArea);
-}
-
 int HandleItem::type() const
 {
     return Type;
 }
 
-QVariant HandleItem::itemChange(GraphicsItemChange change, const QVariant &value)
+bool HandleItem::shouldDraw() const
 {
-    if (change == ItemPositionChange) {
-        // Do not move self. Move parent, i. e. appearArea_
-        appearArea_->setPos(value.toPointF());
-        return QPointF();
-    }
+    return shouldDraw_;
+}
 
-    return QGraphicsItem::itemChange(change, value);
+void HandleItem::setShouldDraw(bool newShouldDraw)
+{
+    shouldDraw_ = newShouldDraw;
+    update();
+}
+
+void HandleItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    handleManager_->setShouldDrawForHandleItems(true);
+    QGraphicsItem::hoverMoveEvent(event);
+}
+
+void HandleItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    handleManager_->setShouldDrawForHandleItems(false);
+    QGraphicsItem::hoverLeaveEvent(event);
 }

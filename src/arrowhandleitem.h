@@ -30,6 +30,10 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
+    void drawMainCircle(QPainter* painter);
+    void drawOuterCircle(QPainter* painter);
+
+private:
     QRectF boundingRect_;
     ArrowManager* arrowManager_ = nullptr;
 };

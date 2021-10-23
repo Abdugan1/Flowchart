@@ -2,6 +2,7 @@
 #include "diagramitem.h"
 
 #include <QGraphicsItem>
+#include <QDebug>
 
 HandleManager::HandleManager(QGraphicsItem* handlingItem, QObject *parent)
     : QObject(parent)
@@ -9,16 +10,10 @@ HandleManager::HandleManager(QGraphicsItem* handlingItem, QObject *parent)
 {
 }
 
-void HandleManager::hideHandleItems()
+void HandleManager::setShouldDrawForHandleItems(bool shouldDraw)
 {
     for (auto handle : qAsConst(handleItems_))
-        handle->hide();
-}
-
-void HandleManager::showHandleItems()
-{
-    for (auto handle : qAsConst(handleItems_))
-        handle->show();
+        handle->setShouldDraw(shouldDraw);
 }
 
 void HandleManager::addHandleItem(HandleItem *handle)

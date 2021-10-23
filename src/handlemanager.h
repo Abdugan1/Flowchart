@@ -15,8 +15,7 @@ class HandleManager : public QObject
 public:
     explicit HandleManager(QGraphicsItem* handlingItem, QObject *parent = nullptr);
 
-    void hideHandleItems();
-    void showHandleItems();
+    void setShouldDrawForHandleItems(bool shouldDraw);
 
     QGraphicsItem *handlingItem() const;
 

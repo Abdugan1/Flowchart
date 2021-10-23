@@ -1,7 +1,6 @@
 #include "sizegrip.h"
-#include "sizehandleitem.h"
+#include "resizehandle.h"
 #include "diagramitem.h"
-#include "handleitemappeararea.h"
 
 #include "constants.h"
 #include "internal.h"
@@ -13,17 +12,17 @@ SizeGrip::SizeGrip(QGraphicsItem *item, const QRectF &resizeRect, const QSizeF &
     , resizeRect_(resizeRect)
     , minGripSize_(minGripSize)
 {
-    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::TopLeft    , this));
-    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::Top        , this));
-    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::TopRight   , this));
-    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::Left       , this));
-    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::Right      , this));
-    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::BottomLeft , this));
-    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::Bottom     , this));
-    HandleManager::addHandleItem(new SizeHandleItem(PositionFlags::BottomRight, this));
+    HandleManager::addHandleItem(new ResizeHandle(PositionFlags::TopLeft    , this));
+    HandleManager::addHandleItem(new ResizeHandle(PositionFlags::Top        , this));
+    HandleManager::addHandleItem(new ResizeHandle(PositionFlags::TopRight   , this));
+    HandleManager::addHandleItem(new ResizeHandle(PositionFlags::Left       , this));
+    HandleManager::addHandleItem(new ResizeHandle(PositionFlags::Right      , this));
+    HandleManager::addHandleItem(new ResizeHandle(PositionFlags::BottomLeft , this));
+    HandleManager::addHandleItem(new ResizeHandle(PositionFlags::Bottom     , this));
+    HandleManager::addHandleItem(new ResizeHandle(PositionFlags::BottomRight, this));
 
     updateHandleItemsPositions();
-    hideHandleItems();
+    setShouldDrawForHandleItems(false);
 }
 
 void SizeGrip::setTop(qreal y)

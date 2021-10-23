@@ -1,6 +1,5 @@
 #include "arrowmanager.h"
 #include "arrowhandleitem.h"
-#include "handleitemappeararea.h"
 #include "diagramitem.h"
 #include "arrowitem.h"
 
@@ -19,7 +18,7 @@ ArrowManager::ArrowManager(DiagramItem *diagramItem, QObject *parent)
     HandleManager::addHandleItem(new ArrowHandleItem(Bottom, this));
 
     updateHandleItemsPositions();
-    hideHandleItems();
+    setShouldDrawForHandleItems(false);
 }
 
 void ArrowManager::emitHandleClicked(ArrowHandleItem *handleItem)

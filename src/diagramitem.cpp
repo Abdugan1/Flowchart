@@ -114,8 +114,8 @@ void DiagramItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         cursor.setPosition(position, QTextCursor::KeepAnchor);
         textItem_->setTextCursor(cursor);
     } else {
-        sizeGrip_->hideHandleItems();
-        arrowManager_->hideHandleItems();
+        sizeGrip_->setShouldDrawForHandleItems(false);
+        arrowManager_->setShouldDrawForHandleItems(false);
 
         if (!QGuiApplication::overrideCursor())
             QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
@@ -146,8 +146,8 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    sizeGrip_->showHandleItems();
-    arrowManager_->showHandleItems();
+    sizeGrip_->setShouldDrawForHandleItems(true);
+    arrowManager_->setShouldDrawForHandleItems(true);
 
     if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction
             && !QGuiApplication::overrideCursor())
@@ -158,8 +158,8 @@ void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
 void DiagramItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    sizeGrip_->hideHandleItems();
-    arrowManager_->hideHandleItems();
+    sizeGrip_->setShouldDrawForHandleItems(false);
+    arrowManager_->setShouldDrawForHandleItems(false);
 
     if (QGuiApplication::overrideCursor())
         QGuiApplication::restoreOverrideCursor();

@@ -1,7 +1,6 @@
 #include "sizegripdiagramitem.h"
-#include "sizehandleitem.h"
+#include "resizehandle.h"
 #include "diagramitem.h"
-#include "handleitemappeararea.h"
 
 #include "constants.h"
 #include "internal.h"
