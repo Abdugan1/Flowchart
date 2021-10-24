@@ -49,12 +49,6 @@ void HandleItem::setShouldDraw(bool newShouldDraw)
 
 void HandleItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    handleManager_->setShouldDrawForHandleItems(true);
-    QGraphicsItem::hoverMoveEvent(event);
-}
-
-void HandleItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-{
-    handleManager_->setShouldDrawForHandleItems(false);
-    QGraphicsItem::hoverLeaveEvent(event);
+    if (!shouldDraw())
+        handleManager_->setShouldDrawForHandleItems(true);
 }

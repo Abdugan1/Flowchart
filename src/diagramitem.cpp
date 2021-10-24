@@ -69,24 +69,13 @@ DiagramItem::~DiagramItem()
 QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange && scene()) {
-        QPointF newPos = value.toPointF();
-
-        newPos = internal::snapToGrid(newPos, Constants::DiagramScene::GridSize);
-
-        newPos = internal::preventOutsideMove(newPos, newPos + QPointF(size_.width(), size_.height()),
-                                              scene_->boundary());
-
-        return newPos;
+        return calculatedPositionWithConstraints(value.toPointF());
 
     } else if (change == ItemPositionHasChanged) {
         emit itemPositionChanged();
 
-    } else if (change == ItemSelectedChange
-               && textItem_->textInteractionFlags() != Qt::NoTextInteraction
-               && !value.toBool()) {
-
-        textEditing_ = false;
-        textItem_->setTextInteraction(false);
+    } else if (change == ItemSelectedChange) {
+        onSelectedChange(value.toBool());
 
     } else if (change == ItemSceneHasChanged) {
         if (scene())
@@ -109,18 +98,9 @@ void DiagramItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void DiagramItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if (textEditing_) {
-        QTextCursor cursor = textItem_->textCursor();
-        int position = getTextCursorPosition(event->pos());
-        cursor.setPosition(position, QTextCursor::KeepAnchor);
-        textItem_->setTextCursor(cursor);
+        selectTextInTextItem(event->pos());
     } else {
-        sizeGrip_->setShouldDrawForHandleItems(false);
-        arrowManager_->setShouldDrawForHandleItems(false);
-
-        if (!QGuiApplication::overrideCursor())
-            QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
-
-        QGraphicsItem::mouseMoveEvent(event);
+        onMovingDiagramItem(event);
     }
 }
 
@@ -136,11 +116,10 @@ void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction) {
-        QGraphicsItem::mouseDoubleClickEvent(event);
-        return;
+    if (textItem_->textInteractionFlags() != Qt::TextEditorInteraction) {
+        enableTextEditing(true);
     }
-    enableTextEditing();
+
     QGraphicsItem::mouseDoubleClickEvent(event);
 }
 
@@ -158,28 +137,28 @@ void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
 void DiagramItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    sizeGrip_->setShouldDrawForHandleItems(false);
-    arrowManager_->setShouldDrawForHandleItems(false);
+    if (!isSelected()) {
+        sizeGrip_->setShouldDrawForHandleItems(false);
+        arrowManager_->setShouldDrawForHandleItems(false);
+    }
 
     if (QGuiApplication::overrideCursor())
         QGuiApplication::restoreOverrideCursor();
-
-    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void DiagramItem::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_F2) {
-        enableTextEditing();
+        enableTextEditing(true);
     }
 
     QGraphicsItem::keyPressEvent(event);
 }
 
-void DiagramItem::enableTextEditing()
+void DiagramItem::enableTextEditing(bool enable)
 {
-    textEditing_ = true;
-    textItem_->setTextInteraction(true);
+    textEditing_ = enable;
+    textItem_->setTextInteraction(enable);
 }
 
 void DiagramItem::setTextCursor(int position)
@@ -220,6 +199,52 @@ int DiagramItem::getTextCursorPosition(const QPointF &clickedPos)
         position += internal::map(x, strBeginPos, strWidth + strBeginPos, 0, l);
 
     return position;
+}
+
+void DiagramItem::onSelectedChange(bool selected)
+{
+    if (textItem_->textInteractionFlags() != Qt::NoTextInteraction
+            && !selected) {
+        enableTextEditing(false);
+    }
+
+    setShouldDrawForHandleItems(false);
+}
+
+QPointF DiagramItem::calculatedPositionWithConstraints(const QPointF &pos)
+{
+    QPointF newPos = pos;
+
+    newPos = internal::snapToGrid(newPos, Constants::DiagramScene::GridSize);
+
+    QPointF bottomRight = newPos + QPointF(size_.width(), size_.height());
+    newPos = internal::preventOutsideMove(newPos, bottomRight, scene_->boundary());
+
+    return newPos;
+}
+
+void DiagramItem::setShouldDrawForHandleItems(bool shouldDraw)
+{
+    sizeGrip_->setShouldDrawForHandleItems(shouldDraw);
+    arrowManager_->setShouldDrawForHandleItems(shouldDraw);
+}
+
+void DiagramItem::selectTextInTextItem(const QPointF &mouseMovedPos)
+{
+    QTextCursor cursor = textItem_->textCursor();
+    int position = getTextCursorPosition(mouseMovedPos);
+    cursor.setPosition(position, QTextCursor::KeepAnchor);
+    textItem_->setTextCursor(cursor);
+}
+
+void DiagramItem::onMovingDiagramItem(QGraphicsSceneMouseEvent *event)
+{
+    setShouldDrawForHandleItems(false);
+
+    if (!QGuiApplication::overrideCursor())
+        QGuiApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
+
+    QGraphicsItem::mouseMoveEvent(event);
 }
 
 SizeGrip *DiagramItem::sizeGrip() const

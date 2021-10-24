@@ -91,9 +91,18 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    void enableTextEditing();
+    void enableTextEditing(bool enable);
     void setTextCursor(int position);
     int getTextCursorPosition(const QPointF& clickedPos);
+
+    void onSelectedChange(bool selected);
+    QPointF calculatedPositionWithConstraints(const QPointF& pos);
+
+    void setShouldDrawForHandleItems(bool shouldDraw);
+
+    void selectTextInTextItem(const QPointF& mouseMovedPos);
+
+    void onMovingDiagramItem(QGraphicsSceneMouseEvent* event);
 
 private:
     QPainterPath path_;

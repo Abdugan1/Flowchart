@@ -65,7 +65,7 @@ void DiagramView::mousePressEvent(QMouseEvent *event)
         contextMenu_->exec(mapToGlobal(event->pos()));
     } else  {
         QList<QGraphicsItem*> items = scene()->items(mapToScene(event->pos()));
-        if (items.empty()/* || (qgraphicsitem_cast<SceneBoundary*>(items.first()))*/) {
+        if (items.empty()) {
             if (event->button() == Qt::LeftButton) {
                 initRubberBand();
             }
@@ -78,9 +78,7 @@ void DiagramView::mousePressEvent(QMouseEvent *event)
 void DiagramView::mouseMoveEvent(QMouseEvent *event)
 {
     movedPos_ = event->pos();
-
-    QPoint currMousePos = mapToScene(movedPos_.toPoint()).toPoint();
-    mousePosLabel_->setText(Constants::DiagramView::CurrentMousePosInfoText.arg(currMousePos.x()).arg(currMousePos.y()));
+    updateCurrentMousePositionText(mapToScene(event->pos()));
 
     if (rubberBandActive_)
         updateRubberBand();
@@ -251,4 +249,9 @@ void DiagramView::finishRubberBand()
     rubberBandActive_ = false;
     emit rubberBandSelectingFinished(QRectF(mapToScene(rubberBand_->geometry().topLeft()),
                                             mapToScene(rubberBand_->geometry().bottomRight())));
+}
+
+void DiagramView::updateCurrentMousePositionText(const QPointF &pos)
+{
+    mousePosLabel_->setText(Constants::DiagramView::CurrentMousePosInfoText.arg(pos.x()).arg(pos.y()));
 }

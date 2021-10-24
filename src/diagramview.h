@@ -47,6 +47,8 @@ private:
     void updateRubberBand();
     void finishRubberBand();
 
+    void updateCurrentMousePositionText(const QPointF& pos);
+
 private:
     DiagramScene* scene_;
 

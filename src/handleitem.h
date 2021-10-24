@@ -41,7 +41,6 @@ public:
 
 protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
 private:
     PositionFlags positionFlags_;

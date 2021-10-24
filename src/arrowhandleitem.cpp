@@ -57,7 +57,6 @@ void ArrowHandleItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_ASSERT(arrowManager_);
     arrowManager_->emitHandleClicked(this);
-    HandleItem::mousePressEvent(event);
 }
 
 void ArrowHandleItem::drawMainCircle(QPainter *painter)
