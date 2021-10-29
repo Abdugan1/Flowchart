@@ -48,7 +48,7 @@ DiagramItem::DiagramItem(DiagramItem::DiagramType diagramType, QGraphicsItem *pa
     connect(sizeGrip_,      &SizeGripDiagramItem::resizeBeenMade,
             arrowManager_,  &ArrowManager::updateArrows);
 
-    connect(this,           &DiagramItem::itemPositionChanged,
+    connect(this,           &DiagramItem::positionChanged,
             arrowManager_,  &ArrowManager::updateArrows);
 
 
@@ -72,7 +72,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change, const QVariant &valu
         return calculatedPositionWithConstraints(value.toPointF());
 
     } else if (change == ItemPositionHasChanged) {
-        emit itemPositionChanged();
+        emit positionChanged();
 
     } else if (change == ItemSelectedChange) {
         onSelectedChange(value.toBool());
@@ -109,7 +109,7 @@ void DiagramItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     if (textEditing_)
         return;
 
-    emit itemReleased();
+    emit released();
     QGuiApplication::restoreOverrideCursor();
     QGraphicsItem::mouseReleaseEvent(event);
 }
@@ -125,8 +125,7 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    sizeGrip_->setShouldDrawForHandleItems(true);
-    arrowManager_->setShouldDrawForHandleItems(true);
+    setShouldDrawForHandleItems(true);
 
     if (textItem_->textInteractionFlags() == Qt::TextEditorInteraction
             && !QGuiApplication::overrideCursor())
@@ -138,8 +137,7 @@ void DiagramItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 void DiagramItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if (!isSelected()) {
-        sizeGrip_->setShouldDrawForHandleItems(false);
-        arrowManager_->setShouldDrawForHandleItems(false);
+        setShouldDrawForHandleItems(false);
     }
 
     if (QGuiApplication::overrideCursor())

@@ -20,7 +20,7 @@ public:
 
     int type() const override;
 
-    void setPathShape(const QList<QLineF>& lines);
+    void setConnectionPath(const QList<QLineF>& lines);
 
     void setStartItem(ArrowHandleItem* handle ,DiagramItem* item);
     DiagramItem* startItem() const;
@@ -60,6 +60,10 @@ private:
     static bool isCaseOfReverseConnection(PositionFlags startHandleFlag, PositionFlags endHandleFlag,
                                           const QPointF& startPos, const QPointF& endPos);
 
+    static QPointF leftSideConnectionPointInOutDiagramItem(DiagramItem *diagramItem);
+    static QPointF rightSideConnectionPointInOutDiagramItem(DiagramItem *diagramItem);
+    static QPointF getFinishConnectPoint(DiagramItem* diagramItem, PositionFlags handlePosFlag);
+
 private:
     struct Info {
         DiagramItem* item = nullptr;
@@ -72,7 +76,5 @@ private:
     QPainterPath shape_;
     QPolygonF arrowHead_;
 };
-
-QPointF getFinishConnectPoint(DiagramItem* diagramItem, PositionFlags handlePosFlag);
 
 #endif // ARROWITEM_H

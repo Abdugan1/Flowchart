@@ -39,10 +39,10 @@ DiagramItem *DiagramScene::createDiagramItem(int diagramType)
     DiagramItem* diagramItem = new DiagramItem(DiagramItem::DiagramType(diagramType));
     diagramItem->sizeGrip()->setMaxGripArea(sceneBoundary_->rect());
 
-    connect(diagramItem, &DiagramItem::itemPositionChanged,
+    connect(diagramItem, &DiagramItem::positionChanged,
             this,        &DiagramScene::addPositionLines);
 
-    connect(diagramItem, &DiagramItem::itemReleased,
+    connect(diagramItem, &DiagramItem::released,
             this,        &DiagramScene::deleteAllPositionLines);
 
     connect(diagramItem->arrowManager(), &ArrowManager::handleClicked,

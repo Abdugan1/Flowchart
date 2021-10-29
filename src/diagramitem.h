@@ -68,8 +68,8 @@ public:
     SizeGrip *sizeGrip() const;
 
 signals:
-    void itemPositionChanged();
-    void itemReleased();
+    void positionChanged();
+    void released();
 
 public slots:
     void updateTextItemPosition();

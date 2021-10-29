@@ -83,8 +83,8 @@ void MainWindow::onOpenDiagram()
 {
     QMessageBox::StandardButton reply =
             QMessageBox::warning(this, tr("Warning"),
-                                 tr("Are you sure you want to open another flowchart?"
-                                    "\nThe current flowchart will be lost."),
+                                 tr("Are you sure you want to open another diagram?"
+                                    "\nThe current diagram will be lost."),
                                  QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {

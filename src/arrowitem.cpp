@@ -21,7 +21,7 @@ int ArrowItem::type() const
     return Type;
 }
 
-void ArrowItem::setPathShape(const QList<QLineF> &lines)
+void ArrowItem::setConnectionPath(const QList<QLineF> &lines)
 {
     lines_ = lines;
     calculateShape();
@@ -84,7 +84,7 @@ void ArrowItem::updateConnectionPath()
         connectionLines = getDefaultConnection(startPos, endPos, startFinish, endFinish);
     }
 
-    setPathShape(connectionLines);
+    setConnectionPath(connectionLines);
     updateArrowHead(endFinish, endHandleFlag);
 }
 
@@ -191,14 +191,6 @@ void ArrowItem::setFinishConnections(QList<QLineF> &lines, const QPointF &startF
 {
     QLineF connectionLineBegin(startFinish, lines.first().p1());
     QLineF connectionLineEnd(lines.last().p2(), endFinish);
-
-    if (connectionLineBegin.length() > Constants::ArrowManager::MarginFromDiagramItemShape) {
-        qDebug() << "ALLERT! begin connection is long!" << connectionLineBegin.length() << "!!!!!!!!!!!!!!!!!";
-        qDebug() << connectionLineBegin;
-    } else if (connectionLineEnd.length() > Constants::ArrowManager::MarginFromDiagramItemShape) {
-        qDebug() << "ALLERT! end connection is long!" << connectionLineEnd.length() << "!!!!!!!!!!!!!!!!!";
-    }
-
     lines.prepend(connectionLineBegin);
     lines.append(connectionLineEnd);
 }
@@ -228,10 +220,36 @@ bool ArrowItem::isCaseOfReverseConnection(PositionFlags startHandleFlag, Positio
     return false;
 }
 
-QPointF getFinishConnectPoint(DiagramItem *diagramItem, PositionFlags handlePosFlag)
+QPointF ArrowItem::leftSideConnectionPointInOutDiagramItem(DiagramItem *diagramItem)
+{
+    QSizeF size = diagramItem->shape().boundingRect().size();
+    int w = size.width();
+    int h = size.height();
+    QRectF rect(0, 0, w / 4, h);
+    return diagramItem->scenePos() + rect.center();
+}
+
+QPointF ArrowItem::rightSideConnectionPointInOutDiagramItem(DiagramItem *diagramItem)
+{
+    QSizeF size = diagramItem->shape().boundingRect().size();
+    int w = size.width();
+    int h = size.height();
+    QRectF rect(w - w / 4, 0, w / 4, h);
+    return diagramItem->scenePos() + rect.center();
+}
+
+QPointF ArrowItem::getFinishConnectPoint(DiagramItem *diagramItem, PositionFlags handlePosFlag)
 {
     QPointF finishPoint;
     const QRectF rect = diagramItem->shape().boundingRect();
+
+    if (diagramItem->diagramType() == DiagramItem::InOut) {
+        if (handlePosFlag == Left) {
+            return leftSideConnectionPointInOutDiagramItem(diagramItem);
+        } else if (handlePosFlag == Right) {
+            return rightSideConnectionPointInOutDiagramItem(diagramItem);
+        }
+    }
 
     switch (handlePosFlag) {
     case Top:
